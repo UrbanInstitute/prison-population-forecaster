@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Prison Pop Forcaster</title>
+		<meta charset="utf-8">		
+		<script src="usdata.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+		<script src="js/underscore-min.js"></script>
+	</head>
+	<body>
+		<div>
+		</div>
+		
+		<script type="text/javascript">
+var t0 = performance.now();
+
+// define functions
+
+// Main function
+function StateProjections(ST,scenarios_list) {
+	// -- Grab the data from the selected state!
+	var stateData = usdata[ST];	
+	// -- Grab unique categories of crimes... for loop?
+	var categories = stateData.catList
+
+  // all.scenarios <-ExpandScenario(scenarios.list) #expand scenarios if they include umbrella category (e.g., violent or nonviolent)
+  var all_scenarios = ExpandScenario(scenarios_list)
+ 
+  var lastyr = stateData.endYear - 1;
+
+  // # Get scenario population projection counts in each category
+  // p.s<-lapply(state.categories, CatProjections, counts.st=STfile, scen.cat=all.scenarios, details=0) 
+  // expanded.list <- lapply(scen.to.expand, ExpandOne)  
+// var ps = CatProjections()
+	for (var i = 0; i < categories.length; i++) {
+		var details = 0;
+		CatProjections(categories[i],stateData,all_scenarios,details)
+	}
+
+ 	// How long did StateProjections take
+  var t1 = performance.now();
+	console.log("StateProjections took " + (t1 - t0) + " milliseconds.")			
+}
+
+	// DW question: do we need to submit all scenarios to this every time?
+	// DW question: when would I use details = 0 and when = 1?
+function CatProjections(cat,stateData,all_scenarios,details) {
+	// Category Projections
+  // #Given offense category & scenario, produce category-specific population projection
+  // #Inputs:
+  //   #category = category string
+  //   #counts.st = dataframe of counts for state
+  //   #scen.cat = scenario
+  //   #details = 0 to just return population projections; 1 to return all variables including admissions, LOS
+
+  // #Returns: Dataframe of projections for category
+  //   #If details == 0, just returns year and N
+  //   #If details == 1, also returns e, p, l
+
+		// console.log(cat)
+		// console.log(stateData)
+		// console.log(all_scenarios)
+		// console.log(details)
+
+		// DW question: do you need to calculate these for EVERY category/scenario??
+		var lastyr = stateData.endYear - 1;  //#last year of real data....DW
+		var firstyr = stateData.startYear;   //#first year of real data
+		var firstyr_formean = lastyr-4   //#first year of data to be incorporated into projections
+
+
+}
+
+// See above in stateprojections for call
+function ExpandScenario(scenarios_list) {
+	// #create list of expanded lists (one list for each original scenario from input scen.to.expand)	
+	// expanded.list <- lapply(scen.to.expand, ExpandOne)  
+	var expanded_list = [];
+
+	// loop through scenarios list and expand out grouped scenarios, add all possible scenarios to an unnested list
+	for (var i = 0; i < scenarios_list.length; i++) {	
+		ExpandOne(scenarios_list[i],expanded_list)						
+	}	
+	
+	return(expanded_list)
+}
+
+function ExpandOne(one_scenario,expanded_list) {
+	// if given scenario is a group, exand the group and add all to expanded_list, otherwise just add scenario directly to expanded_list
+	if (one_scenario[0] === "violent") {
+		var expanded = [["assault", one_scenario[1], one_scenario[2]], ["homicide", one_scenario[1], one_scenario[2]], ["kidnapping", one_scenario[1], one_scenario[2]], ["otherviol", one_scenario[1], one_scenario[2]], ["robbery", one_scenario[1], one_scenario[2]], ["sexassault", one_scenario[1], one_scenario[2]]];
+	} else if (one_scenario[0] === "drug") {
+		var expanded = [["drugposs", one_scenario[1], one_scenario[2]], ["drugtraff", one_scenario[1], one_scenario[2]], ["otherdrug", one_scenario[1], one_scenario[2]]];
+	} else if (one_scenario[0] === "property") {
+		var expanded = [["arson", one_scenario[1], one_scenario[2]], ["burglary", one_scenario[1], one_scenario[2]], ["fraud", one_scenario[1], one_scenario[2]], ["larceny", one_scenario[1], one_scenario[2]], ["mvtheft", one_scenario[1], one_scenario[2]], ["otherprop", one_scenario[1], one_scenario[2]]];
+	} else if (one_scenario[0] === "other") {
+		var expanded = [["dwi", one_scenario[1], one_scenario[2]], ["weapons", one_scenario[1], one_scenario[2]],["public_oth", one_scenario[1], one_scenario[2]]]
+	} else if (one_scenario[0] === "nonviolent") {
+		var expanded = [["arson", one_scenario[1], one_scenario[2]], ["burglary", one_scenario[1], one_scenario[2]], ["drugposs", one_scenario[1], one_scenario[2]], ["drugtraff", one_scenario[1], one_scenario[2]], ["dwi", one_scenario[1], one_scenario[2]], ["fraud", one_scenario[1], one_scenario[2]], ["larceny", one_scenario[1], one_scenario[2]], ["mvtheft", one_scenario[1], one_scenario[2]], ["otherdrug", one_scenario[1], one_scenario[2]], ["otherprop", one_scenario[1], one_scenario[2]], ["public_oth", one_scenario[1], one_scenario[2]], ["weapons", one_scenario[1], one_scenario[2]]]
+	}
+	else {
+		//if it is NOT a group category, just push the current scenario
+		var expanded = one_scenario;
+	}	
+
+	// If multidimensional array, break it down further...
+	// #unlist nested lists to produce list where each element is a scenario (rather than a list of scenarios)
+	if (expanded[0].constructor === Array) {
+		for (var i = 0; i < expanded.length; i++) {
+			expanded_list.push(expanded[i])
+		}
+	}
+	else {
+		expanded_list.push(expanded)
+	}
+}
+
+// Do things
+var test1 = [["burglary",-0.5,2],["drug",-0.2,1]]
+StateProjections("AZ", test1)
+
+
+
+// console.log(usdata)
+
+
+
+		</script>
+	</body>
+</html>
