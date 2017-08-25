@@ -20,7 +20,7 @@ for i in range(1, len(rows)):
 	year = int(float(rows[i][3]))
 	nt = rounders(rows[i][4],1)
 	e = rounders(rows[i][5],1)
-	l = rounders(rows[i][5],4)
+	l = rounders(rows[i][7],4)
 
 	if state not in output:
 		output[state] = {}

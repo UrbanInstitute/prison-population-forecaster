@@ -13,13 +13,15 @@
 		
 		<script type="text/javascript">
 var t0 = performance.now();
-
+var ProjEndYear = 2025;
 // define functions
 
 // Main function
 function StateProjections(ST,scenarios_list) {
 	// -- Grab the data from the selected state!
-	var stateData = usdata[ST];	
+	var stateData = usdata[ST];
+	// Data is organized by state, crime, and then each array is [nt, e, l]
+
 	// -- Grab unique categories of crimes... for loop?
 	var categories = stateData.catList
 
@@ -27,13 +29,19 @@ function StateProjections(ST,scenarios_list) {
   var all_scenarios = ExpandScenario(scenarios_list)
  
   var lastyr = stateData.endYear - 1;
+  var firstyr = stateData.startYear;
 
+  // DW question: Do we need to loop through all categories if they're not modified in scenarios list??
+  // Lizzie answer we will do prepopulated baselines so that you only have to calculate new populations if scenario is modified.
   // # Get scenario population projection counts in each category
   // p.s<-lapply(state.categories, CatProjections, counts.st=STfile, scen.cat=all.scenarios, details=0) 
-  // expanded.list <- lapply(scen.to.expand, ExpandOne)  
-// var ps = CatProjections()
+  // expanded.list <- lapply(scen.to	.expand, ExpandOne)  
+	// var ps = CatProjections()
+	// I predict that we should only have to do this if categoreis === all_scenarios[i].category
 	for (var i = 0; i < categories.length; i++) {
-		var details = 0;
+		var details = 0; 
+		// categories are the categories that are present in each individual state (might not be ALL possible categories)
+		//All_scenarios is all scenarios that have been modified by the user in the input
 		CatProjections(categories[i],stateData,all_scenarios,details)
 	}
 
@@ -44,11 +52,13 @@ function StateProjections(ST,scenarios_list) {
 
 	// DW question: do we need to submit all scenarios to this every time?
 	// DW question: when would I use details = 0 and when = 1
-function CatProjections(cat,stateData,all_scenarios,details) {
+	// Lizzie answer, we can revisit details...might not need it. 
+function CatProjections(cat,stateData,all_scenarios,details) {	
+	// CatProjections <- function(category, counts.st, scen.cat, details) {
 	// Category Projections
   // #Given offense category & scenario, produce category-specific population projection
   // #Inputs:
-  //   #category = category string
+  //   #category = category string 
   //   #counts.st = dataframe of counts for state
   //   #scen.cat = scenario
   //   #details = 0 to just return population projections; 1 to return all variables including admissions, LOS
@@ -57,17 +67,131 @@ function CatProjections(cat,stateData,all_scenarios,details) {
   //   #If details == 0, just returns year and N
   //   #If details == 1, also returns e, p, l
 
-		// console.log(cat)
-		// console.log(stateData)
-		// console.log(all_scenarios)
-		// console.log(details)
+	// DW question: do you need to calculate these for EVERY category/scenario??
+	var lastyr = stateData.endYear - 1;  //#last year of real data....DW
+	var firstyr = stateData.startYear;   //#first year of real data
+	// var firstyr_formean = lastyr-4   //#first year of data to be incorporated into projections
 
-		// DW question: do you need to calculate these for EVERY category/scenario??
-		var lastyr = stateData.endYear - 1;  //#last year of real data....DW
-		var firstyr = stateData.startYear;   //#first year of real data
-		var firstyr_formean = lastyr-4   //#first year of data to be incorporated into projections
+	// DW NOTE: NOT FINISHED //
+	// #generate empty data frame from firstyr to 2025 as base for projections; merge to counts data
+	var proj_base = [];  //should be an empty array from first year to 2025.
+	// proj<-merge(proj_base, subset(counts.st, counts.st$ppf_cat==category), by="year", all.x=TRUE)
+	// DW NOTE END //
 
+	// #get scenario-dependent multiplier for e (admissions/entrances) and l (length of stay)  
+	// Baseline = 1, so these categories are uneffected by the scenarios defined by user; these are default
+	var e_multiplier = 1;
+	var l_multiplier = 1;
 
+  for (var i = 0; i < all_scenarios.length; i++) {
+  	if (all_scenarios[i][0] === cat) {  		
+  		// DW question Can the calculation of whether there are two scenarios of same category be calculated beforehand?
+  		// Find multiplier for All scenarios that have been changed by the USER and that have categories/data in the selected state.
+  		if (all_scenarios[i][2] === 1) {
+				var e_multiplier = 1 + all_scenarios[i][1];
+  		} else if (all_scenarios[i][2] === 2) {
+  			var l_multiplier = 1 + all_scenarios[i][1];
+  		}
+  	}
+  }
+  // console.log(cat + " entrance multiplier: " + e_multiplier)
+  // console.log(cat + " LOS multiplier: " + l_multiplier)
+
+  // #calculate 2025 values for admissions (e) & LOS (l)
+  
+  		// #admissions calculations
+    	var yearIndex = stateData[cat].length - 1;
+    	
+    	var last5e = [stateData[cat][yearIndex - 5][1],stateData[cat][yearIndex - 4][1],stateData[cat][yearIndex - 3][1],stateData[cat][yearIndex - 2][1],stateData[cat][yearIndex - 1][1]];
+    	var e_pc_1 = (last5e[1] - last5e[0])/last5e[0]; //#oldest year
+			var e_pc_2 = (last5e[2] - last5e[1])/last5e[1];
+			var e_pc_3 = (last5e[3] - last5e[2])/last5e[2];
+			var e_pc_4 = (last5e[4] - last5e[3])/last5e[3]; //#most recent year
+
+			// DW note for Lizzie: begin to see small changes in numbers because of e rounding.  
+			// #calculate weighted mean of percent changes (x4, then adjusted by tanh to bound between -1 and 1)
+			var e_pct_chg = Math.tanh((weightedMean([e_pc_1, e_pc_2, e_pc_3, e_pc_4],[1,2,2,3])*4))			
+		  // #apply e_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
+			var e_final = e_multiplier*(weightedMean(last5e,[1,1,2,2,3])+ (e_pct_chg*weightedMean(last5e,[1,1,2,2,3])))
+
+			// #length of stay calculations
+			var last5l = [stateData[cat][yearIndex - 5][2],stateData[cat][yearIndex - 4][2],stateData[cat][yearIndex - 3][2],stateData[cat][yearIndex - 2][2],stateData[cat][yearIndex - 1][2]];
+			var l_pc_1 = (last5l[1] - last5l[0])/last5l[0]; //#oldest year
+			var l_pc_2 = (last5l[2] - last5l[1])/last5l[1];
+			var l_pc_3 = (last5l[3] - last5l[2])/last5l[2];
+			var l_pc_4 = (last5l[4] - last5l[3])/last5l[3]; //#most recent year
+			var l_pct_chg = Math.tanh((weightedMean([l_pc_1, l_pc_2, l_pc_3, l_pc_4],[1,2,2,3])*4))			
+			var l_final = l_multiplier*(weightedMean(last5l,[1,1,2,2,3])+ (l_pct_chg*weightedMean(last5l,[1,1,2,2,3])))			
+
+			// #last year of real data      
+      var e_lastval = stateData[cat][yearIndex - 1][1];  
+      var l_lastval = stateData[cat][yearIndex - 1][2];
+    
+   		// #calculate step for equal interval between years 
+      var e_step = (e_final-e_lastval)/(2025-lastyr);
+      var l_step = (l_final-l_lastval)/(2025-lastyr);
+
+      // #calculate intervening years using step between last real year and 2025 target value
+      // In the below, i set the first item in the array as the lastyr value (2014 for AZ), then added to it is 2015 through 2025
+      // var e_future = [e_lastval];
+      // var l_future = [l_lastval];
+
+      var nt_values = [];
+      var e_values = [];
+      var l_values = [];
+      var p_values = [];
+      var n_values = [];
+      // Add historical data to these places, from start year to current year
+      for (var i = 0; i < yearIndex; i++) {      	
+      	nt_values.push(stateData[cat][i][0])
+      	e_values.push(stateData[cat][i][1])
+      	l_values.push(stateData[cat][i][2])
+      	p_values.push(1-(1/l_values[i]))
+      	n_values.push(stateData[cat][i+1][0])
+      }
+      
+      // Add final n_value as the nt of the lastyr by appending to nt_values array
+      nt_values.push(n_values[n_values.length-1])
+
+      // Predict the FUTURE (lastyr to projected end year)
+      for (var i = yearIndex; i <= (ProjEndYear - firstyr); i++) {
+      	e_values.push(e_values[i-1]+e_step);       	
+      	l_values.push(l_values[i-1]+l_step); //might not need this step because p is calculated?
+      	p_values.push(1-(1/l_values[i]));      	
+      	
+      	// #generate projected n's based on estimates for admissions and LOS
+      	if (p_values[i] >= 0) {
+      		// # (a) when p>=0 (corresponding to LOS >= 1 year):
+        	//  # n = (nt*p) + e
+      		n_values.push(nt_values[i]*p_values[i] + e_values[i]);
+      	} else {
+	      	// # (b) when p<0 (corresponding to LOS < 1 year):
+	        // # n = e*l	
+      		n_values.push(e_values[i]*l_values[i]);
+      	}
+      	
+      	// If not the last iteration, take the ending n value and using it as next years nt value
+      	if (i !== (ProjEndYear - firstyr)) {
+      		nt_values.push(n_values[i]);
+      	}
+      }      
+      
+      // console.log(cat)
+      // console.log(e_values)
+      // console.log(n_values)
+      // console.log(nt_values)
+
+}	
+
+function weightedMean(values, weights) {
+	var valSum = 0;
+	var weightSum = 0;
+	for (var i = 0; i < values.length; i++) {
+		valSum += values[i]*weights[i];
+		weightSum += weights[i];
+	}
+	var mean = valSum / weightSum;
+	return mean;
 }
 
 // See above in stateprojections for call
@@ -115,14 +239,10 @@ function ExpandOne(one_scenario,expanded_list) {
 }
 
 // Do things
-var test1 = [["burglary",-0.5,2],["drug",-0.2,1]]
+var test1 = [["burglary",-0.5,2],["drug",-0.2,1],["drug",-0.4,2]]
+
+// MI, ME and DC and maybe some other states don't go through 2015
 StateProjections("AZ", test1)
-
-
-
-// console.log(usdata)
-
-
 
 		</script>
 	</body>

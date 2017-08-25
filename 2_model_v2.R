@@ -87,9 +87,8 @@ GetMultiplier<-function(category, scen.mult, type) {
   
   #CATEGORY IS INCLUDED IN ONE OR MORE POLICY CHANGE SCENARIOS
     if(category %in% unlist(scen.mult)){ 
-      
+      # print(scen.mult)
       relevant_scen<-scen.mult[sapply(scen.mult, function(x) category %in% x)] #capture any sub-scenarios that affect "category"
-      
       #IF ONE RELEVANT SCENARIO (i.e. either admissions or LOS)
       if (length(relevant_scen)==1){ 
         
@@ -99,6 +98,7 @@ GetMultiplier<-function(category, scen.mult, type) {
         } else { 
           #reduction type does not match: multiplier = 1 (baseline - no change)
           multiplier <- 1
+
         }
       
       #IF TWO RELEVANT SCENARIOS (i.e. both admissions and LOS )
@@ -117,12 +117,12 @@ GetMultiplier<-function(category, scen.mult, type) {
           multiplier <- 1
         }
       }
-    
+      # print(multiplier)
+
   #CATEGORY IS NOT AFFECTED BY SCENARIO
     } else { 
       multiplier<-1 #baseline
     }
-      
   return(as.numeric(multiplier))
     
 }
@@ -155,18 +155,19 @@ CatProjections <- function(category, counts.st, scen.cat, details) {
   
   #generate empty data frame from firstyr to 2025 as base for projections; merge to counts data
   proj_base<-as.data.frame(firstyr:2025)
+
   names(proj_base)<-"year"
   proj<-merge(proj_base, subset(counts.st, counts.st$ppf_cat==category), by="year", all.x=TRUE)
-  
+
   #get scenario-dependent multiplier for e (admissions/entrances) and l (length of stay)
   e_multiplier<-GetMultiplier(category, scen.mult=scen.cat, type=1)
   l_multiplier<-GetMultiplier(category, scen.mult=scen.cat, type=2)
-  
+
   #calculate 2025 values for admissions (e) & LOS (l)
   
     #admissions
       #e_vals = values necessary to make calculation (E (admissions) in recent years)  
-        e_vals<-subset(proj, proj$year<=lastyr & proj$year>=firstyr_formean, select=c("year", "e")) 
+        e_vals<-subset(proj, proj$year<=lastyr & proj$year>=firstyr_formean, select=c("year", "e"))         
       #calculate percent change for each interval in most recent 5 years
         e_pc_1 <- (e_vals$e[2] - e_vals$e[1])/e_vals$e[1] #oldest year
         e_pc_2 <- (e_vals$e[3] - e_vals$e[2])/e_vals$e[2]
@@ -188,15 +189,14 @@ CatProjections <- function(category, counts.st, scen.cat, details) {
       #calculate weighted mean of percent changes (x4, then adjusted by tanh to bound between -1 and 1)
         l_pct_chg <- tanh(weighted.mean(c(l_pc_1, l_pc_2, l_pc_3, l_pc_4), c(1, 2, 2, 3))*4)
       #apply l_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
-        l_final <- l_multiplier*(weighted.mean(as.vector(l_vals$l), c(1, 1, 2, 2, 3)) + (l_pct_chg*weighted.mean(as.vector(l_vals$l), c(1, 1, 2, 2, 3))))
-
+        l_final <- l_multiplier*(weighted.mean(as.vector(l_vals$l), c(1, 1, 2, 2, 3)) + (l_pct_chg*weighted.mean(as.vector(l_vals$l), c(1, 1, 2, 2, 3))))        
         
   # generate intervening years using linear step between last yr of real data and 2025 projection value
         
     #last year of real data
       e_lastval<-proj$e[proj$year==lastyr]  
-      l_lastval<-proj$l[proj$year==lastyr]
-    
+      l_lastval<-proj$l[proj$year==lastyr]      
+
     #calculate step for equal interval between years 
       e_step<-(e_final-e_lastval)/(2025-lastyr) 
       l_step<-(l_final-l_lastval)/(2025-lastyr)
@@ -211,18 +211,23 @@ CatProjections <- function(category, counts.st, scen.cat, details) {
   # p = proportion remaining in prison after one year
   # L= 1/(1-p)
   # p = 1-(1/l)
+
     proj$p <- 1-(1/proj$l)
 
-  
   #generate projected n's based on estimates for admissions and LOS
     
     #nt = stock pop in previous yr
     #p = proportion still in prison from prev yr stock
     #e = admissions over the year
     #n = admissions in current year (t+1 implied)
-    
+    # print(proj)
+    # DW note: Edits will happen in this area from Lizzie
+  
     proj$n<-(proj$nt*proj$p)+proj$e 
-    
+    print(category)
+    print(lastyr - firstyr + 2)
+    print(proj)
+    # print(2025-firstyr+1)
     for(i in (lastyr-firstyr+2):(2025-firstyr+1)){
       
       #n from year i-1 becomes nt for year i
@@ -241,7 +246,7 @@ CatProjections <- function(category, counts.st, scen.cat, details) {
           proj$n[[i]]<-proj$e[[i]]*proj$l[[i]]
       }
     }
-    
+    print(proj)
   #generate output dataframe conditional on details (# of vars required)
     if (details==0){
       final_projections<-subset(proj, select=c("year", "n"))
@@ -281,6 +286,7 @@ StateProjections <- function(ST, scenarios.list) {
   
   all.scenarios <-ExpandScenario(scenarios.list) #expand scenarios if they include umbrella category (e.g., violent or nonviolent)
   
+  # Last year of real data
   lastyr <- max(STfile$year)-1
 
   # Get scenario population projection counts in each category
@@ -515,13 +521,9 @@ GetBaselineLastYr <- function(ST) {
 load("costs.RData")
 load("counts.RData")
 
-test1 <- list(c("burglary", -.5, 2), c("drug", -.2, 1))
+test1 <- list(c("burglary", -.5, 2), c("drug", -.2, 1), c("drug", -.4, 2))
 test2 <- list(c("other", -.1, 1))
 
 
-# StateProjections("AZ", test1)
- StateProjections("WA", test1)
-
-
-
-
+StateProjections("AZ", test1)
+ # StateProjections("WA", test1)

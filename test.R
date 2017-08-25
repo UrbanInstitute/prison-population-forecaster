@@ -10,7 +10,7 @@ StateProjections <- function(ST, scenarios.list) {
   	# print(scenarios.list)	
 	# print(scenarios.list[[1]][1])	
 	STfile <- subset(counts.allstates, counts.allstates$state==ST)
-	write.csv(STfile, file="yourCSV.csv")
+	
 }
 
 
