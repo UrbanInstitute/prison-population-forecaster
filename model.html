@@ -72,12 +72,6 @@ function CatProjections(cat,stateData,all_scenarios,details) {
 	var firstyr = stateData.startYear;   //#first year of real data
 	// var firstyr_formean = lastyr-4   //#first year of data to be incorporated into projections
 
-	// DW NOTE: NOT FINISHED //
-	// #generate empty data frame from firstyr to 2025 as base for projections; merge to counts data
-	var proj_base = [];  //should be an empty array from first year to 2025.
-	// proj<-merge(proj_base, subset(counts.st, counts.st$ppf_cat==category), by="year", all.x=TRUE)
-	// DW NOTE END //
-
 	// #get scenario-dependent multiplier for e (admissions/entrances) and l (length of stay)  
 	// Baseline = 1, so these categories are uneffected by the scenarios defined by user; these are default
 	var e_multiplier = 1;
@@ -94,8 +88,6 @@ function CatProjections(cat,stateData,all_scenarios,details) {
   		}
   	}
   }
-  // console.log(cat + " entrance multiplier: " + e_multiplier)
-  // console.log(cat + " LOS multiplier: " + l_multiplier)
 
   // #calculate 2025 values for admissions (e) & LOS (l)
   
@@ -133,8 +125,6 @@ function CatProjections(cat,stateData,all_scenarios,details) {
 
       // #calculate intervening years using step between last real year and 2025 target value
       // In the below, i set the first item in the array as the lastyr value (2014 for AZ), then added to it is 2015 through 2025
-      // var e_future = [e_lastval];
-      // var l_future = [l_lastval];
 
       var nt_values = [];
       var e_values = [];
@@ -175,11 +165,11 @@ function CatProjections(cat,stateData,all_scenarios,details) {
       		nt_values.push(n_values[i]);
       	}
       }      
-      
-      // console.log(cat)
-      // console.log(e_values)
-      // console.log(n_values)
-      // console.log(nt_values)
+
+      // console.log(cat) //category
+      // console.log(e_values) //entrance values
+      // console.log(n_values) // end of year populations
+      // console.log(nt_values) // beginning of year populations
 
 }	
 
@@ -238,6 +228,7 @@ function ExpandOne(one_scenario,expanded_list) {
 	}
 }
 
+// BEN you can change/add categories, change (between -1,1), and whether you're affecting entrances (1) or Length of Stay (2)
 // Do things
 var test1 = [["burglary",-0.5,2],["drug",-0.2,1],["drug",-0.4,2]]
 
