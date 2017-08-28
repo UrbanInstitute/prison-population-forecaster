@@ -5,12 +5,104 @@
 		<meta charset="utf-8">		
 		<script src="data/usdata.js"></script>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-		<script src="js/underscore-min.js"></script>
+		<script src="js/vendor/d3.v4.min.js"></script>
+		<link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic,900" rel="stylesheet" type="text/css">
+		<style>
+body{
+	font-family: Lato;
+}
+.control{
+	font-size: 14px;
+	margin-right: 10px;
+}
+#addScenario {
+    font-size: 30px;
+    background-color: #1696d2;
+    width: 18px;
+    height: 36px;
+    vertical-align: middle;
+    padding: 0px 10px 2px 10px;
+    color: white;
+    margin-top: 20px;
+    cursor: pointer;
+}
+#stateSelect{
+	margin-bottom: 20px;
+}
+#runButton{
+	font-size: 30px;
+    margin-top: 10px;
+    background: black;
+    padding: 10px;
+    width: 171px;
+    color: white;
+    cursor: pointer;
+}
+	</style>
 	</head>
 	<body>
-		<div>
+    <select id = "stateSelect" class = "control">
+		<option value="AL">Alabama</option>
+		<option value="AK">Alaska</option>
+		<option value="AZ">Arizona</option>
+		<option value="AR">Arkansas</option>
+		<option value="CA">California</option>
+		<option value="CO">Colorado</option>
+		<option value="CT">Connecticut</option>
+		<option value="DE">Delaware</option>
+		<option value="DC">District of Columbia</option>
+		<option value="FL">Florida</option>
+		<option value="GA">Georgia</option>
+		<option value="HI">Hawaii</option>
+		<option value="ID">Idaho</option>
+		<option value="IL">Illinois</option>
+		<option value="IN">Indiana</option>
+		<option value="IA">Iowa</option>
+		<option value="KS">Kansas</option>
+		<option value="KY">Kentucky</option>
+		<option value="LA">Louisiana</option>
+		<option value="ME">Maine</option>
+		<option value="MD">Maryland</option>
+		<option value="MA">Massachusetts</option>
+		<option value="MI">Michigan</option>
+		<option value="MN">Minnesota</option>
+		<option value="MS">Mississippi</option>
+		<option value="MO">Missouri</option>
+		<option value="MT">Montana</option>
+		<option value="NE">Nebraska</option>
+		<option value="NV">Nevada</option>
+		<option value="NH">New Hampshire</option>
+		<option value="NJ">New Jersey</option>
+		<option value="NM">New Mexico</option>
+		<option value="NY">New York</option>
+		<option value="NC">North Carolina</option>
+		<option value="ND">North Dakota</option>
+		<option value="OH">Ohio</option>
+		<option value="OK">Oklahoma</option>
+		<option value="OR">Oregon</option>
+		<option value="PA">Pennsylvania</option>
+		<option value="RI">Rhode Island</option>
+		<option value="SC">South Carolina</option>
+		<option value="SD">South Dakota</option>
+		<option value="TN">Tennessee</option>
+		<option value="TX">Texas</option>
+		<option value="UT">Utah</option>
+		<option value="VT">Vermont</option>
+		<option value="VA">Virginia</option>
+		<option value="WA">Washington</option>
+		<option value="WV">West Virginia</option>
+		<option value="WI">Wisconsin</option>
+		<option value="WY">Wyoming</option>
+    </select>
+		<div id = "inputs">
 		</div>
+		<div id = "addScenario">+</div>
 		
+		<div id = "runButton">Run scenario</div>
+
+		<div id = "outputs">
+		</div>
+
 		<script type="text/javascript">
 var t0 = performance.now();
 var ProjEndYear = 2025;
@@ -166,10 +258,10 @@ function CatProjections(cat,stateData,all_scenarios,details) {
       	}
       }      
 
-      // console.log(cat) //category
-      // console.log(e_values) //entrance values
-      // console.log(n_values) // end of year populations
-      // console.log(nt_values) // beginning of year populations
+      console.log(cat) //category
+      console.log(e_values) //entrance values
+      console.log(n_values) // end of year populations
+      console.log(nt_values) // beginning of year populations
 
 }	
 
@@ -228,12 +320,104 @@ function ExpandOne(one_scenario,expanded_list) {
 	}
 }
 
-// BEN you can change/add categories, change (between -1,1), and whether you're affecting entrances (1) or Length of Stay (2)
-// Do things
+
+var offenses = [ ["violent","All Violent"], ["drug", "All Drug"], ["property", "All Property"], ["nonviolent", "All Nonviolent"], ["other", "All Other"], ["arson", "Arson"],["assault", "Assault"],["burglary", "Burglary"],["drugposs", "Drug possession"],["drugtraff", "Drug trafficking"],["dwi", "DWI"],["fraud", "Fraud"],["homicide", "Homicide"],["kidnapping", "Kidnapping"],["larceny", "Larceny"],["otherdrug", "Other drug"],["otherprop", "Other property"],["otherviol", "Other violent"],["public_oth", "Public other"],["robbery", "Robbery"],["sexassault", "Sexual assault"],["weapons", "Weapons"],["mvtheft", "Motor vehicle theft"] ]
+
+function addController(){
+	var controlRow = d3.select("#inputs")
+		.append("div")
+		.attr("class", "controlRow")
+
+	var offenseType = controlRow
+		.append("select")
+		.attr("class", "control offenseType")
+
+	for(var i = 0; i < offenses.length; i++){
+		var offense = offenses[i];
+		offenseType.append("option")
+			.attr("value", offense[0])
+			.text(offense[1])
+	}
+	var reductionType = controlRow.append("select")
+		.attr("class", "control reductionType")
+
+	reductionType.append("option")
+		.attr("value","los")
+		.text("Length of Stay")
+	reductionType.append("option")
+		.attr("value", "entrances")
+		.text("Entrances")
+
+	var reductionAmount = controlRow.append("input")
+		.attr("type","range")
+		.attr("value","0")
+		.attr("step","1")
+		.attr("min","-100")
+		.attr("max","100")
+		.attr("class", "control reductionAmount")
+	var reductionLabel = controlRow.append("input")
+		.attr("type","text")
+		.attr("value", "50")
+		.attr("class", "control reductionLabel")
+
+	reductionAmount.on("input", function(obj){
+		var val = $(this).val()
+		$(reductionLabel.node()).val(val)
+	})
+	reductionLabel.on("input", function(obj){
+		var val = $(this).val()
+		$(reductionAmount.node()).val(val)
+	})
+}
+
+function getScenario(){
+	var scenarios = [];
+	d3.selectAll(".controlRow")
+		.each(function(){
+			if(typeof(this) == "undefined"){
+				return false;
+			}else{
+				var cr = this;
+				var scenario = []
+				scenario.push($(cr).find(".offenseType").val())
+				scenario.push(parseFloat( $(cr).find(".reductionAmount").val() )/100.0 )
+				var reductionTypeInt = ( $(cr).find(".reductionType").val() == "los") ? 2 : 1;
+				scenario.push(reductionTypeInt)
+
+				scenarios.push(scenario)
+			}
+		})
+	return scenarios;
+}
+
+function getState(){
+	return $("#stateSelect").val()
+}
+
+function testRun(){
+	var state = getState();
+	var scenario = getScenario();
+	var results = StateProjections(state, scenario);
+}
+
+
 var test1 = [["burglary",-0.5,2],["drug",-0.2,1],["drug",-0.4,2]]
 
+addController();
+d3.select("#addScenario")
+	.on("click", addController)
+
+d3.select("#runButton")
+	.on("click", function(){
+		t0 = performance.now();
+		StateProjections(getState(), getScenario())
+	})
+// BEN you can change/add categories, change (between -1,1), and whether you're affecting entrances (1) or Length of Stay (2)
+// Do things
+
+
 // MI, ME and DC and maybe some other states don't go through 2015
-StateProjections("AZ", test1)
+// StateProjections("AZ", test1)
 
 		</script>
 	</body>
