@@ -67,23 +67,45 @@ td{
 		<option value="AL">Alabama</option>
 		<option value="AK">Alaska</option>
 		<option value="AZ">Arizona</option>
-		<option value="AR">Arkansas</option>
+		
+		<!-- not in counts.allstates data -->
+		<!-- <option value="AR">Arkansas</option> -->
+
 		<option value="CA">California</option>
 		<option value="CO">Colorado</option>
-		<option value="CT">Connecticut</option>
+		
+		<!-- not in counts.allstates data -->
+		<!-- <option value="CT">Connecticut</option> -->
+
 		<option value="DE">Delaware</option>
-		<option value="DC">District of Columbia</option>
+
+				<!-- not in costs data -->
+				<!-- <option value="DC">District of Columbia</option> -->
+
 		<option value="FL">Florida</option>
 		<option value="GA">Georgia</option>
-		<option value="HI">Hawaii</option>
-		<option value="ID">Idaho</option>
+		
+		<!-- not in counts.allstates data -->
+		<!-- <option value="HI">Hawaii</option> -->
+
+		<!-- not in counts.allstates data -->
+		<!-- <option value="ID">Idaho</option> -->
+
 		<option value="IL">Illinois</option>
 		<option value="IN">Indiana</option>
 		<option value="IA">Iowa</option>
-		<option value="KS">Kansas</option>
+
+			<!-- fewer than five years of baseline data -->
+			<!-- <option value="KS">Kansas</option> -->
+
 		<option value="KY">Kentucky</option>
-		<option value="LA">Louisiana</option>
-		<option value="ME">Maine</option>
+
+		<!-- not in counts.allstates data -->
+		<!-- <option value="LA">Louisiana</option> -->
+
+			<!-- fewer than five years of baseline data -->
+			<!-- <option value="ME">Maine</option> -->
+
 		<option value="MD">Maryland</option>
 		<option value="MA">Massachusetts</option>
 		<option value="MI">Michigan</option>
@@ -93,7 +115,10 @@ td{
 		<option value="MT">Montana</option>
 		<option value="NE">Nebraska</option>
 		<option value="NV">Nevada</option>
-		<option value="NH">New Hampshire</option>
+
+			<!-- fewer than five years of baseline data -->
+			<!-- <option value="NH">New Hampshire</option> -->
+
 		<option value="NJ">New Jersey</option>
 		<option value="NM">New Mexico</option>
 		<option value="NY">New York</option>
@@ -109,8 +134,13 @@ td{
 		<option value="TN">Tennessee</option>
 		<option value="TX">Texas</option>
 		<option value="UT">Utah</option>
-		<option value="VT">Vermont</option>
-		<option value="VA">Virginia</option>
+
+		<!-- not in counts.allstates data -->
+		<!-- <option value="VT">Vermont</option> -->
+
+		<!-- not in counts.allstates data -->
+		<!-- <option value="VA">Virginia</option> -->
+
 		<option value="WA">Washington</option>
 		<option value="WV">West Virginia</option>
 		<option value="WI">Wisconsin</option>
@@ -168,6 +198,7 @@ function StateProjections(ST,scenarios_list) {
 	// Data is organized by state, crime, and then each array is [nt, e, l]
 
 	// -- Grab unique categories of crimes... for loop?
+
 	var categories = stateData.catList
 
   // all.scenarios <-ExpandScenario(scenarios.list) #expand scenarios if they include umbrella category (e.g., violent or nonviolent)
@@ -334,7 +365,7 @@ function CatProjections(cat,stateData,all_scenarios,details) {
   		}
   	}
   }
-
+  
   // #calculate 2025 values for admissions (e) & LOS (l)
   
   		// #admissions calculations
@@ -368,6 +399,7 @@ function CatProjections(cat,stateData,all_scenarios,details) {
    		// #calculate step for equal interval between years 
       var e_step = (e_final-e_lastval)/(2025-lastyr);
       var l_step = (l_final-l_lastval)/(2025-lastyr);
+
 
       // #calculate intervening years using step between last real year and 2025 target value
       // In the below, i set the first item in the array as the lastyr value (2014 for AZ), then added to it is 2015 through 2025
