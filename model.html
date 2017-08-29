@@ -4,7 +4,7 @@
 		<title>Prison Pop Forcaster</title>
 		<meta charset="utf-8">		
 		<script type="text/javascript">
-			var t0 = performance.now();			
+			var tStart = performance.now();			
 		</script>
 		<script src="data/race.js"></script>
 		<script src="data/costs.js"></script>
@@ -17,12 +17,13 @@
 		</div>
 		
 		<script type="text/javascript">
-
-var ProjEndYear = 2025;
 // define functions
+//  variables and functions called are at the bottom!!!!
 
 // Main function
 function StateProjections(ST,scenarios_list) {
+	var tSPstart = performance.now();
+
 	var racesums = {"white":0,
 								"black":0,
 								"hispanic":0,
@@ -30,15 +31,14 @@ function StateProjections(ST,scenarios_list) {
 								"asian":0,
 								"hawaiian":0,
 								"other":0};
-var racePCT = {"white":0,
-							"black":0,
-							"hispanic":0,
-							"native":0,
-							"asian":0,
-							"hawaiian":0,
-							"other":0};
-var popThruYears = {};
-	var t1 = performance.now();
+	var racePCT = {"white":0,
+								"black":0,
+								"hispanic":0,
+								"native":0,
+								"asian":0,
+								"hawaiian":0,
+								"other":0};
+	var popThruYears = {};
 
 	// -- Grab the data from the selected state!
 	var stateData = usdata[ST];
@@ -112,17 +112,15 @@ var popThruYears = {};
 			// console.log(popThruYears)
 		}
 	}
-	console.log(popThruYears)
-	console.log(racePCT)
+	// console.log(popThruYears)
+	// console.log(racePCT)
 	// console.log(costs[ST])
 
-
-
-
  	// How long did everything take
-  var te = performance.now();
-	// console.log("StateProjections took " + (te - t1) + " milliseconds.")			
-	// console.log("Entire Page took " + (te - t0) + " milliseconds.")			
+  var tSPend = performance.now();
+	console.log("StateProjections took " + (tSPend - tSPstart) + " milliseconds.")			
+
+	return [popThruYears, racePCT]
 }
 
 	// DW question: do we need to submit all scenarios to this every time?
@@ -299,18 +297,36 @@ function ExpandOne(one_scenario,expanded_list) {
 	}
 }
 
+
+// DW NOTES MI, ME and DC and maybe some other states don't go through 2015
+var ProjEndYear = 2025;
+var chosenState = "AZ"
 // BEN you can change/add categories, change (between -1,1), and whether you're affecting entrances (1) or Length of Stay (2)
+var projectedParameters = [["property",-0.2,2],["drug",-0.2,1],["drug",-0.4,2]];
+// Do not change baseline parameters from this. 
+var baselineParameters = [];
+
+
 // Do things
-var test1 = [["property",-0.2,2],["drug",-0.2,1],["drug",-0.4,2]];
-var test2 = [];
+var projectedFinalData = 	StateProjections(chosenState, projectedParameters);
+var baselineFinalData  = 	StateProjections(chosenState, baselineParameters);
 
-// MI, ME and DC and maybe some other states don't go through 2015
+console.log('%cProjected prison population', 'color: blue; font-size: x-large')
+console.log('From these scenarios ' + projectedParameters)
+console.log(projectedFinalData[0])
+console.log('From Baseline:')
+console.log(baselineFinalData[0])
+console.log('%cProjected proportion of prison population belonging to each race/ethnicity', 'color: blue; font-size: x-large')
+console.log('From Projection Population:')
+console.log(projectedFinalData[1])
+console.log('From Baseline Population:')
+console.log(baselineFinalData[1])
 
-console.log('Projected from these scenarios: ["property",-0.2,2],["drug",-0.2,1],["drug",-0.4,2]' )
-StateProjections("AZ", test1)
-console.log('Baseline')
-StateProjections("AZ", test2)
-
+var tEnd = performance.now();
+console.log("Entire Page took " + (tEnd - tStart) + " milliseconds.")		
+console.log('%cNotes for Ben:', 'color: Tomato ; font-size: x-large')
+console.log('%cThere is a lot of refactoring that can go on to improve performance, most notably precalculating baseline projections for each state.', 'color: Tomato ; font-size: medium')	
+console.log('%cThere are a few states where the data coverage is not ideal, and this may break for the time being. A few lines of code would fix that. It would also break the R script too, but just wanted you to know', 'color: Tomato ; font-size: medium')	
 		</script>
 	</body>
 </html>
