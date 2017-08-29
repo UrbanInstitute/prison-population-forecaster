@@ -22,7 +22,7 @@ table{
 	display: block;
 	margin-right: 100px;
 	margin-top: 50px;
-	margin-bottom: 100px;
+	margin-bottom: 50px;
 	border-spacing: 0px;
 }
 
@@ -228,7 +228,7 @@ function StateProjections(ST,scenarios_list) {
 	}
 
 	// To ADD!
-	console.log(raceLYPCT)
+	// console.log(raceLYPCT, racePCT)
 
 	for (cat in population_totals) {
 		if (cat != "years") {
@@ -256,7 +256,7 @@ function StateProjections(ST,scenarios_list) {
 	d3.select("#runTime")
 		.text("StateProjections run took " + msFormat(tSPend - tSPstart) + " milliseconds.")			
 
-	return [popThruYears, racePCT]
+	return [popThruYears, racePCT, raceLYPCT]
 }
 
 function CostProjections(projData,baseData,lastYear,costpercap) {
@@ -575,7 +575,7 @@ function testRun(){
 	var projectedFinalData = 	StateProjections(chosenState, projectedParameters);
 	var baselineFinalData  = 	StateProjections(chosenState, baselineParameters);
 	var costsFinalData = CostProjections(projectedFinalData[0],baselineFinalData[0],(usdata[chosenState].endYear - 1),costpercap);
-	console.log(costsFinalData);
+	
 
 	var minYear = d3.min(Object.keys(baselineFinalData[0]))
 	var maxYear = d3.max(Object.keys(baselineFinalData[0]))
@@ -610,7 +610,9 @@ function testRun(){
 	raceHeader.append("th")
 		.text("Baseline proportion")
 	raceHeader.append("th")
-		.text("Projected proportion")
+		.text("Projected vs baseline")
+	raceHeader.append("th")
+		.text("Projected vs last yr")
 
 	var races = Object.keys(baselineFinalData[1])
 
@@ -623,8 +625,39 @@ function testRun(){
 			.text(genericFormatter(baselineFinalData[1][race]))
 		tr.append("td")
 			.text(genericFormatter(projectedFinalData[1][race]))
+		tr.append("td")
+			.text(genericFormatter(projectedFinalData[2][race]))
 	}
+
+	var costTable = d3.select("#outputs")
+		.append("table")
+	var costHeader = costTable.append("tr")
+	costHeader.append("th")
+		.text("Year")
+	costHeader.append("th")
+		.text("Cost vs baseline")
+	costHeader.append("th")
+		.text("Cost diff vs last yr")
+
+	var costKeys = Object.keys(costsFinalData)
+	for(var i = 0; i < costKeys.length; i++) {
+    	costKeys[i] = parseInt(costKeys[i]);
+	}
+	var minCostYear = d3.min(costKeys)
+	var maxCostYear = d3.max(costKeys)
 	
+	// console.log(costsFinalData, parseInt.apply(null, Object.keys(costsFinalData)))
+	var dollars = d3.format("$,.2f")
+
+	for(var i = minCostYear; i <= maxCostYear; i++){
+		var tr = costTable.append("tr")
+		tr.append("td")
+			.text(i)
+		tr.append("td")
+			.text(dollars(costsFinalData[i]["baselineDiff"]))
+		tr.append("td")
+			.text(dollars(costsFinalData[i]["lastYearDiff"]))
+	}
 
 
 
