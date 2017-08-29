@@ -147,6 +147,20 @@ function StateProjections(ST,scenarios_list) {
 								"asian":0,
 								"hawaiian":0,
 								"other":0};
+	var raceLYsums = {"white":0,
+								"black":0,
+								"hispanic":0,
+								"native":0,
+								"asian":0,
+								"hawaiian":0,
+								"other":0};
+	var raceLYPCT = {"white":0,
+								"black":0,
+								"hispanic":0,
+								"native":0,
+								"asian":0,
+								"hawaiian":0,
+								"other":0};								
 	var popThruYears = {};
 
 	// -- Grab the data from the selected state!
@@ -186,25 +200,35 @@ function StateProjections(ST,scenarios_list) {
 	var RE = racedata[ST]
 	// console.log(population_totals)
 
+	console.log(RE)
+
 	// multiply number of people by percent for each category, sum up by race
 	for (cat in RE) {		
 		if (cat !== "unknown") {
 			if (population_totals[cat] != undefined) {
 				for (race in racesums) {
-					racesums[race] = racesums[race] + (RE[cat][race]*population_totals[cat][25])
+					racesums[race] = racesums[race] + (RE[cat][race]*population_totals[cat][ProjEndYear-firstyr])
+					raceLYsums[race] = raceLYsums[race] + (RE[cat][race]*population_totals[cat][lastyr-firstyr])
 				}
 			}			
 		}		
 	}
 
+
 	var popTotal = 0;
+	var popLYTotal = 0;
 	for (race in racesums) {
 		popTotal += racesums[race];
+		popLYTotal += raceLYsums[race];
 	}
 	
 	for (race in racesums) {
-		racePCT[race] = racesums[race] / popTotal
+		racePCT[race] = racesums[race] / popTotal;
+		raceLYPCT[race] = raceLYsums[race] / popLYTotal;
 	}
+
+	// To ADD!
+	console.log(raceLYPCT)
 
 	for (cat in population_totals) {
 		if (cat != "years") {
@@ -223,7 +247,7 @@ function StateProjections(ST,scenarios_list) {
 	}
 	// console.log(popThruYears)
 	// console.log(racePCT)
-	// console.log(costs[ST])
+	
 
  	// How long did everything take
 	var tSPend = performance.now();
@@ -233,6 +257,43 @@ function StateProjections(ST,scenarios_list) {
 		.text("StateProjections run took " + msFormat(tSPend - tSPstart) + " milliseconds.")			
 
 	return [popThruYears, racePCT]
+}
+
+function CostProjections(projData,baseData,lastYear,costpercap) {
+	var costData = {};
+	var costCumulativeBaseline = 0;
+	var costCumulativeLastYear = 0;
+	for (var i = (lastYear + 1); i <= ProjEndYear; i++) {		
+		costData[i] = {};
+
+		pctB = (baseData[i] - projData[i]) / baseData[i]
+		pctLY = (baseData[lastYear] - projData[i]) / baseData[lastYear]
+		if (Math.abs(pctB) <= 0.12) {
+			if (pctB < 0) {
+				costData[i]["baselineDiff"] = ((baseData[i] - projData[i])*costpercap*(-0.12));
+			} else if (pctB >= 0) {
+				costData[i]["baselineDiff"] = ((baseData[i] - projData[i])*costpercap*(0.12));
+			}
+		} else if (Math.abs(pctB) > 0.12) {
+			costData[i]["baselineDiff"] = ((baseData[i] - projData[i])*costpercap*pctB);
+		}
+		costCumulativeBaseline += costData[i]["baselineDiff"];
+		
+		if (Math.abs(pctLY) <= 0.12) {
+			if (pctLY < 0) {
+				costData[i]["lastYearDiff"] = ((baseData[lastYear] - projData[i])*costpercap*(-0.12));
+			} else if (pctLY >= 0) {
+				costData[i]["lastYearDiff"] = ((baseData[lastYear] - projData[i])*costpercap*(0.12));
+			}
+		} else if (Math.abs(pctLY) > 0.12) {
+			costData[i]["lastYearDiff"] = ((baseData[lastYear] - projData[i])*costpercap*pctLY);
+		}
+		costCumulativeLastYear += costData[i]["lastYearDiff"];
+	}
+	costData["cumulative"] = {};
+	costData["cumulative"]["baselineDiff"] = costCumulativeBaseline;
+	costData["cumulative"]["lastYearDiff"] = costCumulativeLastYear;
+	return costData;
 }
 
 	// DW question: do we need to submit all scenarios to this every time?
@@ -503,20 +564,21 @@ function getState(){
 function testRun(){
 	var chosenState = getState();
 	var projectedParameters = getScenario();
-	
+	// Temp change to static for testing
+	// var chosenState = "DE";	
+	// var projectedParameters = [["property",-0.2,2],["drug",-0.2,1],["drug",-0.4,2]];
+	var costpercap = costs[chosenState].pcexpend;
+
 
 	// Do not change baseline parameters from this. 
-
 	var baselineParameters = [];
-
 	var projectedFinalData = 	StateProjections(chosenState, projectedParameters);
 	var baselineFinalData  = 	StateProjections(chosenState, baselineParameters);
-
-
+	var costsFinalData = CostProjections(projectedFinalData[0],baselineFinalData[0],(usdata[chosenState].endYear - 1),costpercap);
+	console.log(costsFinalData);
 
 	var minYear = d3.min(Object.keys(baselineFinalData[0]))
 	var maxYear = d3.max(Object.keys(baselineFinalData[0]))
-
 	
 	d3.select("#outputs").selectAll("*").remove()
 	var projectionTable = d3.select("#outputs")
@@ -573,7 +635,7 @@ function testRun(){
 
 	// var tEnd = performance.now();
 	// console.log("Entire Page took " + (tEnd - tStart) + " milliseconds.")		
-	// console.log('%cNotes for Ben:', 'color: Tomato ; font-size: x-large')
+	// console.log('%c Notes for Ben:', 'color: Tomato ; font-size: x-large')
 	// console.log('%cThere is a lot of refactoring that can go on to improve performance, most notably precalculating baseline projections for each state.', 'color: Tomato ; font-size: medium')	
 	// console.log('%cThere are a few states where the data coverage is not ideal, and this may break for the time being. A few lines of code would fix that. It would also break the R script too, but just wanted you to know', 'color: Tomato ; font-size: medium')	
 
