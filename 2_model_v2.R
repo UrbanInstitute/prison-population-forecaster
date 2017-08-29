@@ -224,9 +224,9 @@ CatProjections <- function(category, counts.st, scen.cat, details) {
     # DW note: Edits will happen in this area from Lizzie
   
     proj$n<-(proj$nt*proj$p)+proj$e 
-    print(category)
-    print(lastyr - firstyr + 2)
-    print(proj)
+    # print(category)
+    # print(lastyr - firstyr + 2)
+    # print(proj)
     # print(2025-firstyr+1)
     for(i in (lastyr-firstyr+2):(2025-firstyr+1)){
       
@@ -246,7 +246,7 @@ CatProjections <- function(category, counts.st, scen.cat, details) {
           proj$n[[i]]<-proj$e[[i]]*proj$l[[i]]
       }
     }
-    print(proj)
+    # print(proj)
   #generate output dataframe conditional on details (# of vars required)
     if (details==0){
       final_projections<-subset(proj, select=c("year", "n"))
@@ -278,7 +278,7 @@ StateProjections <- function(ST, scenarios.list) {
   
   STfile <- subset(counts.allstates, counts.allstates$state==ST)
   #print(STfile)
-  # write.csv(STfile, file="WACSV.csv")
+  # write.csv(co, file="costs.csv")
   
   state.categories<-unique(STfile$ppf_cat)
   
@@ -293,6 +293,7 @@ StateProjections <- function(ST, scenarios.list) {
     p.s<-lapply(state.categories, CatProjections, counts.st=STfile, 
                 scen.cat=all.scenarios, details=0) 
   
+  # print(p.s)
   
   #Calculate race/ethnicity percentages in 2025
     
@@ -301,19 +302,23 @@ StateProjections <- function(ST, scenarios.list) {
             p.s[[i]]$ppf_cat <- paste(gsub("_n", "", names(p.s[[i]])[2]))
             names(p.s[[i]])[2] <- "n"
           }
-      
+      # print(p.s)
+
       # Combine 2025 population projections in each category; merge to R/E counts dataframe
         re.2025<- merge(Reduce(rbind, lapply(p.s, subset, year==2025)), 
                        subset(re, state==ST, by="ppf_cat"))
-  
+        # print(re.2025)
+
       #Multiply n in each category by R/E percentages; sum up N allocated to each R/E category
         re.2025.n <- matrix(colSums(as.data.frame(lapply(re.2025[, c("white", "black", "hispanic", "native", "asian", "hawaiian", "other")],
                        function(x, y) x * y,
                        y = re.2025$n))), nrow=1, ncol=7)
-  
+        # print(re.2025.n)
+
       #Convert R/E population counts to percentages of population
         re.2025.pct <- matrix(re.2025.n/sum(re.2025.n), nrow=7, ncol=1)
 
+        # print(re.2025.pct)
 
   #Process final projections for scenario
         
@@ -328,7 +333,6 @@ StateProjections <- function(ST, scenarios.list) {
         p.s.m$val <- lapply(p.s.m$year, function(x) paste("n", x, sep="_")) #generate "val" - measure name variable
         p.s.m <- subset(p.s.m, select=c("val", "p"))
         p.s.m$val <- as.character(p.s.m$val)
-
   
   #Generate final o (outcome) dataframe; combine R/E percentages and population
         
@@ -337,13 +341,20 @@ StateProjections <- function(ST, scenarios.list) {
         o$val<-as.character(o$val)
         o$p <- as.numeric(as.character(o$p))
         o <- rbind(o, p.s.m)
+
+        # print(o)
   
   #Merge o with baseline results
         o <- merge(o, GetBaselineLastYr(ST))
-  
+        
+        print(o)
+# 
+
   #Produce cost estimate
+  
 
         ann.pc <- co$pcexpend[co$stabbrev==ST] #annual per capita cost for state
+        # print(ann.pc)
         yrlist <- (lastyr+1):2025 #set list of years over which to calculate cost savings
         
       #Savings in one year
@@ -523,7 +534,8 @@ load("counts.RData")
 
 test1 <- list(c("burglary", -.5, 2), c("drug", -.2, 1), c("drug", -.4, 2))
 test2 <- list(c("other", -.1, 1))
+test3 <- list(c("property",-.2,2),c("drug", -.2, 1), c("drug", -.4, 2))
 
 
-StateProjections("AZ", test1)
+StateProjections("AZ", test3)
  # StateProjections("WA", test1)

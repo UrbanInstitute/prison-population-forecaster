@@ -3,7 +3,12 @@
 	<head>
 		<title>Prison Pop Forcaster</title>
 		<meta charset="utf-8">		
-		<script src="data/usdata.js"></script>
+		<script type="text/javascript">
+			var t0 = performance.now();			
+		</script>
+		<script src="data/race.js"></script>
+		<script src="data/costs.js"></script>
+		<script src="data/usdata.js"></script>		
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 		<script src="js/underscore-min.js"></script>
 	</head>
@@ -12,12 +17,29 @@
 		</div>
 		
 		<script type="text/javascript">
-var t0 = performance.now();
+
 var ProjEndYear = 2025;
 // define functions
 
 // Main function
 function StateProjections(ST,scenarios_list) {
+	var racesums = {"white":0,
+								"black":0,
+								"hispanic":0,
+								"native":0,
+								"asian":0,
+								"hawaiian":0,
+								"other":0};
+var racePCT = {"white":0,
+							"black":0,
+							"hispanic":0,
+							"native":0,
+							"asian":0,
+							"hawaiian":0,
+							"other":0};
+var popThruYears = {};
+	var t1 = performance.now();
+
 	// -- Grab the data from the selected state!
 	var stateData = usdata[ST];
 	// Data is organized by state, crime, and then each array is [nt, e, l]
@@ -27,7 +49,6 @@ function StateProjections(ST,scenarios_list) {
 
   // all.scenarios <-ExpandScenario(scenarios.list) #expand scenarios if they include umbrella category (e.g., violent or nonviolent)
   var all_scenarios = ExpandScenario(scenarios_list)
- 
   var lastyr = stateData.endYear - 1;
   var firstyr = stateData.startYear;
 
@@ -36,18 +57,72 @@ function StateProjections(ST,scenarios_list) {
   // # Get scenario population projection counts in each category
   // p.s<-lapply(state.categories, CatProjections, counts.st=STfile, scen.cat=all.scenarios, details=0) 
   // expanded.list <- lapply(scen.to	.expand, ExpandOne)  
-	// var ps = CatProjections()
-	// I predict that we should only have to do this if categoreis === all_scenarios[i].category
+
+	// I predict that we should only have to do this if categories === all_scenarios[i].category
+	var population_totals = {};
+
+	population_totals.years = {};
+	population_totals.years.startYear = firstyr;
+	population_totals.years.endYear = lastyr;
+	population_totals.years.projYear = ProjEndYear;
+
 	for (var i = 0; i < categories.length; i++) {
 		var details = 0; 
 		// categories are the categories that are present in each individual state (might not be ALL possible categories)
 		//All_scenarios is all scenarios that have been modified by the user in the input
-		CatProjections(categories[i],stateData,all_scenarios,details)
+		population_totals[categories[i]] = CatProjections(categories[i],stateData,all_scenarios,details)
 	}
 
- 	// How long did StateProjections take
-  var t1 = performance.now();
-	console.log("StateProjections took " + (t1 - t0) + " milliseconds.")			
+// DW note: can make this more efficient and smaller...ignore "unknown" and ignore "hisp_f"
+	var RE = racedata[ST]
+	// console.log(population_totals)
+
+	// multiply number of people by percent for each category, sum up by race
+	for (cat in RE) {		
+		if (cat !== "unknown") {
+			if (population_totals[cat] != undefined) {
+				for (race in racesums) {
+					racesums[race] = racesums[race] + (RE[cat][race]*population_totals[cat][25])
+				}
+			}			
+		}		
+	}
+
+	var popTotal = 0;
+	for (race in racesums) {
+		popTotal += racesums[race];
+	}
+	
+	for (race in racesums) {
+		racePCT[race] = racesums[race] / popTotal
+	}
+
+	for (cat in population_totals) {
+		if (cat != "years") {
+			for (var i = 0; i < population_totals[cat].length; i++) {
+				var yearT = i + firstyr;
+				if (popThruYears[yearT] === undefined) {					
+					popThruYears[yearT] = population_totals[cat][i];
+				}
+				else {
+					// console.log(population_totals[cat][i] + 100)
+					popThruYears[yearT] += population_totals[cat][i];
+				}
+			}
+			// console.log(popThruYears)
+		}
+	}
+	console.log(popThruYears)
+	console.log(racePCT)
+	// console.log(costs[ST])
+
+
+
+
+ 	// How long did everything take
+  var te = performance.now();
+	// console.log("StateProjections took " + (te - t1) + " milliseconds.")			
+	// console.log("Entire Page took " + (te - t0) + " milliseconds.")			
 }
 
 	// DW question: do we need to submit all scenarios to this every time?
@@ -166,11 +241,7 @@ function CatProjections(cat,stateData,all_scenarios,details) {
       	}
       }      
 
-      // console.log(cat) //category
-      // console.log(e_values) //entrance values
-      // console.log(n_values) // end of year populations
-      // console.log(nt_values) // beginning of year populations
-
+      return n_values;
 }	
 
 function weightedMean(values, weights) {
@@ -230,10 +301,15 @@ function ExpandOne(one_scenario,expanded_list) {
 
 // BEN you can change/add categories, change (between -1,1), and whether you're affecting entrances (1) or Length of Stay (2)
 // Do things
-var test1 = [["burglary",-0.5,2],["drug",-0.2,1],["drug",-0.4,2]]
+var test1 = [["property",-0.2,2],["drug",-0.2,1],["drug",-0.4,2]];
+var test2 = [];
 
 // MI, ME and DC and maybe some other states don't go through 2015
+
+console.log('Projected from these scenarios: ["property",-0.2,2],["drug",-0.2,1],["drug",-0.4,2]' )
 StateProjections("AZ", test1)
+console.log('Baseline')
+StateProjections("AZ", test2)
 
 		</script>
 	</body>
