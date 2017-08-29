@@ -16,6 +16,23 @@
 body{
 	font-family: Lato;
 }
+
+table{
+	float: left;
+	display: block;
+	margin-right: 100px;
+	margin-top: 50px;
+	margin-bottom: 100px;
+	border-spacing: 0px;
+}
+
+
+td{
+	padding: 9px;
+	text-align: right;
+	border: 1px solid black;
+}
+
 .control{
 	font-size: 14px;
 	margin-right: 10px;
@@ -103,7 +120,7 @@ body{
 		</div>
 		<div id = "addScenario">+</div>
 		
-		<div id = "runButton">Run scenario</div>
+		<div id = "runTime"></div>
 
 		<div id = "outputs">
 		</div>
@@ -209,8 +226,11 @@ function StateProjections(ST,scenarios_list) {
 	// console.log(costs[ST])
 
  	// How long did everything take
-  var tSPend = performance.now();
-	console.log("StateProjections took " + (tSPend - tSPstart) + " milliseconds.")			
+	var tSPend = performance.now();
+
+	var msFormat = d3.format(".2f")
+	d3.select("#runTime")
+		.text("StateProjections run took " + msFormat(tSPend - tSPstart) + " milliseconds.")			
 
 	return [popThruYears, racePCT]
 }
@@ -414,6 +434,7 @@ function addController(){
 	var reductionType = controlRow.append("select")
 		.attr("class", "control reductionType")
 
+
 	reductionType.append("option")
 		.attr("value","los")
 		.text("Length of Stay")
@@ -433,15 +454,24 @@ function addController(){
 		.attr("value", "0")
 		.attr("class", "control reductionLabel")
 
-	reductionAmount.on("input", function(obj){
+	reductionAmount.on("input", function(){
 		var val = $(this).val()
 		$(reductionLabel.node()).val(val)
-		// testRun();
+		testRun();
 	})
-	reductionLabel.on("input", function(obj){
+	reductionLabel.on("input", function(){
 		var val = $(this).val()
 		$(reductionAmount.node()).val(val)
-		// testRun();
+		testRun();
+	})
+	offenseType.on("change", function(){
+		testRun();
+	})
+	reductionType.on("change", function(){
+		testRun();
+	})
+	d3.select("#stateSelect").on("change", function(){
+		testRun();
 	})
 }
 
@@ -469,6 +499,7 @@ function getState(){
 	return $("#stateSelect").val()
 }
 
+
 function testRun(){
 	var chosenState = getState();
 	var projectedParameters = getScenario();
@@ -481,24 +512,57 @@ function testRun(){
 	var projectedFinalData = 	StateProjections(chosenState, projectedParameters);
 	var baselineFinalData  = 	StateProjections(chosenState, baselineParameters);
 
-	// console.log(projectedParameters)
 
-	console.log('%cProjected prison population', 'color: blue; font-size: x-large')
-	console.log('From these scenarios ' + projectedParameters)
-	console.log(projectedFinalData[0])
-	console.log('From Baseline:')
-	console.log(baselineFinalData[0])
-	console.log('%cProjected proportion of prison population belonging to each race/ethnicity', 'color: blue; font-size: x-large')
-	console.log('From Projection Population:')
-	console.log(projectedFinalData[1])
-	console.log('From Baseline Population:')
-	console.log(baselineFinalData[1])
 
 	var minYear = d3.min(Object.keys(baselineFinalData[0]))
 	var maxYear = d3.max(Object.keys(baselineFinalData[0]))
 
-	console.log(minYear, maxYear)
-	// var projectionTable = d3.select("#ouputs")
+	
+	d3.select("#outputs").selectAll("*").remove()
+	var projectionTable = d3.select("#outputs")
+		.append("table")
+
+	var header = projectionTable.append("tr")
+	var genericFormatter = d3.format(".5f")
+	header.append("th")
+		.text("Year")
+	header.append("th")
+		.text("Baseline population")
+	header.append("th")
+		.text("Projected population")
+	for(var i = minYear; i <= maxYear; i++){
+		var tr = projectionTable.append("tr")
+		tr.append("td")
+			.text(i)
+		tr.append("td")
+			.text(genericFormatter(baselineFinalData[0][i]))
+		tr.append("td")
+			.text(genericFormatter(projectedFinalData[0][i]))
+	}
+
+	var raceTable = d3.select("#outputs")
+		.append("table")
+	var raceHeader = raceTable.append("tr")
+	raceHeader.append("th")
+		.text("Race")
+	raceHeader.append("th")
+		.text("Baseline proportion")
+	raceHeader.append("th")
+		.text("Projected proportion")
+
+	var races = Object.keys(baselineFinalData[1])
+
+	for(var i = 0; i < races.length; i ++){
+		var race = races[i]
+		var tr = raceTable.append("tr")
+		tr.append("td")
+			.text(race)
+		tr.append("td")
+			.text(genericFormatter(baselineFinalData[1][race]))
+		tr.append("td")
+			.text(genericFormatter(projectedFinalData[1][race]))
+	}
+	
 
 
 
@@ -507,8 +571,8 @@ function testRun(){
 	// StateProjections("AZ", test1)
 
 
-	var tEnd = performance.now();
-	console.log("Entire Page took " + (tEnd - tStart) + " milliseconds.")		
+	// var tEnd = performance.now();
+	// console.log("Entire Page took " + (tEnd - tStart) + " milliseconds.")		
 	// console.log('%cNotes for Ben:', 'color: Tomato ; font-size: x-large')
 	// console.log('%cThere is a lot of refactoring that can go on to improve performance, most notably precalculating baseline projections for each state.', 'color: Tomato ; font-size: medium')	
 	// console.log('%cThere are a few states where the data coverage is not ideal, and this may break for the time being. A few lines of code would fix that. It would also break the R script too, but just wanted you to know', 'color: Tomato ; font-size: medium')	
@@ -519,12 +583,6 @@ function testRun(){
 addController();
 d3.select("#addScenario")
 	.on("click", addController)
-
-d3.select("#runButton")
-	.on("click", function(){
-		tStart = performance.now();	
-		testRun();
-	})
 
 
 
