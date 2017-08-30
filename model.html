@@ -225,6 +225,7 @@ function StateProjections(ST,scenarios_list) {
 		// categories are the categories that are present in each individual state (might not be ALL possible categories)
 		//All_scenarios is all scenarios that have been modified by the user in the input
 		population_totals[categories[i]] = CatProjections(categories[i],stateData,all_scenarios,details)
+
 	}
 
 // DW note: can make this more efficient and smaller...ignore "unknown" and ignore "hisp_f"
@@ -260,7 +261,6 @@ function StateProjections(ST,scenarios_list) {
 
 	// To ADD!
 	// console.log(raceLYPCT, racePCT)
-
 	for (cat in population_totals) {
 		if (cat != "years") {
 			for (var i = 0; i < population_totals[cat].length; i++) {
@@ -269,7 +269,6 @@ function StateProjections(ST,scenarios_list) {
 					popThruYears[yearT] = population_totals[cat][i];
 				}
 				else {
-					// console.log(population_totals[cat][i] + 100)
 					popThruYears[yearT] += population_totals[cat][i];
 				}
 			}
@@ -286,7 +285,6 @@ function StateProjections(ST,scenarios_list) {
 	var msFormat = d3.format(".2f")
 	d3.select("#runTime")
 		.text("StateProjections run took " + msFormat(tSPend - tSPstart) + " milliseconds.")			
-
 	return [popThruYears, racePCT, raceLYPCT]
 }
 
@@ -392,6 +390,7 @@ function CatProjections(cat,stateData,all_scenarios,details) {
 			var l_pct_chg = Math.tanh((weightedMean([l_pc_1, l_pc_2, l_pc_3, l_pc_4],[1,2,2,3])*4))			
 			var l_final = l_multiplier*(weightedMean(last5l,[1,1,2,2,3])+ (l_pct_chg*weightedMean(last5l,[1,1,2,2,3])))			
 
+
 			// #last year of real data      
       var e_lastval = stateData[cat][yearIndex - 1][1];  
       var l_lastval = stateData[cat][yearIndex - 1][2];
@@ -400,6 +399,7 @@ function CatProjections(cat,stateData,all_scenarios,details) {
       var e_step = (e_final-e_lastval)/(2025-lastyr);
       var l_step = (l_final-l_lastval)/(2025-lastyr);
 
+	
 
       // #calculate intervening years using step between last real year and 2025 target value
       // In the below, i set the first item in the array as the lastyr value (2014 for AZ), then added to it is 2015 through 2025
@@ -417,16 +417,27 @@ function CatProjections(cat,stateData,all_scenarios,details) {
       	p_values.push(1-(1/l_values[i]))
       	n_values.push(stateData[cat][i+1][0])
       }
-      
+
       // Add final n_value as the nt of the lastyr by appending to nt_values array
       nt_values.push(n_values[n_values.length-1])
 
       // Predict the FUTURE (lastyr to projected end year)
       for (var i = yearIndex; i <= (ProjEndYear - firstyr); i++) {
+
       	e_values.push(e_values[i-1]+e_step);       	
       	l_values.push(l_values[i-1]+l_step); //might not need this step because p is calculated?
-      	p_values.push(1-(1/l_values[i]));      	
-      	
+      	p_values.push(1-(1/l_values[i]));     
+
+if(cat == "kidnapping" && i == (ProjEndYear-firstyr)){
+	console.log(l_values[i-1], l_step)
+	console.log(l_values[i])
+	console.log(p_values[i])
+}
+
+      	// if(cat == "kidnapping" && i == (ProjEndYear-firstyr)){
+      	// 	console.log(l_values[i])
+      	// }
+
       	// #generate projected n's based on estimates for admissions and LOS
       	if (p_values[i] >= 0) {
       		// # (a) when p>=0 (corresponding to LOS >= 1 year):
@@ -442,7 +453,8 @@ function CatProjections(cat,stateData,all_scenarios,details) {
       	if (i !== (ProjEndYear - firstyr)) {
       		nt_values.push(n_values[i]);
       	}
-      }      
+
+      }     
 
       return n_values;
 }	
