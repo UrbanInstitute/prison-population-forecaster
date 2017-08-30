@@ -374,18 +374,14 @@ StateProjections <- function(ST, scenarios.list) {
             people <- o.df$p[o.df$val==paste("n", year, sep="_")] - o.df$b[o.df$val==paste("n", lastyr, sep="_")] #number fewer people in prison
             pct <- (people / o.df$b[o.df$val==paste("n", lastyr, sep="_")]) #percent change relative to last year of real data
           }
+          print(pct)
           #if percent change is less than 12%, only marginal costs affected (use per capita figure * .12)
             if(abs(pct)<=.12){ 
-              if(pct<0){
-                sav <- (ann.pc*(-.12))*people
-              } else if(pct>0) {
-                sav <- (ann.pc*(.12))*people
-              }
+              sav <- (ann.pc*(.12))*people
           #if percent change is greater than 12%, begin to cut into capital costs (use per capita figure * whatever percent reduction is)
             } else if(abs(pct)>.12){ 
-              sav <- (ann.pc*(pct))*people
-            }
-          
+              sav <- (ann.pc*(abs(pct)))*people
+            }          
           return(sav)
         }
         
@@ -535,7 +531,10 @@ load("counts.RData")
 test1 <- list(c("burglary", -.5, 2), c("drug", -.2, 1), c("drug", -.4, 2))
 test2 <- list(c("other", -.1, 1))
 test3 <- list(c("property",-.2,2),c("drug", -.2, 1), c("drug", -.4, 2))
+test4 <- list(c("drug",.9,2),c("drug", .9, 1), c("violent", .9, 2),c("violent", .9, 1), c("other",.9,2),c("other", .9, 1),c("property",.9,2),c("property", .9, 1))
+test5 <- list(c("drug",-.9,2),c("drug", -.9, 1), c("violent", -.9, 2),c("violent", -.9, 1), c("other",-.9,2),c("other", -.9, 1),c("property",-.9,2),c("property", -.9, 1))
+test6 <- list(c("violent",-.28,2))
+test7 <- list(c("property",-.49,5),c("violent",-.37,2))
 
-
-StateProjections("AZ", test3)
+StateProjections("CA", test1)
  # StateProjections("WA", test1)
