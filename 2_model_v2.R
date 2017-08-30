@@ -374,7 +374,7 @@ StateProjections <- function(ST, scenarios.list) {
             people <- o.df$p[o.df$val==paste("n", year, sep="_")] - o.df$b[o.df$val==paste("n", lastyr, sep="_")] #number fewer people in prison
             pct <- (people / o.df$b[o.df$val==paste("n", lastyr, sep="_")]) #percent change relative to last year of real data
           }
-          print(pct)
+          # print(pct)
           #if percent change is less than 12%, only marginal costs affected (use per capita figure * .12)
             if(abs(pct)<=.12){ 
               sav <- (ann.pc*(.12))*people
