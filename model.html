@@ -297,25 +297,17 @@ function CostProjections(projData,baseData,lastYear,costpercap) {
 
 		pctB = (baseData[i] - projData[i]) / baseData[i]
 		pctLY = (baseData[lastYear] - projData[i]) / baseData[lastYear]
-		if (Math.abs(pctB) <= 0.12) {
-			if (pctB < 0) {
-				costData[i]["baselineDiff"] = ((baseData[i] - projData[i])*costpercap*(-0.12));
-			} else if (pctB >= 0) {
-				costData[i]["baselineDiff"] = ((baseData[i] - projData[i])*costpercap*(0.12));
-			}
+		if (Math.abs(pctB) <= 0.12) {			
+			costData[i]["baselineDiff"] = ((projData[i] - baseData[i])*costpercap*(0.12));			
 		} else if (Math.abs(pctB) > 0.12) {
-			costData[i]["baselineDiff"] = ((baseData[i] - projData[i])*costpercap*pctB);
+			costData[i]["baselineDiff"] = ((projData[i] - baseData[i])*costpercap*Math.abs(pctB));
 		}
 		costCumulativeBaseline += costData[i]["baselineDiff"];
 		
 		if (Math.abs(pctLY) <= 0.12) {
-			if (pctLY < 0) {
-				costData[i]["lastYearDiff"] = ((baseData[lastYear] - projData[i])*costpercap*(-0.12));
-			} else if (pctLY >= 0) {
-				costData[i]["lastYearDiff"] = ((baseData[lastYear] - projData[i])*costpercap*(0.12));
-			}
+			costData[i]["lastYearDiff"] = ((projData[i] - baseData[lastYear])*costpercap*(0.12));			
 		} else if (Math.abs(pctLY) > 0.12) {
-			costData[i]["lastYearDiff"] = ((baseData[lastYear] - projData[i])*costpercap*pctLY);
+			costData[i]["lastYearDiff"] = ((projData[i] - baseData[lastYear])*costpercap*Math.abs(pctLY));
 		}
 		costCumulativeLastYear += costData[i]["lastYearDiff"];
 	}
