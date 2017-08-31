@@ -685,6 +685,7 @@ function testRun(){
 	// console.log(costsFinalData, parseInt.apply(null, Object.keys(costsFinalData)))
 	var dollars = d3.format("$,.2f")
 
+	console.log(costsFinalData)
 	for(var i = minCostYear; i <= maxCostYear; i++){
 		var tr = costTable.append("tr")
 		tr.append("td")
@@ -694,7 +695,13 @@ function testRun(){
 		tr.append("td")
 			.text(dollars(costsFinalData[i]["lastYearDiff"]))
 	}
-
+	var last_tr = costTable.append("tr")
+	last_tr.append("td")
+		.text("cumulative")
+	last_tr.append("td")
+		.text(dollars(costsFinalData["cumulative"]["baselineDiff"]))
+	last_tr.append("td")
+		.text(dollars(costsFinalData["cumulative"]["lastYearDiff"]))
 
 
 
