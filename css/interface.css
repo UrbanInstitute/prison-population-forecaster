@@ -1,0 +1,153 @@
+body, html{
+	font-family: Lato;
+	margin: 0px;
+}
+
+#sidebar{
+	width: 315px;
+    background: #f7f7fa;
+    height: auto;
+    min-height: calc(100% - 100px);
+}
+
+.stateSelect.container{
+	color: #1696d2;
+	font-weight: bold;
+	width: 303px;
+    background: #f7f7fa;
+    height: 60px;
+    left: 0px;
+    top: 0px;
+    padding-top: 40px;
+    padding-left: 12px;
+    z-index: 2;
+    position: fixed;
+}
+.allOffenses.container{
+	margin-top: 100px;
+	padding-left: 12px;
+}
+#offensesLabel{
+	font-size: 12px;
+    color: #9194a6;
+    padding-left: 12px;
+    height: 37px;
+    padding-top: 21px;
+}
+.subOffenses.container{
+	background: #e8e9ec;
+    height: auto;
+    min-height: calc(100% - 369px);
+    padding-bottom: 140px;
+    position: relative;
+}
+.offenseCategory.container{
+	width: calc(100% - 48px);
+    background: #f4f4f6;
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-left: 12px;
+    border-top: 1px solid #e8e9ec;
+    height: 46px;
+    overflow: hidden;
+}
+.offenseCategory.container.c-0{
+	border-top: none !important;
+}
+.expandArrowContainer{
+	position: absolute;
+    width: 292px;
+    height: 46px;
+    left: 11px;
+}
+.expandArrowContainer img{
+	width: 17px;
+    position: absolute;
+    right: 20px;
+    top: 14px;
+}
+.parentCategory{
+	background: #fff;
+    margin-left: -12px;
+    width: calc(100% + 12px);
+    padding-left: 12px;
+}
+.category{
+	border-bottom: 1px solid #e8e9ec;
+    width: calc(100% + 12px);
+    left: -12px;
+    position: relative;
+    padding-left: 12px;
+}
+
+.categoryName{
+	padding-top: 14px;
+    padding-bottom: 15px;
+    font-size: 14px;
+}
+.losContainer, .admissionsContainer{
+	height: 40px;
+}
+.inputContainer .input, .inputContainer .checkbox, .inputContainer .label{
+	display: inline-block;
+}
+.inputContainer .label{
+	font-size: 14px;
+}
+.inputContainer .input{
+	width: 30px;
+    float: right;
+    margin-right: 19px;
+    height: 22px;
+}
+.inputContainer .checkbox{
+	margin-right: 15px;
+}
+.losContainer, .admissionsContainer{
+	position: relative;
+}
+.rangeContainer{
+    width: 229px;
+    left: 20px;
+    top: 1px;
+    position: absolute;
+    cursor: pointer;
+}
+.rangeContainer input{
+	width: 100%;
+	cursor: pointer;
+}
+.allOffenses .rangeContainer{
+	background: #f7f7fa;
+	width: 227px;
+}
+.parentCategory .rangeContainer{
+	background: #fff;
+	width: 203px;
+}
+.category .rangeContainer{
+	background: #f4f4f6;
+	width: 193px;
+}
+
+.allOffenses .label{
+
+}
+.parentCategory .label{
+}
+.category .label{
+	color: #9d9d9d;
+}
+#resetButton{
+	font-size: 14px;
+    background: #fff;
+    width: calc(100% - 2px);
+    text-align: center;
+    color: #1696d2;
+    height: 39px;
+    padding-top: 23px;
+    bottom: 0px;
+    position: absolute;
+    left: 0px;
+    cursor: pointer;
+}
