@@ -1,0 +1,288 @@
+body{
+	font-family: Lato;
+}
+
+/*******************************************************/
+/******************** LEFT SIDE BAR ********************/
+/*******************************************************/
+#leftSidebar{
+    width: 279px;
+    height: 100%;
+    background: #5c5859;
+    display: inline-block;
+    color: #fff;
+    margin-top: 48px;
+    padding-bottom: 340px;
+}
+#leftHeader{
+    background: #444243;
+    height: 20px;
+	padding: 20px;
+}
+#startHere{
+    font-size: 20px;
+    font-weight: bold;
+    display: inline-block;
+}
+#clearAll{
+	display: inline-block;
+    float: right;
+    text-transform: uppercase;
+    font-size: 11px;
+}
+#leftContent{
+	padding-left: 20px;
+}
+#stateSelect-button{
+	margin-top: 35px;
+	margin-bottom: 44px;
+}
+.leftHeader{
+    font-size: 16px;
+    font-weight: bold;
+    border-bottom: 2px solid white;
+    padding-bottom: 12px;
+    margin-bottom: 30px;
+    position: relative;
+}
+.leftHeader:after{
+    content: "";
+    width: calc(100% - 3px);
+    border-bottom: 1px solid #2e2c2c;
+    position: absolute;
+    left: 3px;
+    bottom: -4px;
+}
+.parentControls{
+    position: relative;
+    height: 103px;
+    box-shadow: 0 9px 15px -6px #262223;
+    width: 100%;
+    left: -20px;
+    padding-left: 21px;
+    z-index: 2;
+
+}
+
+.parentHeader{
+	border-bottom: 2px solid #959192;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    left: -10px;
+    width: 230px;
+    position: relative;
+}
+.parentHeader:after{
+    content: "";
+    width: 100%;
+    border-bottom: 3px solid #4c4748;
+    position: absolute;
+    left: 0px;
+    bottom: -5px;
+}
+.parentName{
+    font-size: 16px;
+    font-weight: bold;
+    display: inline-block;
+}
+.parentArrow{
+	background-image: url(../img/expandArrow.png);
+    display: inline-block;
+    background-size: 18px;
+    background-repeat: no-repeat;
+    width: 18px;
+    height: 18px;
+    background-position: center;
+    float: right;
+    margin-right: 5px;
+    position: relative;
+    top: 3px;
+}
+.controlTypeLabel{
+	font-size: 14px;
+    font-style: italic;
+    display: block;
+    clear: both;
+}
+.parent.controlTypeLabel{
+	margin-top: 15px;
+}
+
+
+
+
+.childContainer{
+    background: #535050;
+    left: -20px;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding-top: 20px;
+    padding-left: 20px;
+}
+
+
+.sliderLabels{
+	display: block;
+    clear: both;
+    width: 100%;
+}
+.sliderLabel{
+	position: relative;
+	font-size: 11px;
+	cursor: pointer;
+	display: inline-block;
+}
+.sliderLabel.lneg{
+	left: -11px
+}
+.sliderLabel.l0{
+	left: 58.5px;
+}
+.sliderLabel.lpos{
+	left: 123px;
+}
+.sliderLabel:hover{
+	color: #a2d4ec;
+}
+
+
+
+/***************************************************************************/
+/************************ CROSS BROWSER RANGE INPUT ************************/
+/***************************************************************************/
+/*modified from http://brennaobrien.com/blog/2014/05/style-input-type-range-in-every-browser.html*/
+
+input[type=range] {
+	width: 172px;
+	float: left;
+	clear: both;
+	position: relative;
+	top: 6px;
+    /*removes default webkit styles*/
+    -webkit-appearance: none;
+    
+    /*fix for FF unable to apply focus style bug */
+    border: none;
+    height: 18px;
+    background-color: transparent;
+    
+    /*required for proper track sizing in FF*/
+    /*width: 300px;*/
+}
+
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  input[type=range] {
+    float: none;
+    width: 172px;
+    clear: both;
+    position: relative;
+    top: 6px;
+      /*removes default webkit styles*/
+      -webkit-appearance: none;
+      
+      /*fix for FF unable to apply focus style bug */
+      border: none;
+      height: 75px;
+      background-color: transparent;
+      
+      /*required for proper track sizing in FF*/
+      /*width: 300px;*/
+  }
+
+
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    /*width: 300px;*/
+    height: 5px;
+    background: #858282;
+    border: none;
+    border-radius: 3px;
+}
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: 5px solid #1696d2;
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background: #fff;
+    margin-top: -6px;
+    cursor: pointer;
+}
+input[type=range]:focus {
+    outline: 0;
+}
+input::-moz-focus-inner{
+	outline: 0;
+}
+input[type=range]::-moz-focus-outer {
+    border: 0;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+    background: #353535;
+    outline: none;
+}
+
+input[type=range]::-moz-range-track {
+    /*width: 300px;*/
+    height: 5px;
+    background: #858282;
+    border: none;
+    border-radius: 3px;
+}
+input[type=range]::-moz-range-thumb {
+    border: 5px solid #1696d2;
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+}
+
+/*hide the outline behind the border*/
+input[type=range]:-moz-focusring{
+    outline: 1px solid #ffffff;
+    outline-offset: -1px;
+}
+
+input[type=range]::-ms-track {
+    /*width: 300px;*/
+    max-width: 50px !important;
+    /*height: 5px;*/
+    
+    /*remove bg colour from the track, we'll use ms-fill-lower and ms-fill-upper instead */
+    background: transparent;
+    
+    /*leave room for the larger thumb to overflow with a transparent border */
+    border-color: transparent;
+    border-width: 6px 0;
+
+    /*remove default tick marks*/
+    color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+    background: #858282;
+    border-radius: 10px;
+}
+input[type=range]::-ms-fill-upper {
+    background: #858282;
+    border-radius: 10px;
+}
+input[type=range]::-ms-thumb {
+    border: 5px solid #1696d2;
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+}
+input[type=range]:focus::-ms-fill-lower {
+    background: #353535;
+}
+input[type=range]:focus::-ms-fill-upper {
+    background: #353535;
+}
+
+
+

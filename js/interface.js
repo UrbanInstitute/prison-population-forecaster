@@ -143,6 +143,10 @@ var offenses = [
 			"name": "Other drug"
 		},
 		{
+			"id": "otherprop",
+			"name": "Other property"
+		},
+		{
 			"id": "public_oth",
 			"name": "Public other"
 		}
