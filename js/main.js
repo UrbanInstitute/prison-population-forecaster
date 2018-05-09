@@ -108,7 +108,7 @@ function updateInputs(offense, indicator, tier, amount){
 	//if changing for all, loop through each umbrella category and check if locked, then do as above
 	
 	setInputs(inputs)
-	sendInputs("US", inputs)
+	sendInputs("CA", inputs)
 }
 function sendInputs(state, inputs){
 	var reshaped = []
@@ -206,6 +206,7 @@ function buildPopulationChart(data){
 		.remove();
 
 		g.append("g")
+		.attr("class","lineChart y axis")
 		.call(d3.axisLeft(y))
 
 		g.append("path")
@@ -225,6 +226,10 @@ function buildPopulationChart(data){
 		.attr("d", lineBaseline);
 
 	}else{
+
+		d3.select(".lineChart.y.axis")
+		.transition()
+		.call(d3.axisLeft(y))
 
 		d3.select(".line.projection.future")
 		.datum(futureData)
