@@ -1,161 +1,3 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>Prison Pop Forcaster</title>
-		<meta charset="utf-8">		
-		<script type="text/javascript">
-			var tStart = performance.now();			
-		</script>
-		<script src="data/race.js"></script>
-		<script src="data/costs.js"></script>
-		<script src="data/usdata.js"></script>		
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-		<script src="js/vendor/d3.v4.min.js"></script>
-		<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic,900" rel="stylesheet" type="text/css">
-		<style>
-body{
-	font-family: Lato;
-}
-
-table{
-	float: left;
-	display: block;
-	margin-right: 100px;
-	margin-top: 50px;
-	margin-bottom: 50px;
-	border-spacing: 0px;
-}
-
-
-td{
-	padding: 9px;
-	text-align: right;
-	border: 1px solid black;
-}
-
-.control{
-	font-size: 14px;
-	margin-right: 10px;
-}
-#addScenario {
-    font-size: 30px;
-    background-color: #1696d2;
-    width: 18px;
-    height: 36px;
-    vertical-align: middle;
-    padding: 0px 10px 2px 10px;
-    color: white;
-    margin-top: 20px;
-    cursor: pointer;
-}
-#stateSelect{
-	margin-bottom: 20px;
-}
-#runButton{
-	font-size: 30px;
-    margin-top: 10px;
-    background: black;
-    padding: 10px;
-    width: 171px;
-    color: white;
-    cursor: pointer;
-}
-	</style>
-	</head>
-	<body>
-    <select id = "stateSelect" class = "control">
-		<option value="AL">Alabama</option>
-		<option value="AK">Alaska</option>
-		<option value="AZ">Arizona</option>
-		
-		<!-- not in counts.allstates data -->
-		<!-- <option value="AR">Arkansas</option> -->
-
-		<option value="CA">California</option>
-		<option value="CO">Colorado</option>
-		
-		<!-- not in counts.allstates data -->
-		<!-- <option value="CT">Connecticut</option> -->
-
-		<option value="DE">Delaware</option>
-
-				<!-- not in costs data -->
-				<!-- <option value="DC">District of Columbia</option> -->
-
-		<option value="FL">Florida</option>
-		<option value="GA">Georgia</option>
-		
-		<!-- not in counts.allstates data -->
-		<!-- <option value="HI">Hawaii</option> -->
-
-		<!-- not in counts.allstates data -->
-		<!-- <option value="ID">Idaho</option> -->
-
-		<option value="IL">Illinois</option>
-		<option value="IN">Indiana</option>
-		<option value="IA">Iowa</option>
-
-			<!-- fewer than five years of baseline data -->
-			<!-- <option value="KS">Kansas</option> -->
-
-		<option value="KY">Kentucky</option>
-
-		<!-- not in counts.allstates data -->
-		<!-- <option value="LA">Louisiana</option> -->
-
-			<!-- fewer than five years of baseline data -->
-			<!-- <option value="ME">Maine</option> -->
-
-		<option value="MD">Maryland</option>
-		<option value="MA">Massachusetts</option>
-		<option value="MI">Michigan</option>
-		<option value="MN">Minnesota</option>
-		<option value="MS">Mississippi</option>
-		<option value="MO">Missouri</option>
-		<option value="MT">Montana</option>
-		<option value="NE">Nebraska</option>
-		<option value="NV">Nevada</option>
-
-			<!-- fewer than five years of baseline data -->
-			<!-- <option value="NH">New Hampshire</option> -->
-
-		<option value="NJ">New Jersey</option>
-		<option value="NM">New Mexico</option>
-		<option value="NY">New York</option>
-		<option value="NC">North Carolina</option>
-		<option value="ND">North Dakota</option>
-		<option value="OH">Ohio</option>
-		<option value="OK">Oklahoma</option>
-		<option value="OR">Oregon</option>
-		<option value="PA">Pennsylvania</option>
-		<option value="RI">Rhode Island</option>
-		<option value="SC">South Carolina</option>
-		<option value="SD">South Dakota</option>
-		<option value="TN">Tennessee</option>
-		<option value="TX">Texas</option>
-		<option value="UT">Utah</option>
-
-		<!-- not in counts.allstates data -->
-		<!-- <option value="VT">Vermont</option> -->
-
-		<!-- not in counts.allstates data -->
-		<!-- <option value="VA">Virginia</option> -->
-
-		<option value="WA">Washington</option>
-		<option value="WV">West Virginia</option>
-		<option value="WI">Wisconsin</option>
-		<option value="WY">Wyoming</option>
-    </select>
-		<div id = "inputs">
-		</div>
-		<div id = "addScenario">+</div>
-		
-		<div id = "runTime"></div>
-
-		<div id = "outputs">
-		</div>
-
-		<script type="text/javascript">
 // define functions
 //  variables and functions called are at the bottom!!!!
 
@@ -421,9 +263,9 @@ function CatProjections(cat,stateData,all_scenarios,details) {
       	p_values.push(1-(1/l_values[i]));     
 
 if(cat == "kidnapping" && i == (ProjEndYear-firstyr)){
-	console.log(l_values[i-1], l_step)
-	console.log(l_values[i])
-	console.log(p_values[i])
+	// console.log(l_values[i-1], l_step)
+	// console.log(l_values[i])
+	// console.log(p_values[i])
 }
 
       	// if(cat == "kidnapping" && i == (ProjEndYear-firstyr)){
@@ -513,93 +355,8 @@ var ProjEndYear = 2025;
 
 var offenses = [ ["violent","All Violent"], ["drug", "All Drug"], ["property", "All Property"], ["nonviolent", "All Nonviolent"], ["other", "All Other"], ["arson", "Arson"],["assault", "Assault"],["burglary", "Burglary"],["drugposs", "Drug possession"],["drugtraff", "Drug trafficking"],["dwi", "DWI"],["fraud", "Fraud"],["homicide", "Homicide"],["kidnapping", "Kidnapping"],["larceny", "Larceny"],["otherdrug", "Other drug"],["otherprop", "Other property"],["otherviol", "Other violent"],["public_oth", "Public other"],["robbery", "Robbery"],["sexassault", "Sexual assault"],["weapons", "Weapons"],["mvtheft", "Motor vehicle theft"] ]
 
-function addController(){
-	var controlRow = d3.select("#inputs")
-		.append("div")
-		.attr("class", "controlRow")
+function runModel(chosenState, projectedParameters){
 
-	var offenseType = controlRow
-		.append("select")
-		.attr("class", "control offenseType")
-
-	for(var i = 0; i < offenses.length; i++){
-		var offense = offenses[i];
-		offenseType.append("option")
-			.attr("value", offense[0])
-			.text(offense[1])
-	}
-	var reductionType = controlRow.append("select")
-		.attr("class", "control reductionType")
-
-
-	reductionType.append("option")
-		.attr("value","los")
-		.text("Length of Stay")
-	reductionType.append("option")
-		.attr("value", "entrances")
-		.text("Entrances")
-
-	var reductionAmount = controlRow.append("input")
-		.attr("type","range")
-		.attr("value","0")
-		.attr("step","1")
-		.attr("min","-100")
-		.attr("max","100")
-		.attr("class", "control reductionAmount")
-	var reductionLabel = controlRow.append("input")
-		.attr("type","text")
-		.attr("value", "0")
-		.attr("class", "control reductionLabel")
-
-	reductionAmount.on("input", function(){
-		var val = $(this).val()
-		$(reductionLabel.node()).val(val)
-		testRun();
-	})
-	reductionLabel.on("input", function(){
-		var val = $(this).val()
-		$(reductionAmount.node()).val(val)
-		testRun();
-	})
-	offenseType.on("change", function(){
-		testRun();
-	})
-	reductionType.on("change", function(){
-		testRun();
-	})
-	d3.select("#stateSelect").on("change", function(){
-		testRun();
-	})
-}
-
-function getScenario(){
-	var scenarios = [];
-	d3.selectAll(".controlRow")
-		.each(function(){
-			if(typeof(this) == "undefined"){
-				return false;
-			}else{
-				var cr = this;
-				var scenario = []
-				scenario.push($(cr).find(".offenseType").val())
-				scenario.push(parseFloat( $(cr).find(".reductionAmount").val() )/100.0 )
-				var reductionTypeInt = ( $(cr).find(".reductionType").val() == "los") ? 2 : 1;
-				scenario.push(reductionTypeInt)
-
-				scenarios.push(scenario)
-			}
-		})
-	return scenarios;
-}
-
-function getState(){
-	return $("#stateSelect").val()
-}
-
-
-function testRun(){
-	var chosenState = getState();
-	var projectedParameters = getScenario();
 	// Temp change to static for testing
 	// var chosenState = "DE";	
 	// var projectedParameters = [["property",-0.2,2],["drug",-0.2,1],["drug",-0.4,2]];
@@ -615,93 +372,96 @@ function testRun(){
 
 	var minYear = d3.min(Object.keys(baselineFinalData[0]))
 	var maxYear = d3.max(Object.keys(baselineFinalData[0]))
+
+
+	return {"projected": projectedFinalData, "baseline": baselineFinalData, "costs": costsFinalData}
 	
-	d3.select("#outputs").selectAll("*").remove()
-	var projectionTable = d3.select("#outputs")
-		.append("table")
+	// d3.select("#outputs").selectAll("*").remove()
+	// var projectionTable = d3.select("#outputs")
+	// 	.append("table")
 
-	var header = projectionTable.append("tr")
-	var genericFormatter = d3.format(".5f")
-	header.append("th")
-		.text("Year")
-	header.append("th")
-		.text("Baseline population")
-	header.append("th")
-		.text("Projected population")
-	for(var i = minYear; i <= maxYear; i++){
-		var tr = projectionTable.append("tr")
-		tr.append("td")
-			.text(i)
-		tr.append("td")
-			.text(genericFormatter(baselineFinalData[0][i]))
-		tr.append("td")
-			.text(genericFormatter(projectedFinalData[0][i]))
-	}
+	// var header = projectionTable.append("tr")
+	// var genericFormatter = d3.format(".5f")
+	// header.append("th")
+	// 	.text("Year")
+	// header.append("th")
+	// 	.text("Baseline population")
+	// header.append("th")
+	// 	.text("Projected population")
+	// for(var i = minYear; i <= maxYear; i++){
+	// 	var tr = projectionTable.append("tr")
+	// 	tr.append("td")
+	// 		.text(i)
+	// 	tr.append("td")
+	// 		.text(genericFormatter(baselineFinalData[0][i]))
+	// 	tr.append("td")
+	// 		.text(genericFormatter(projectedFinalData[0][i]))
+	// }
 
-	var raceTable = d3.select("#outputs")
-		.append("table")
-	var raceHeader = raceTable.append("tr")
-	raceHeader.append("th")
-		.text("Race")
-	raceHeader.append("th")
-		.text("Baseline proportion")
-	raceHeader.append("th")
-		.text("Projected vs baseline")
-	raceHeader.append("th")
-		.text("Projected vs last yr")
+	// var raceTable = d3.select("#outputs")
+	// 	.append("table")
+	// var raceHeader = raceTable.append("tr")
+	// raceHeader.append("th")
+	// 	.text("Race")
+	// raceHeader.append("th")
+	// 	.text("Baseline proportion")
+	// raceHeader.append("th")
+	// 	.text("Projected vs baseline")
+	// raceHeader.append("th")
+	// 	.text("Projected vs last yr")
 
-	var races = Object.keys(baselineFinalData[1])
+	// var races = Object.keys(baselineFinalData[1])
 
-	for(var i = 0; i < races.length; i ++){
-		var race = races[i]
-		var tr = raceTable.append("tr")
-		tr.append("td")
-			.text(race)
-		tr.append("td")
-			.text(genericFormatter(baselineFinalData[1][race]))
-		tr.append("td")
-			.text(genericFormatter(projectedFinalData[1][race]))
-		tr.append("td")
-			.text(genericFormatter(projectedFinalData[2][race]))
-	}
+	// for(var i = 0; i < races.length; i ++){
+	// 	var race = races[i]
+	// 	var tr = raceTable.append("tr")
+	// 	tr.append("td")
+	// 		.text(race)
+	// 	tr.append("td")
+	// 		.text(genericFormatter(baselineFinalData[1][race]))
+	// 	tr.append("td")
+	// 		.text(genericFormatter(projectedFinalData[1][race]))
+	// 	tr.append("td")
+	// 		.text(genericFormatter(projectedFinalData[2][race]))
+	// }
 
-	var costTable = d3.select("#outputs")
-		.append("table")
-	var costHeader = costTable.append("tr")
-	costHeader.append("th")
-		.text("Year")
-	costHeader.append("th")
-		.text("Cost vs baseline")
-	costHeader.append("th")
-		.text("Cost diff vs last yr")
+	// var costTable = d3.select("#outputs")
+	// 	.append("table")
+	// var costHeader = costTable.append("tr")
+	// costHeader.append("th")
+	// 	.text("Year")
+	// costHeader.append("th")
+	// 	.text("Cost vs baseline")
+	// costHeader.append("th")
+	// 	.text("Cost diff vs last yr")
 
-	var costKeys = Object.keys(costsFinalData)
-	for(var i = 0; i < costKeys.length; i++) {
-    	costKeys[i] = parseInt(costKeys[i]);
-	}
-	var minCostYear = d3.min(costKeys)
-	var maxCostYear = d3.max(costKeys)
+	// var costKeys = Object.keys(costsFinalData)
+	// for(var i = 0; i < costKeys.length; i++) {
+ //    	costKeys[i] = parseInt(costKeys[i]);
+	// }
+	// var minCostYear = d3.min(costKeys)
+	// var maxCostYear = d3.max(costKeys)
 	
-	// console.log(costsFinalData, parseInt.apply(null, Object.keys(costsFinalData)))
-	var dollars = d3.format("$,.2f")
+	// // console.log(costsFinalData, parseInt.apply(null, Object.keys(costsFinalData)))
+	// var dollars = d3.format("$,.2f")
 
-	console.log(costsFinalData)
-	for(var i = minCostYear; i <= maxCostYear; i++){
-		var tr = costTable.append("tr")
-		tr.append("td")
-			.text(i)
-		tr.append("td")
-			.text(dollars(costsFinalData[i]["baselineDiff"]))
-		tr.append("td")
-			.text(dollars(costsFinalData[i]["lastYearDiff"]))
-	}
-	var last_tr = costTable.append("tr")
-	last_tr.append("td")
-		.text("cumulative")
-	last_tr.append("td")
-		.text(dollars(costsFinalData["cumulative"]["baselineDiff"]))
-	last_tr.append("td")
-		.text(dollars(costsFinalData["cumulative"]["lastYearDiff"]))
+	// console.log(costsFinalData)
+	// for(var i = minCostYear; i <= maxCostYear; i++){
+	// 	var tr = costTable.append("tr")
+	// 	tr.append("td")
+	// 		.text(i)
+	// 	tr.append("td")
+	// 		.text(dollars(costsFinalData[i]["baselineDiff"]))
+	// 	tr.append("td")
+	// 		.text(dollars(costsFinalData[i]["lastYearDiff"]))
+	// }
+	// var last_tr = costTable.append("tr")
+	// last_tr.append("td")
+	// 	.text("cumulative")
+	// last_tr.append("td")
+	// 	.text(dollars(costsFinalData["cumulative"]["baselineDiff"]))
+	// last_tr.append("td")
+	// 	.text(dollars(costsFinalData["cumulative"]["lastYearDiff"]))
 
 
 
@@ -718,16 +478,3 @@ function testRun(){
 }
 
 
-addController();
-d3.select("#addScenario")
-	.on("click", addController)
-
-
-
-
-
-
-
-		</script>
-	</body>
-</html>

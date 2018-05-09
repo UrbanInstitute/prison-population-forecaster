@@ -21,8 +21,6 @@
 
         <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic,900" rel="stylesheet" type="text/css">
         <link rel="stylesheet" type="text/css" href="css/main.css">
-        <link rel="stylesheet" type="text/css" href="css/responsive.css">
-        <link rel="stylesheet" type="text/css" href="css/home-print.css">
         <link rel="stylesheet" type="text/css" href="css/urban-header.css">
         <link rel="stylesheet" type="text/css" href="css/vendor/jquery-ui.css">
 
@@ -113,9 +111,92 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <div id = "leftContent">
       <select id = "stateSelect">
         <option value = "all">All states</option>
+        <option value="AL">Alabama</option>
+        <option value="AK">Alaska</option>
+        <option value="AZ">Arizona</option>
+        
+        <!-- not in counts.allstates data -->
+        <!-- <option value="AR">Arkansas</option> -->
+
+        <option value="CA">California</option>
+        <option value="CO">Colorado</option>
+        
+        <!-- not in counts.allstates data -->
+        <!-- <option value="CT">Connecticut</option> -->
+
+        <option value="DE">Delaware</option>
+
+            <!-- not in costs data -->
+            <!-- <option value="DC">District of Columbia</option> -->
+
+        <option value="FL">Florida</option>
+        <option value="GA">Georgia</option>
+        
+        <!-- not in counts.allstates data -->
+        <!-- <option value="HI">Hawaii</option> -->
+
+        <!-- not in counts.allstates data -->
+        <!-- <option value="ID">Idaho</option> -->
+
+        <option value="IL">Illinois</option>
+        <option value="IN">Indiana</option>
+        <option value="IA">Iowa</option>
+
+          <!-- fewer than five years of baseline data -->
+          <!-- <option value="KS">Kansas</option> -->
+
+        <option value="KY">Kentucky</option>
+
+        <!-- not in counts.allstates data -->
+        <!-- <option value="LA">Louisiana</option> -->
+
+          <!-- fewer than five years of baseline data -->
+          <!-- <option value="ME">Maine</option> -->
+
+        <option value="MD">Maryland</option>
+        <option value="MA">Massachusetts</option>
+        <option value="MI">Michigan</option>
+        <option value="MN">Minnesota</option>
+        <option value="MS">Mississippi</option>
+        <option value="MO">Missouri</option>
+        <option value="MT">Montana</option>
+        <option value="NE">Nebraska</option>
+        <option value="NV">Nevada</option>
+
+          <!-- fewer than five years of baseline data -->
+          <!-- <option value="NH">New Hampshire</option> -->
+
+        <option value="NJ">New Jersey</option>
+        <option value="NM">New Mexico</option>
+        <option value="NY">New York</option>
+        <option value="NC">North Carolina</option>
+        <option value="ND">North Dakota</option>
+        <option value="OH">Ohio</option>
+        <option value="OK">Oklahoma</option>
+        <option value="OR">Oregon</option>
+        <option value="PA">Pennsylvania</option>
+        <option value="RI">Rhode Island</option>
+        <option value="SC">South Carolina</option>
+        <option value="SD">South Dakota</option>
+        <option value="TN">Tennessee</option>
+        <option value="TX">Texas</option>
+        <option value="UT">Utah</option>
+
+        <!-- not in counts.allstates data -->
+        <!-- <option value="VT">Vermont</option> -->
+
+        <!-- not in counts.allstates data -->
+        <!-- <option value="VA">Virginia</option> -->
+
+        <option value="WA">Washington</option>
+        <option value="WV">West Virginia</option>
+        <option value="WI">Wisconsin</option>
+        <option value="WY">Wyoming</option>
+
       </select>
 
-      <div class = "leftHeader">Make policy changes</div>
+      <div class = "leftHeaderText">Make policy changes</div>
+<!-- START VIOLENT OFFENSES -->
       <div class = "parentContainer">
         <div class = "parentHeader">
           <div class = "parentName">All violent offenses</div>
@@ -123,50 +204,818 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         </div>
         <div class ="parentControls">
           <div class = "parent controlTypeLabel">Admissions</div>
-          <div class = "parent slider">
-            <input id = "" class = "controlSlider" type="range" min="-100" max="100" step="1" value ="0">
+          <div class = "parent slider" data-offense="violent" data-indicator="admissions" data-tier="parent">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
             <div class = "sliderLabels">
-              <div class = "sliderLabel lneg">-100</div>
-              <div class = "sliderLabel l0">0</div>
-              <div class = "sliderLabel lpos">+100</div>
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class="control">
             </div>
           </div>
           <div class = "parent controlTypeLabel">Length of prison term</div>
-          <div class = "parent slider">SLIDER</div>
+          <div class = "parent slider" data-offense="violent" data-indicator="los" data-tier="parent">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class="control">
+            </div>
+          </div>
         </div>
-        <div class = "childContainer">
-          <div class = "childHeader">
-            <div class = "childName">Assault</div>
-            <div class = "childArrow"></div>
-          </div>
-          <div class ="childControls">
-            <div class = "child controlTypeLabel">Admissions</div>
-            <div class = "child slider">SLIDER</div>
-            <div class = "child controlTypeLabel">Length of prison term</div>
-            <div class = "child slider">SLIDER</div>
-          </div>
+<!-- START ASSAULT -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">Assault</div>
+          <div class = "childArrow"></div>
         </div>
-        <div class = "childContainer">
-          <div class = "childHeader">
-            <div class = "childName">Homicide</div>
-            <div class = "childArrow"></div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="assault" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
           </div>
-          <div class ="childControls">
-            <div class = "child controlTypeLabel">Admissions</div>
-            <div class = "child slider">SLIDER</div>
-            <div class = "child controlTypeLabel">Length of prison term</div>
-            <div class = "child slider">SLIDER</div>
+
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="assault" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
           </div>
         </div>
       </div>
+<!-- END ASSAULT -->
+<!-- START HOMICIDE -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">Homicide</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="homicide" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
 
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="homicide" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
       </div>
+<!-- END HOMICIDE -->
+<!-- START KIDNAPPING -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">Kidnapping</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="kidnapping" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
 
-<!-- https://www.sitepoint.com/css3-transform-background-image/ -->
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="kidnapping" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- END KIDNAPPING -->
+<!-- START ROBBERY -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">Robbery</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="robbery" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="robbery" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- END ROBBERY -->
+<!-- START SEXUAL ASSAULT -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">Sexual assault</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="sexassault" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="sexassault" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- END SEXUAL ASSAULT -->
+<!-- START OTHER VIOLENT -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">Other violent offenses</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="otherviol" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="otherviol" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- END OTHER VIOLENT -->
     </div>
+<!-- END VIOLENT OFFENSES -->
+<!-- START DRUG OFFENSES -->
+      <div class = "parentContainer">
+        <div class = "parentHeader">
+          <div class = "parentName">All drug offenses</div>
+          <div class = "parentArrow"></div>
+        </div>
+        <div class ="parentControls">
+          <div class = "parent controlTypeLabel">Admissions</div>
+          <div class = "parent slider" data-offense="drug" data-indicator="admissions" data-tier="parent">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class="control">
+            </div>
+          </div>
+          <div class = "parent controlTypeLabel">Length of prison term</div>
+          <div class = "parent slider" data-offense="drug" data-indicator="los" data-tier="parent">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class="control">
+            </div>
+          </div>
+        </div>
+<!-- START DRUG POSSESSION -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">Drug possession</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="drugposs" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="drugposs" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- END DRUG POSSESSION -->
+<!-- START DRUG TRAFFICKING -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">Drug trafficking</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="drugtraff" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="drugtraff" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- END DRUG TRAFFICKING -->
+<!-- START OTHER DRUG -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">Other drug offenses</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="otherdrug" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="otherdrug" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- END OTHER DRUG -->
+    </div>
+<!-- END DRUG OFFENSES -->
+<!-- START PROPERY OFFENSES -->
+      <div class = "parentContainer">
+        <div class = "parentHeader">
+          <div class = "parentName">All property offenses</div>
+          <div class = "parentArrow"></div>
+        </div>
+        <div class ="parentControls">
+          <div class = "parent controlTypeLabel">Admissions</div>
+          <div class = "parent slider" data-offense="property" data-indicator="admissions" data-tier="parent">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class="control">
+            </div>
+          </div>
+          <div class = "parent controlTypeLabel">Length of prison term</div>
+          <div class = "parent slider" data-offense="property" data-indicator="los" data-tier="parent">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class="control">
+            </div>
+          </div>
+        </div>
+<!-- START ARSON -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">Arson</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="arson" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="arson" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- END ARSON -->
+<!-- START BURGLARY -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">Burglary</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="burglary" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="burglary" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- END BURGLARY -->
+<!-- START FRAUD -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">Fraud</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="fraud" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="fraud" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- END FRAUD -->
+<!-- START THEFT -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">Theft</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="larceny" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="larceny" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- END THEFT -->
+<!-- START MOTOR VEHICLE THEFT -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">Motor vehicle theft</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="mvtheft" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="mvtheft" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- END MOTOR VEHICLE THEFT -->
+<!-- START OTHER PROPERTY -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">Other property offenses</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="otherprop" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="otherprop" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- END OTHER PROPERTY -->
+    </div>
+<!-- END PROPERTY OFFENSES -->
+<!-- START OTHER OFFENSES -->
+      <div class = "parentContainer">
+        <div class = "parentHeader">
+          <div class = "parentName">All other offenses</div>
+          <div class = "parentArrow"></div>
+        </div>
+        <div class ="parentControls">
+          <div class = "parent controlTypeLabel">Admissions</div>
+          <div class = "parent slider" data-offense="other" data-indicator="admissions" data-tier="parent">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class="control">
+            </div>
+          </div>
+          <div class = "parent controlTypeLabel">Length of prison term</div>
+          <div class = "parent slider" data-offense="other" data-indicator="los" data-tier="parent">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class="control">
+            </div>
+          </div>
+        </div>
+<!-- START DWI -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">DWI</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="dwi" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="dwi" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- END DWI -->
+<!-- START WEAPONS -->
+      <div class = "childContainer">
+        <div class = "childHeader">
+          <div class = "childName">Weapons offenses</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="weapons" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="weapons" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- END WEAPONS -->
+<!-- START PUBLIC OTHER -->
+      <div class = "childContainer tall">
+        <div class = "childHeader">
+          <div class = "childName">Public order and other offenses</div>
+          <div class = "childArrow"></div>
+        </div>
+        <div class ="childControls">
+          <div class = "child controlTypeLabel">Admissions</div>
+          <div class = "child slider" data-offense="public_oth" data-indicator="admissions" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+
+          <div class = "child controlTypeLabel">Length of prison term</div>
+            <div class = "child slider" data-offense="public_oth" data-indicator="los" data-tier="child">
+            <div class = "slideLock unlocked control"></div>
+            <input class = "controlSlider control" type="range" min="-100" max="100" step="1" value = "-20">
+            <div class = "sliderLabels">
+              <div class = "sliderLabel lneg control">-100</div>
+              <div class = "sliderLabel l0 control">0</div>
+              <div class = "sliderLabel lpos control">+100</div>
+            </div>
+            <div class = "sliderInput">
+              <input value = "-20%" class = "control">
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- END PUBLIC OTHER -->
+    </div>
+<!-- END OTHER OFFENSES -->
+  </div>
+  </div>
   </div>
   <!-- END LEFT CONTROLS -->
 
+
+
+<!-- START CENTER CONTENT -->
+<div id = "lineChart"></div>
+<!-- END CENTER CONTENT -->
 
 
 
@@ -176,7 +1025,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <script src="js/vendor/jquery.1.8.min.js"></script>
   <script src="js/vendor/jquery-ui.js"></script>
 
-  <script src = "js/text.js"></script>
+    <script src="data/race.js"></script>
+    <script src="data/costs.js"></script>
+    <script src="data/usdata.js"></script>  
+
+  <script src = "js/model.js"></script>
   <script src = "js/main.js"></script>
   <script src = "js/header.js"></script>
 

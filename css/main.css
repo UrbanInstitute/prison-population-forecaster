@@ -3,6 +3,30 @@ body{
 }
 
 /*******************************************************/
+/********************* LINE CHART **********************/
+/*******************************************************/
+#lineChart{
+    position: fixed;
+    left: 300px;
+    top: 100px;
+}
+.line{
+    fill: none;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    stroke-width: 2px;
+}
+.line.baseline{
+    stroke: #000;
+}
+/*.line.baseline.future{
+    stroke-dasharray: 3.5px 2px;
+}*/
+.line.future.projection{
+    stroke: #ec008b;
+}
+
+/*******************************************************/
 /******************** LEFT SIDE BAR ********************/
 /*******************************************************/
 #leftSidebar{
@@ -29,23 +53,34 @@ body{
     float: right;
     text-transform: uppercase;
     font-size: 11px;
+    cursor: pointer;
 }
-#leftContent{
-	padding-left: 20px;
+#clearAll img{
+    width: 18px;
+    position: relative;
+    margin-left: 12px;
+    top: 5px;
+}
+.parentContainer{
+	overflow: hidden;
+    height: 40px;
+    padding-top: 15px;
 }
 #stateSelect-button{
+    margin-left: 20px;
 	margin-top: 35px;
 	margin-bottom: 44px;
 }
-.leftHeader{
-    font-size: 16px;
+.leftHeaderText{
+    font-size: 17px;
     font-weight: bold;
     border-bottom: 2px solid white;
     padding-bottom: 12px;
+    margin-left: 20px;
     margin-bottom: 30px;
     position: relative;
 }
-.leftHeader:after{
+.leftHeaderText:after{
     content: "";
     width: calc(100% - 3px);
     border-bottom: 1px solid #2e2c2c;
@@ -55,22 +90,27 @@ body{
 }
 .parentControls{
     position: relative;
-    height: 103px;
+    height: 168px;
     box-shadow: 0 9px 15px -6px #262223;
-    width: 100%;
+    width: calc(100% - 21px);
     left: -20px;
     padding-left: 21px;
+    margin-left: 20px;
     z-index: 2;
 
 }
-
+.parent.slider{
+    height: 56px;
+}
 .parentHeader{
-	border-bottom: 2px solid #959192;
+    border-bottom: 2px solid #959192;
     padding-bottom: 10px;
-    padding-left: 20px;
+    padding-left: 10px;
+    margin-left: 20px;
     left: -10px;
-    width: 230px;
+    width: 240px;
     position: relative;
+    cursor: pointer;
 }
 .parentHeader:after{
     content: "";
@@ -85,6 +125,7 @@ body{
     font-weight: bold;
     display: inline-block;
 }
+
 .parentArrow{
 	background-image: url(../img/expandArrow.png);
     display: inline-block;
@@ -98,6 +139,40 @@ body{
     position: relative;
     top: 3px;
 }
+.childHeader{
+    border-bottom: 2px solid #959192;
+    padding-bottom: 7px;
+    width: 216px;
+    position: relative;
+    cursor: pointer;
+}
+.childHeader:after{
+    content: "";
+    width: 100%;
+    border-bottom: 3px solid #4c4748;
+    position: absolute;
+    left: 0px;
+    bottom: -5px;
+}
+.childArrow{
+    background-image: url(../img/expandArrow.png);
+    display: inline-block;
+    background-size: 15px;
+    background-repeat: no-repeat;
+    width: 15px;
+    height: 15px;
+    background-position: center;
+    float: right;
+    margin-right: 2px;
+    position: relative;
+    top: -15px;
+}
+
+.childName{
+    font-size: 15px;
+    font-weight: bold;
+    width: 200px;
+}
 .controlTypeLabel{
 	font-size: 14px;
     font-style: italic;
@@ -107,21 +182,53 @@ body{
 .parent.controlTypeLabel{
 	margin-top: 15px;
 }
-
+.child.controlTypeLabel{
+    padding-top: 7px;
+}
 
 
 
 .childContainer{
     background: #535050;
-    left: -20px;
+    left: -18px;
     position: relative;
     z-index: 1;
-    width: 100%;
+    width: calc(100% - 41px);
     padding-top: 20px;
-    padding-left: 20px;
+    padding-left: 38px;
+    margin-left: 20px;
+    height: 30px;
+    overflow: hidden;
 }
+.childContainer.tall{
+    height: 45px;
+}
+.childContainer:last-child{
+    padding-bottom: 12px;
+}
+.child.slider{
+    margin-left: -22px;
+    height: 64px;
+}
+.slideLock{
+    display: inline-block;
+    float: left;
+    margin-top: 12px;
+    width: 20px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-position: 1px 1px;
+    cursor: pointer;
 
-
+}
+.slideLock.unlocked{
+    background-image: url(../img/unlocked.png);
+    background-size: 17px;
+}
+.slideLock.locked{
+    background-image: url(../img/locked.png);
+    background-size: 12px;
+}
 .sliderLabels{
 	display: block;
     clear: both;
@@ -132,20 +239,43 @@ body{
 	font-size: 11px;
 	cursor: pointer;
 	display: inline-block;
+    top: -3px;
 }
 .sliderLabel.lneg{
-	left: -11px
+	left: 16px
 }
 .sliderLabel.l0{
-	left: 58.5px;
+	left: 72.5px;
 }
 .sliderLabel.lpos{
-	left: 123px;
+	left: 121px;
 }
 .sliderLabel:hover{
 	color: #a2d4ec;
 }
+.sliderInput input{
+    display: inline-block;
+    position: relative;
+    top: -41px;
+    font-family: Lato;
+    font-size: 16px;
+    background: transparent;
+    border: none;
+    color: #a2d4ec;
+    font-weight: bold;
+    right: -189px;
+    text-align: right;
+    width: 49px;
 
+}
+.lockMask{
+    width: calc(100% - 15px);
+    height: 40px;
+    position: relative;
+    top: -65px;
+    left: 14px;
+    background: transparent;
+}
 
 
 /***************************************************************************/
@@ -153,31 +283,24 @@ body{
 /***************************************************************************/
 /*modified from http://brennaobrien.com/blog/2014/05/style-input-type-range-in-every-browser.html*/
 
+
 input[type=range] {
-	width: 172px;
-	float: left;
-	clear: both;
-	position: relative;
-	top: 6px;
-    /*removes default webkit styles*/
+    display: inline-block;
+    width: 159px;
+    float: left;
+    margin-top: 12px;
     -webkit-appearance: none;
-    
-    /*fix for FF unable to apply focus style bug */
     border: none;
     height: 18px;
     background-color: transparent;
-    
-    /*required for proper track sizing in FF*/
-    /*width: 300px;*/
 }
 
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
   input[type=range] {
-    float: none;
-    width: 172px;
-    clear: both;
-    position: relative;
-    top: 6px;
+    display: inline-block;
+    width: 159px;
+    float: left;
+    margin-top: 12px;
       /*removes default webkit styles*/
       -webkit-appearance: none;
       
