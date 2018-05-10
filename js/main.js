@@ -14,11 +14,11 @@ var offenses = [["assault","foo"],["homicide","foo"],["kidnapping","foo"],["robb
 /**************** GETTERS AND SETTERS ******************/
 /*******************************************************/
 function getState(state){
-
+	return d3.select("#stateSelect").node().value
 }
-function setState(state){
+// function setState(state){
 
-}
+// }
 function getBase(){
 
 }
@@ -108,7 +108,7 @@ function updateInputs(offense, indicator, tier, amount){
 	//if changing for all, loop through each umbrella category and check if locked, then do as above
 	
 	setInputs(inputs)
-	sendInputs("CA", inputs)
+	sendInputs(getState(), inputs)
 }
 function sendInputs(state, inputs){
 	var reshaped = []
@@ -183,8 +183,17 @@ function buildPopulationChart(data){
 		.x(function(d) { return x(d.year); })
 		.y(function(d) { return y(d.projected); });
 
+		var yMin = d3.min([
+				d3.min(data, function(d){ return d.projected}),
+				d3.min(data, function(d){ return d.baseline}),
+			])
+		var yMax = d3.max([
+				d3.max(data, function(d){ return d.projected}),
+				d3.max(data, function(d){ return d.baseline}),
+			])
+
 		x.domain(d3.extent(data, function(d) { return d.year; }));
-		y.domain(d3.extent(data, function(d) { return d.projected; }));
+		y.domain([yMin, yMax]);
 
 
 		var historicalData = data.filter(function(o){ return o.year <= CURRENT_YEAR })
@@ -200,6 +209,7 @@ function buildPopulationChart(data){
 		console.log(data)
 
 		g.append("g")
+		.attr("class","lineChart x axis")
 		.attr("transform", "translate(0," + height + ")")
 		.call(d3.axisBottom(x))
 		.select(".domain")
@@ -230,6 +240,11 @@ function buildPopulationChart(data){
 		d3.select(".lineChart.y.axis")
 		.transition()
 		.call(d3.axisLeft(y))
+
+
+		d3.select(".lineChart.x.axis")
+		.transition()
+		.call(d3.axisBottom(x))
 
 		d3.select(".line.projection.future")
 		.datum(futureData)
@@ -347,7 +362,7 @@ change: function(event, data){
 	//state on change
 	//get state
 	var inputs = getInputs()
-	sendInputs(state, inputs)
+	sendInputs(this.value, inputs)
     var m = $(this);
     if(m.val() == ""){
       m.css("color", "#818385");
