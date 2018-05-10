@@ -260,13 +260,12 @@ function CatProjections(cat,stateData,all_scenarios,details) {
 
       	e_values.push(e_values[i-1]+e_step);       	
       	l_values.push(l_values[i-1]+l_step); //might not need this step because p is calculated?
-      	p_values.push(1-(1/l_values[i]));     
+      	
+      	if (l_values[i] < 0) {
+      		l_values[i] = 0;
+      	}
 
-if(cat == "kidnapping" && i == (ProjEndYear-firstyr)){
-	// console.log(l_values[i-1], l_step)
-	// console.log(l_values[i])
-	// console.log(p_values[i])
-}
+      	p_values.push(1-(1/l_values[i]));     
 
       	// if(cat == "kidnapping" && i == (ProjEndYear-firstyr)){
       	// 	console.log(l_values[i])
