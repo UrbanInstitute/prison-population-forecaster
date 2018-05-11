@@ -160,7 +160,7 @@ td{
 //  variables and functions called are at the bottom!!!!
 
 // Main function
-function StateProjections(ST,scenarios_list) {
+function StateProjections(ST,scenarios_list,abcdefg) {
 	var tSPstart = performance.now();
 
 	var racesums = {"white":0,
@@ -220,11 +220,12 @@ function StateProjections(ST,scenarios_list) {
 	population_totals.years.endYear = lastyr;
 	population_totals.years.projYear = ProjEndYear;
 
+	
 	for (var i = 0; i < categories.length; i++) {
 		var details = 0; 
 		// categories are the categories that are present in each individual state (might not be ALL possible categories)
 		//All_scenarios is all scenarios that have been modified by the user in the input
-		population_totals[categories[i]] = CatProjections(categories[i],stateData,all_scenarios,details)
+		population_totals[categories[i]] = CatProjections(categories[i],stateData,all_scenarios,details,abcdefg)
 
 	}
 
@@ -320,7 +321,7 @@ function CostProjections(projData,baseData,lastYear,costpercap) {
 	// DW question: do we need to submit all scenarios to this every time?
 	// DW question: when would I use details = 0 and when = 1
 	// Lizzie answer, we can revisit details...might not need it. 
-function CatProjections(cat,stateData,all_scenarios,details) {	
+function CatProjections(cat,stateData,all_scenarios,details,abcdefg) {	
 	// CatProjections <- function(category, counts.st, scen.cat, details) {
 	// Category Projections
   // #Given offense category & scenario, produce category-specific population projection
@@ -418,17 +419,23 @@ function CatProjections(cat,stateData,all_scenarios,details) {
 
       	e_values.push(e_values[i-1]+e_step);       	
       	l_values.push(l_values[i-1]+l_step); //might not need this step because p is calculated?
+      	
+      	// DW note: this was added to prevent a floating point issue in the line above where length of stay was reduced to a negative number, thus causing the resulting p value to travel towards infinity, in error. I THINK the l_values[i-1]+l_step should never amount to a negative number. 
+      	if (l_values[i] < 0) {
+      		l_values[i] = 0;
+      	}
+
+
       	p_values.push(1-(1/l_values[i]));     
 
-if(cat == "kidnapping" && i == (ProjEndYear-firstyr)){
-	console.log(l_values[i-1], l_step)
-	console.log(l_values[i])
-	console.log(p_values[i])
+
+// DW note: this is an artifact of trying to fix the 1/l_values -> infinity issue
+if(cat == "kidnapping" && i == (ProjEndYear-firstyr) && abcdefg == "projected"){
+	// console.log(l_values[i-1])
+	// console.log(l_step)
+	// console.log(l_values[i])	
 }
 
-      	// if(cat == "kidnapping" && i == (ProjEndYear-firstyr)){
-      	// 	console.log(l_values[i])
-      	// }
 
       	// #generate projected n's based on estimates for admissions and LOS
       	if (p_values[i] >= 0) {
@@ -607,9 +614,9 @@ function testRun(){
 
 
 	// Do not change baseline parameters from this. 
-	var baselineParameters = [];
-	var projectedFinalData = 	StateProjections(chosenState, projectedParameters);
-	var baselineFinalData  = 	StateProjections(chosenState, baselineParameters);
+	var baselineParameters = [];	
+	var projectedFinalData = 	StateProjections(chosenState, projectedParameters,"projected");
+	var baselineFinalData  = 	StateProjections(chosenState, baselineParameters,"baseline");
 	var costsFinalData = CostProjections(projectedFinalData[0],baselineFinalData[0],(usdata[chosenState].endYear - 1),costpercap);
 	
 
@@ -685,7 +692,7 @@ function testRun(){
 	// console.log(costsFinalData, parseInt.apply(null, Object.keys(costsFinalData)))
 	var dollars = d3.format("$,.2f")
 
-	console.log(costsFinalData)
+	// console.log(costsFinalData)
 	for(var i = minCostYear; i <= maxCostYear; i++){
 		var tr = costTable.append("tr")
 		tr.append("td")
