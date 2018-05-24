@@ -33,6 +33,9 @@ var ppf = function(){
 	function setForecastID(){
 
 	}
+	function getMinYear(){
+		return 2008;
+	}
 
 
 	/*******************************************************/
@@ -90,7 +93,8 @@ var ppf = function(){
 			}
 		}
 	}
-	function updateInputs(offense, indicator, tier, amount){
+	function updateInputs(offense, indicator, tier, amount, eventType){
+
 		var inputs = getInputs();
 		// var newInputs = {};
 		if(tier == "parent"){
@@ -107,7 +111,9 @@ var ppf = function(){
 		}
 		//if changing umbrella category, loop through inputs for each child and if it's not locked, update val
 		//if changing for all, loop through each umbrella category and check if locked, then do as above
-		
+		if(eventType != "slideInput"){
+			updateYourSelections(inputs)
+		}
 		setInputs(inputs)
 		sendInputs(getState(), inputs)
 	}
@@ -126,6 +132,17 @@ var ppf = function(){
 		buildPopulationChart(lineData)
 
 
+	}
+	function getUniqueChildren(parent, inputs){
+
+	}
+	function updateYourSelections(inputs){
+		console.log(inputs)
+		for (var parent in subcategories) {
+			if (subcategories.hasOwnProperty(parent)){
+				getUniqueChildren(parent, inputs)
+			}
+		}
 	}
 	function lockInput(offense, indicator){
 		var parent = d3.select(".slider[data-offense=\"" + offense + "\"][data-indicator=\"" + indicator + "\"]")
@@ -161,14 +178,16 @@ var ppf = function(){
 				lineData.push(lineDatum)
 			}
 		}
-		return lineData;
+		return [lineData, data.years];
 	}
 
-	function buildPopulationChart(data){
+	function buildPopulationChart(allData){
 		var lineBaseline, lineProjected,
-			margin = {top: 20, right: 20, bottom: 30, left: 50},
-			width = 900 - margin.left - margin.right,
-			height = 500 - margin.top - margin.bottom;
+			margin = {top: 20, right: 50, bottom: 30, left: 20},
+			width = 700 - margin.left - margin.right,
+			height = 300 - margin.top - margin.bottom,
+			data = allData[0],
+			years = allData[1];
 
 			var x = d3.scaleLinear()
 			.rangeRound([0, width]);
@@ -193,11 +212,11 @@ var ppf = function(){
 					d3.max(data, function(d){ return d.baseline}),
 				])
 
-			x.domain(d3.extent(data, function(d) { return d.year; }));
+			x.domain([getMinYear(), years.max]);
 			y.domain([0, yMax]);
 
-			var historicalData = data.filter(function(o){ return o.year <= CURRENT_YEAR })
-			var futureData = data.filter(function(o){ return o.year >= CURRENT_YEAR })
+			var historicalData = data.filter(function(o){ return o.year <= years.diverge-1 && o.year >= getMinYear()})
+			var futureData = data.filter(function(o){ return o.year >= years.diverge-1 && o.year >= getMinYear()})
 
 
 		if(d3.select("#lineChart").select("svg").node() == null){
@@ -205,8 +224,13 @@ var ppf = function(){
 
 			g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
-			console.log(data)
+			g.append("rect")
+				.attr("id","bgRect")
+				.attr("x",0)
+				.attr("y",0)
+				.attr("height",height)
+				.attr("width",x(years.diverge-1) - x(getMinYear()))
+				
 
 			g.append("g")
 			.attr("class","lineChart x axis")
@@ -217,7 +241,8 @@ var ppf = function(){
 
 			g.append("g")
 			.attr("class","lineChart y axis")
-			.call(d3.axisLeft(y))
+			.call(d3.axisRight(y).ticks(5).tickSize(-width))
+			.attr("transform", "translate(" + width + ",0)")
 
 			g.append("path")
 			.datum(futureData)
@@ -236,10 +261,15 @@ var ppf = function(){
 			.attr("d", lineBaseline);
 
 		}else{
+			d3.select("#bgRect")
+				.transition()
+					.attr("width",x(years.diverge-1) - x(getMinYear()))
+				
+
 
 			d3.select(".lineChart.y.axis")
 			.transition()
-			.call(d3.axisLeft(y))
+			.call(d3.axisRight(y).ticks(5).tickSize(-width))
 
 
 			d3.select(".lineChart.x.axis")
@@ -372,17 +402,20 @@ var ppf = function(){
 	});
 
 	d3.selectAll(".lneg").on("click", function(d){
-		updateInputs(d.offense, d.indicator, d.tier, -100)
+		updateInputs(d.offense, d.indicator, d.tier, -100, "slideClick")
 	})
 	d3.selectAll(".lpos").on("click", function(d){
-		updateInputs(d.offense, d.indicator, d.tier, 100)
+		updateInputs(d.offense, d.indicator, d.tier, 100, "slideClick")
 	})
 	d3.selectAll(".l0").on("click", function(d){
-		updateInputs(d.offense, d.indicator, d.tier, 0)
+		updateInputs(d.offense, d.indicator, d.tier, 0, "slideClick")
 	})
 	d3.selectAll(".controlSlider")
 		.on("input", function(d){
-			updateInputs(d.offense, d.indicator, d.tier, this.value)
+			updateInputs(d.offense, d.indicator, d.tier, this.value, "slideInput")
+		})
+		.on("change", function(d){
+			updateInputs(d.offense, d.indicator, d.tier, this.value, "slideChange")
 		})
 
 	d3.selectAll(".sliderInput input")
@@ -396,7 +429,7 @@ var ppf = function(){
 			else if(raw == "-"){ value = 0}
 			else{ value = +raw}
 
-			updateInputs(d.offense, d.indicator, d.tier, value)
+			updateInputs(d.offense, d.indicator, d.tier, value, "textBox")
 		})
 
 	//input on change
@@ -451,7 +484,7 @@ var ppf = function(){
 
 	function init(){
 		bindControlData()
-		updateInputs(false, false, false, false)
+		updateInputs(false, false, false, false, "init")
 	}
 	init();
 }();

@@ -1,6 +1,9 @@
 // define functions
 //  variables and functions called are at the bottom!!!!
 
+function getProjEndYear(){
+	return 2025;
+}
 // Main function
 function StateProjections(ST,scenarios_list) {
 	var tSPstart = performance.now();
@@ -60,7 +63,7 @@ function StateProjections(ST,scenarios_list) {
 	population_totals.years = {};
 	population_totals.years.startYear = firstyr;
 	population_totals.years.endYear = lastyr;
-	population_totals.years.projYear = ProjEndYear;
+	population_totals.years.projYear = getProjEndYear();
 
 	for (var i = 0; i < categories.length; i++) {
 		var details = 0; 
@@ -81,7 +84,7 @@ function StateProjections(ST,scenarios_list) {
 		if (cat !== "unknown") {
 			if (population_totals[cat] != undefined) {
 				for (race in racesums) {
-					racesums[race] = racesums[race] + (RE[cat][race]*population_totals[cat][ProjEndYear-firstyr])
+					racesums[race] = racesums[race] + (RE[cat][race]*population_totals[cat][getProjEndYear()-firstyr])
 					raceLYsums[race] = raceLYsums[race] + (RE[cat][race]*population_totals[cat][lastyr-firstyr])
 				}
 			}			
@@ -134,7 +137,7 @@ function CostProjections(projData,baseData,lastYear,costpercap) {
 	var costData = {};
 	var costCumulativeBaseline = 0;
 	var costCumulativeLastYear = 0;
-	for (var i = (lastYear + 1); i <= ProjEndYear; i++) {		
+	for (var i = (lastYear + 1); i <= getProjEndYear(); i++) {		
 		costData[i] = {};
 
 		pctB = (baseData[i] - projData[i]) / baseData[i]
@@ -230,8 +233,8 @@ function CatProjections(cat,stateData,all_scenarios,details) {
       var l_lastval = stateData[cat][yearIndex - 1][2];
     
    		// #calculate step for equal interval between years 
-      var e_step = (e_final-e_lastval)/(2025-lastyr);
-      var l_step = (l_final-l_lastval)/(2025-lastyr);
+      var e_step = (e_final-e_lastval)/(getProjEndYear()-lastyr);
+      var l_step = (l_final-l_lastval)/(getProjEndYear()-lastyr);
 
 	
 
@@ -256,7 +259,7 @@ function CatProjections(cat,stateData,all_scenarios,details) {
       nt_values.push(n_values[n_values.length-1])
 
       // Predict the FUTURE (lastyr to projected end year)
-      for (var i = yearIndex; i <= (ProjEndYear - firstyr); i++) {
+      for (var i = yearIndex; i <= (getProjEndYear() - firstyr); i++) {
 
       	e_values.push(e_values[i-1]+e_step);       	
       	l_values.push(l_values[i-1]+l_step); //might not need this step because p is calculated?
@@ -267,7 +270,7 @@ function CatProjections(cat,stateData,all_scenarios,details) {
 
       	p_values.push(1-(1/l_values[i]));     
 
-      	// if(cat == "kidnapping" && i == (ProjEndYear-firstyr)){
+      	// if(cat == "kidnapping" && i == (getProjEndYear()-firstyr)){
       	// 	console.log(l_values[i])
       	// }
 
@@ -283,7 +286,7 @@ function CatProjections(cat,stateData,all_scenarios,details) {
       	}
       	
       	// If not the last iteration, take the ending n value and using it as next years nt value
-      	if (i !== (ProjEndYear - firstyr)) {
+      	if (i !== (getProjEndYear() - firstyr)) {
       		nt_values.push(n_values[i]);
       	}
 
@@ -349,7 +352,7 @@ function ExpandOne(one_scenario,expanded_list) {
 
 
 // DW NOTES MI, ME and DC and maybe some other states don't go through 2015
-var ProjEndYear = 2025;
+
 
 
 var offenses = [ ["violent","All Violent"], ["drug", "All Drug"], ["property", "All Property"], ["nonviolent", "All Nonviolent"], ["other", "All Other"], ["arson", "Arson"],["assault", "Assault"],["burglary", "Burglary"],["drugposs", "Drug possession"],["drugtraff", "Drug trafficking"],["dwi", "DWI"],["fraud", "Fraud"],["homicide", "Homicide"],["kidnapping", "Kidnapping"],["larceny", "Larceny"],["otherdrug", "Other drug"],["otherprop", "Other property"],["otherviol", "Other violent"],["public_oth", "Public other"],["robbery", "Robbery"],["sexassault", "Sexual assault"],["weapons", "Weapons"],["mvtheft", "Motor vehicle theft"] ]
@@ -371,9 +374,10 @@ function runModel(chosenState, projectedParameters){
 
 	var minYear = d3.min(Object.keys(baselineFinalData[0]))
 	var maxYear = d3.max(Object.keys(baselineFinalData[0]))
+	var projYear = d3.min(Object.keys(projectedFinalData[0]))
 
 
-	return {"projected": projectedFinalData, "baseline": baselineFinalData, "costs": costsFinalData, "years": [minYear, maxYear]}
+	return {"projected": projectedFinalData, "baseline": baselineFinalData, "costs": costsFinalData, "years": {"min": +minYear, "max": +maxYear, "diverge": +usdata[chosenState].endYear}}
 	
 	// d3.select("#outputs").selectAll("*").remove()
 	// var projectionTable = d3.select("#outputs")
