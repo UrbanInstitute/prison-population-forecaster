@@ -196,7 +196,6 @@ var ppf = function(){
 			x.domain(d3.extent(data, function(d) { return d.year; }));
 			y.domain([0, yMax]);
 
-
 			var historicalData = data.filter(function(o){ return o.year <= CURRENT_YEAR })
 			var futureData = data.filter(function(o){ return o.year >= CURRENT_YEAR })
 

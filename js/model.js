@@ -373,7 +373,7 @@ function runModel(chosenState, projectedParameters){
 	var maxYear = d3.max(Object.keys(baselineFinalData[0]))
 
 
-	return {"projected": projectedFinalData, "baseline": baselineFinalData, "costs": costsFinalData}
+	return {"projected": projectedFinalData, "baseline": baselineFinalData, "costs": costsFinalData, "years": [minYear, maxYear]}
 	
 	// d3.select("#outputs").selectAll("*").remove()
 	// var projectionTable = d3.select("#outputs")
