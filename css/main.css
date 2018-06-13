@@ -80,6 +80,7 @@ body{
 /******************** LEFT SIDE BAR ********************/
 /*******************************************************/
 #leftSidebar{
+    position: fixed;
     width: 279px;
     background: #5c5859;
     display: inline-block;
@@ -472,7 +473,20 @@ input[type=range]:focus::-ms-fill-upper {
     right: 0px;
     padding-bottom: calc(100% - 900px);
 }
-#selectionsTitle{
+#selectionsContainer{
+    background: #444243;
+    padding-left: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    top: -20px;
+    left: -20px;
+    position: relative;
+    width: 100%;
+}
+#savedContainer{
+    background: #5c5859;
+}
+.selectionsTitle{
     font-size: 16px;
     margin-top: 20px;
     font-weight: bold;
@@ -480,11 +494,157 @@ input[type=range]:focus::-ms-fill-upper {
     border-bottom: 2px solid white;
     position: relative;
 }
-#selectionsTitle:after{
+.selectionsTitle.bottom{
+    margin-top: 0px;
+}
+.selectionsTitle:after{
     content: "";
     width: calc(100% - 3px);
     border-bottom: 1px solid #2e2c2c;
     position: absolute;
     left: 3px;
     bottom: -4px;
+}
+
+
+.selectionItem.state{
+    font-size: 14px;
+    margin-top:22px;
+}
+.selectionState{
+    display: inline-block;
+}
+
+.selectionHeader{
+    color: #b9dff1;
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 22px;
+    margin-bottom: -4px;
+}
+
+.selectionName.parent{
+    margin-top: 16px;
+    font-size: 14px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.selectionValue.left{
+    display: inline-block;
+    float: left;
+}
+.selectionValue.left.parent.digit3{
+    width: 140px;
+}
+.selectionValue.left.child.digit3{
+    width: 130px;
+}
+.selectionValue.left.parent.digit2{
+    width: 146px;
+}
+.selectionValue.left.child.digit2{
+    width: 136px;
+}
+.selectionValue.left.parent.digit1{
+    width: 164px;
+}
+.selectionValue.left.child.digit1{
+    width: 154px;
+}
+.selectionNum.digit3{
+    width: 40px;
+}
+.selectionNum.digit2{
+    width: 34px;
+}
+.selectionNum.digit1{
+    width: 16px;
+}
+.selectionNum{
+    display: inline-block;
+    text-align: right;
+}
+.selectionText{
+    float: left;
+}
+.selectionDots{
+    background-image: url("../img/dotbg-01.png");
+    background-size: 8px;
+    background-repeat-x: repeat;
+    background-position: 10px 7px;
+    background-repeat-y: no-repeat;
+    overflow: hidden;
+}
+.selectionNum.parent{
+    font-size: 13px;
+}
+.selectionNum.child{
+    font-size: 12px;
+}
+
+.selectionValue.parent{
+    font-size: 13px;
+    margin-bottom: 2px;
+}
+
+.selectionItem.child{
+    padding-left: 10px;
+}
+
+.selectionName.child{
+    font-size: 14px;
+    margin-top: 10px;
+    font-weight: bold;
+}
+.selectionValue.child{
+    font-size: 12px;
+}
+#saveForecast{
+    background: #1696d2;
+    color: #ffffff;
+    width: calc(100% - 46px);
+    padding: 18px 13px 18px 13px;
+    text-align: center;
+    margin-top: 24px;
+    cursor: pointer;
+}
+#saveForecast.deactivated{
+    background: #858282;
+}
+
+.savedForecast{
+    border-bottom: 1px solid #858282;
+}
+.savedForecast input{
+    float: left;
+    background: none;
+    border: none;
+    font-family: Lato;
+    font-size: 14px;
+    color: #a2d4ec;
+    width: 110px;
+    text-overflow: ellipsis;
+}
+.forecastButton{
+    display: inline-block;
+    float: left;
+    width: 20px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-position: 1px 1px;
+    cursor: pointer;
+
+}
+.shareForecast{
+    background-image: url(../img/locked.png);
+    background-size: 12px;
+}
+.editForecast{
+    background-image: url(../img/unlocked.png);
+    background-size: 17px;
+}
+.deleteForecast{
+    background-image: url(../img/unlocked.png);
+    background-size: 17px;
 }

@@ -1,25 +1,104 @@
+// Polyfill from https://developer.mozilla.org/en-US/docs/Web/Events/wheel
+// creates a global "addWheelListener" method
+// example: addWheelListener( elem, function( e ) { console.log( e.deltaY ); e.preventDefault(); } );
+(function(window,document) {
+
+    var prefix = "", _addEventListener, support;
+
+    // detect event model
+    if ( window.addEventListener ) {
+        _addEventListener = "addEventListener";
+    } else {
+        _addEventListener = "attachEvent";
+        prefix = "on";
+    }
+
+    // detect available wheel event
+    support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
+              document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
+              "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
+
+    window.addWheelListener = function( elem, callback, useCapture ) {
+        _addWheelListener( elem, support, callback, useCapture );
+
+        // handle MozMousePixelScroll in older Firefox
+        if( support == "DOMMouseScroll" ) {
+            _addWheelListener( elem, "MozMousePixelScroll", callback, useCapture );
+        }
+    };
+
+    function _addWheelListener( elem, eventName, callback, useCapture ) {
+        elem[ _addEventListener ]( prefix + eventName, support == "wheel" ? callback : function( originalEvent ) {
+            !originalEvent && ( originalEvent = window.event );
+
+            // create a normalized event object
+            var event = {
+                // keep a ref to the original event object
+                originalEvent: originalEvent,
+                target: originalEvent.target || originalEvent.srcElement,
+                type: "wheel",
+                deltaMode: originalEvent.type == "MozMousePixelScroll" ? 0 : 1,
+                deltaX: 0,
+                deltaY: 0,
+                deltaZ: 0,
+                preventDefault: function() {
+                    originalEvent.preventDefault ?
+                        originalEvent.preventDefault() :
+                        originalEvent.returnValue = false;
+                }
+            };
+            
+            // calculate deltaY (and deltaX) according to the event
+            if ( support == "mousewheel" ) {
+                event.deltaY = - 1/40 * originalEvent.wheelDelta;
+                // Webkit also support wheelDeltaX
+                originalEvent.wheelDeltaX && ( event.deltaX = - 1/40 * originalEvent.wheelDeltaX );
+            } else {
+                event.deltaY = originalEvent.deltaY || originalEvent.detail;
+            }
+
+            // it's time to fire the callback
+            return callback( event );
+
+        }, useCapture || false );
+    }
+
+})(window,document);
+
+
+
 var ppf = function(){
 	var CURRENT_YEAR = 2015;
 
-	var subcategories = {
+	var SUBCATEGORIES = {
 		"violent": ["assault","homicide","kidnapping","robbery","sexassault","otherviol"],
 		"drug": ["drugposs","drugtraff","otherdrug"],
 		"property": ["arson","burglary","fraud","larceny","mvtheft","otherprop"],
 		"other": ["dwi","weapons","public_oth"]
 	}
 	// 
-	// var offenses = 	[["assault","foo"],["homicide","foo"],["kidnapping","foo"],["robbery","foo"],["sexassault","foo"],["otherviol","foo"], ["drugposs","foo"],["drugtraff","foo"],["otherdrug","foo"], ["arson","foo"],["burglary","foo"],["fraud","foo"],["larceny","foo"],["mvtheft","foo"],["otherprop","foo"],["dwi","foo"],["weapons","foo"],["public_oth","foo"]]
-	var offenses = [["assault","foo"],["homicide","foo"],["kidnapping","foo"],["robbery","foo"],["sexassault","foo"],["otherviol","foo"],["drugposs","foo"],["drugtraff","foo"],["otherdrug","foo"],["arson","foo"],["burglary","foo"],["fraud","foo"],["larceny","foo"],["mvtheft","foo"],["otherprop","foo"],["dwi","foo"],["weapons","foo"],["public_oth","foo"]]
+	// var OFFENSES = 	[["assault","foo"],["homicide","foo"],["kidnapping","foo"],["robbery","foo"],["sexassault","foo"],["otherviol","foo"], ["drugposs","foo"],["drugtraff","foo"],["otherdrug","foo"], ["arson","foo"],["burglary","foo"],["fraud","foo"],["larceny","foo"],["mvtheft","foo"],["otherprop","foo"],["dwi","foo"],["weapons","foo"],["public_oth","foo"]]
+	var OFFENSES = [
+		["assault","Assault"],["homicide","Homicide"],["kidnapping","Kidnapping"],["robbery","Robbery"],["sexassault","Sexual assault"],["otherviol","Other violent offenses"],["drugposs","Drug possession"],["drugtraff","Drug trafficking"],["otherdrug","Other drug offenses"],["arson","Arson"],["burglary","Burglary"],["fraud","Fraud"],["larceny","Theft"],["mvtheft","Motor vehicle theft"],["otherprop","Other property offenses"],["dwi","DWI"],["weapons","Weapons offenses"],["public_oth","Public order and other offenses"]
+		]
+	var PARENTS = [
+		["violent","All violent offenses"],["drug","All drug offenses"],["property","All property offenses"],["other","All other offenses"]
+	]
 
 	/*******************************************************/
 	/**************** GETTERS AND SETTERS ******************/
 	/*******************************************************/
-	function getState(state){
+	function getState(){
 		return d3.select("#stateSelect").node().value
 	}
-	// function setState(state){
+	function getStateName(){
+		var state = getState();
+		return d3.select("#stateSelect option[value=" + state + "]").text()
 
-	// }
+	}
+	function setState(state){
+		 $( "#stateSelect" ).val(state).selectmenu("refresh")
+	}
 	function getBase(){
 
 	}
@@ -41,8 +120,16 @@ var ppf = function(){
 	/*******************************************************/
 	/****************** INPUT MANAGERS *********************/
 	/*******************************************************/
+	function getParentInputs(){
+		return getInputs(PARENTS)
 
-	function getInputs(){
+	}
+	function getChildInputs(){
+		return getInputs(OFFENSES)
+
+	}
+
+	function getInputs(offenses){
 		//return an array of all inputs
 		var inputs = {}
 		offenses.map(function(o){
@@ -94,13 +181,12 @@ var ppf = function(){
 		}
 	}
 	function updateInputs(offense, indicator, tier, amount, eventType){
-
-		var inputs = getInputs();
+		var inputs = getChildInputs();
 		// var newInputs = {};
 		if(tier == "parent"){
 			setTextInput(offense, indicator, amount)
 			d3.select(".slider[data-offense=\"" + offense + "\"][data-indicator=\"" + indicator + "\"]").select(".controlSlider").property("value", amount)
-			subcategories[offense].map(function(c){
+			SUBCATEGORIES[offense].map(function(c){
 				if(! inputs[c][indicator]["locked"]){
 					inputs[c][indicator]["value"] = amount
 				}
@@ -111,13 +197,16 @@ var ppf = function(){
 		}
 		//if changing umbrella category, loop through inputs for each child and if it's not locked, update val
 		//if changing for all, loop through each umbrella category and check if locked, then do as above
-		if(eventType != "slideInput"){
+		if(eventType != "slideInput" && eventType != "forecast"){
 			updateYourSelections(inputs)
 		}
 		setInputs(inputs)
-		sendInputs(getState(), inputs)
+		if(eventType != "forecast"){
+			sendInputs(getState(), inputs)
+		}
 	}
 	function sendInputs(state, inputs){
+		d3.select("#saveForecast").classed("deactivated",false)
 		var reshaped = []
 		for (var offense in inputs) {
 			if (inputs.hasOwnProperty(offense)) {
@@ -133,14 +222,105 @@ var ppf = function(){
 
 
 	}
-	function getUniqueChildren(parent, inputs){
+
+
+	function formatPercent(val){
+		if(val == 0){
+			return "0%"
+		}
+		else if(val < 0){
+			return val + "%"
+		}else{
+			return "+" + val + "%"
+		}
+	}
+
+	function buildSelection(container, number, tier, indicator){
+
+		var text = (indicator == "los") ? "Length of prison term" : "Admissions";
+		var widthClass;
+		if(Math.abs(number) == 100){
+			widthClass = "digit3"
+		}
+		else if(Math.abs(number) < 10){
+			widthClass = "digit1" 
+		}else{
+			widthClass = "digit2"
+		}
+
+		var sv = container.append("div")
+			.attr("class", "selectionItem selectionValue " + tier + " " + indicator)
+		var svL = sv.append("div").attr("class","selectionValue left " + tier + " " + widthClass)
+			svL.append("div").attr("class","selectionText").text(text)
+			svL.append("div").attr("class","selectionDots").html("&nbsp;")
+		var svR = sv.append("div").attr("class","selectionNum " + tier + " " + widthClass).text(formatPercent(number))
 
 	}
+
 	function updateYourSelections(inputs){
-		console.log(inputs)
-		for (var parent in subcategories) {
-			if (subcategories.hasOwnProperty(parent)){
-				getUniqueChildren(parent, inputs)
+		d3.selectAll(".selectionItem").remove()
+		var l = d3.select("#selectionsList")
+
+		var state = l.append("div")
+			.attr("class", "selectionItem selectionValue state")
+		var stateL = state.append("div").attr("class","selectionValue left state")
+			stateL.append("div").attr("class","selectionStateLabel selectionText").text("State")
+			stateL.append("div").attr("class","selectionDots").html("&nbsp;")
+		var stateR = state.append("div").attr("class","selectionState").text(getStateName())
+		var nameWidth = stateR.node().getBoundingClientRect().width
+		stateL.style("width",(180 - nameWidth) + "px")
+
+		l.append("div")
+			.attr("class","selectionItem selectionHeader")
+			.text("Adjusted Offenses")
+
+		for (var parent in SUBCATEGORIES) {
+			if (SUBCATEGORIES.hasOwnProperty(parent)){
+				// getUniqueChildren(parent, SUBCATEGORIES[parent], inputs)
+				var	admissionsContainer = d3.select(".slider[data-offense=\"" + parent + "\"][data-indicator=admissions]"),
+					losContainer = d3.select(".slider[data-offense=\"" + parent + "\"][data-indicator=los]")
+
+				var los = +losContainer.select(".controlSlider").node().value
+				var admissions = +admissionsContainer.select(".controlSlider").node().value
+				// console.log(parent, los, admissions)
+				
+				l.append("div")
+					.attr("class", "selectionItem selectionName parent")
+					.text(PARENTS.filter(function(p){ return p[0] == parent})[0][1])
+				buildSelection(l, admissions, "parent", "admissions")
+				buildSelection(l, los, "parent", "los")
+
+
+				
+				for(var i = 0; i < SUBCATEGORIES[parent].length; i++){
+					var child = SUBCATEGORIES[parent][i]
+					 	childAdmissions = +inputs[child]["admissions"]["value"],
+					 	childLos = +inputs[child]["los"]["value"]
+					if(childAdmissions != +admissions){
+						l.append("div")
+							.attr("class", "selectionItem selectionName child admissions " + child)
+							.text(OFFENSES.filter(function(c){ return c[0] == child})[0][1])
+						buildSelection(l, childAdmissions, "child", "admissions")
+					}else{
+						d3.selectAll(".selectionValue.admissions." + child).remove()
+					}
+
+					if(childLos != +los){
+						if(childAdmissions == admissions){
+							l.append("div")
+								.attr("class", "selectionItem selectionName child los " + child)
+								.text(OFFENSES.filter(function(c){ return c[0] == child})[0][1])
+						}
+						buildSelection(l, childLos, "child", "los")
+					}else{
+						d3.selectAll(".selectionValue.los" + child).remove()
+					}
+
+					if(childLos == los && childAdmissions == admissions){
+						d3.selectAll(".selectionItem." + child).remove()	
+					}
+				}
+
 			}
 		}
 	}
@@ -235,7 +415,7 @@ var ppf = function(){
 			g.append("g")
 			.attr("class","lineChart x axis")
 			.attr("transform", "translate(0," + height + ")")
-			.call(d3.axisBottom(x))
+			.call(d3.axisBottom(x).tickFormat(d3.format(".0f")))
 			.select(".domain")
 			.remove();
 
@@ -272,9 +452,9 @@ var ppf = function(){
 			.call(d3.axisRight(y).ticks(5).tickSize(-width))
 
 
-			d3.select(".lineChart.x.axis")
-			.transition()
-			.call(d3.axisBottom(x))
+			// d3.select(".lineChart.x.axis")
+			// .transition()
+			// .call(d3.axisBottom(x))
 
 			d3.select(".line.projection.future")
 			.datum(futureData)
@@ -303,25 +483,81 @@ var ppf = function(){
 	/*******************************************************/
 	/******************** FORECASTS ************************/
 	/*******************************************************/
+	var forecastCount = 1;
 	function saveForecast(){
+		var forecast = {"inputs": getChildInputs(), "state": getState(), "parents": getParentInputs()}
+		console.log(forecast)
+		d3.select("#saveForecast").classed("deactivated",true)
+
+		var l = d3.select("#savedForecastsList")
+		var name = (forecastCount == 1) ? "Sample forecast" : "Forecast " + forecastCount;
+		var row = l.append("div")
+			.attr("class","savedForecast")
+			// .text(name)
+			.datum(forecast)
+			.on("click", function(d){
+				loadForecast(d)
+			})
+		row.append("input")
+			.attr("value",name)
+
+		var edit = row.append("div")
+			.attr("class","editForecast forecastButton")
+		var share = row.append("div")
+			// .text("share")
+			.attr("class","shareForecast forecastButton")
+			.on("click", function(d){ shareForecast(d) })
+		var del = row.append("div")
+			.attr("class","deleteForecast forecastButton")
+
+
+    // background-image: url(../img/unlocked.png);
+
+		forecastCount += 1;
+	}
+	function loadForecast(d){
+		setState(d.state)
+		for(o in d.parents){
+			if(d.parents.hasOwnProperty(o)){
+				updateInputs(o, "admissions", "parent", +d["parents"][o]["admissions"]["value"], "forecast")
+				updateInputs(o, "los", "parent", +d["parents"][o]["los"]["value"], "forecast")
+			}
+		}
+		for(o in d.inputs){
+			if(d.inputs.hasOwnProperty(o)){
+				updateInputs(o, "admissions", "child", +d["inputs"][o]["admissions"]["value"], "forecast")
+				updateInputs(o, "los", "child", +d["inputs"][o]["los"]["value"], "forecast")
+			}
+		}
+		updateInputs(false, false, false, false, "runForecast")
+		d3.select("#saveForecast").classed("deactivated",true)
+	}
+	function shareForecast(d){
+		console.log(d)
 
 	}
-	function loadForecast(forecastData){
+	function deleteForecast(obj){
 
 	}
-	function deleteForecast(forecastID){
+	function editForecast(obj){
 
 	}
-	function disableSaveForecast(){
+	// function disableSaveForecast(){
 
-	}
-	function enableSaveForecast(){
+	// }
+	// function enableSaveForecast(){
 
-	}
+	// }
 	//refreshButton
 	d3.select("#clearAll")
 		.on("click", function(){
-			loadForecast({})
+			$(".controlSlider.control").val(0)
+			d3.selectAll(".slideLock")
+			.each(function(d){
+				unlockInput(d.offense, d.indicator)
+			})
+			updateInputs(false, false, false, false, "reset")
+			
 		})
 		.on("mouseover", function(){ 
 			d3.select(this).select("img").attr("src", "img/refreshHover.png")
@@ -391,7 +627,8 @@ var ppf = function(){
 	change: function(event, data){
 		//state on change
 		//get state
-		var inputs = getInputs()
+		var inputs = getChildInputs()
+		updateYourSelections(inputs)
 		sendInputs(this.value, inputs)
 	    var m = $(this);
 	    if(m.val() == ""){
@@ -440,12 +677,12 @@ var ppf = function(){
 			var locked = d3.select(this).classed("locked")
 			if(d.tier == "parent"){
 				if(locked){
-					subcategories[d.offense].map(function(o){
+					SUBCATEGORIES[d.offense].map(function(o){
 						unlockInput(o, d.indicator)
 					})
 				}
 				else{
-					subcategories[d.offense].map(function(o){
+					SUBCATEGORIES[d.offense].map(function(o){
 						lockInput(o, d.indicator)
 					})
 				}
@@ -464,6 +701,53 @@ var ppf = function(){
 	// 	})
 	d3.selectAll(".childHeader")
 		.on("click", function(){ toggleChildDrawer(this) })
+
+	d3.select("#saveForecast")
+		.on("click", saveForecast)
+
+	var mouseX = 0,
+		leftTop = 48,
+		rightTop = 48;
+	$(window).on("mousemove", function(event){
+		mouseX = event.pageX;
+	})
+
+
+	addWheelListener(window, function(event){
+		var left = d3.select("#leftSidebar")
+		var right = d3.select("#rightSideBar")
+		var leftWidth = left.node().getBoundingClientRect().width;
+		var rightWidth = right.node().getBoundingClientRect().width;
+		if(mouseX < leftWidth){
+			if(left.style("position") == "fixed"){
+				left.style("position", "absolute")
+					.style("margin-top",  "48px")
+				window.scrollTo(0, leftTop*-1 + 48);
+			}
+			right.style("position", "fixed")
+				.style("margin-top", rightTop + "px")
+			leftTop = left.node().getBoundingClientRect().top
+		}
+		else if(mouseX > window.innerWidth - rightWidth){
+			if(right.style("position") == "fixed"){
+				right.style("position", "absolute")
+					.style("margin-top", "48px")
+				window.scrollTo(0, rightTop*-1 + 48);
+			}
+			left.style("position", "fixed")
+				.style("margin-top", leftTop + "px")
+			rightTop = right.node().getBoundingClientRect().top
+		}
+		else{
+			right.style("position", "fixed")
+				.style("margin-top", rightTop + "px")
+			leftTop = left.node().getBoundingClientRect().top
+			left.style("position", "fixed")
+				.style("margin-top", leftTop + "px")
+			rightTop = right.node().getBoundingClientRect().top
+
+		}
+	})
 
 	/*******************************************************/
 	/********************* INITIALIZE **********************/
@@ -485,6 +769,8 @@ var ppf = function(){
 	function init(){
 		bindControlData()
 		updateInputs(false, false, false, false, "init")
+		d3.select("#saveForecast").classed("deactivated",true)
+		saveForecast()
 	}
 	init();
 }();
