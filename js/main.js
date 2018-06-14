@@ -68,7 +68,8 @@
 
 
 var ppf = function(){
-	var CURRENT_YEAR = 2015;
+	var MIN_YEAR = 2008;
+	var MAX_YEAR  = 2025
 
 	var SUBCATEGORIES = {
 		"violent": ["assault","homicide","kidnapping","robbery","sexassault","otherviol"],
@@ -113,7 +114,7 @@ var ppf = function(){
 
 	}
 	function getMinYear(){
-		return 2008;
+		return MIN_YEAR;
 	}
 
 
@@ -218,7 +219,12 @@ var ppf = function(){
 		}
 		var rawData = runModel(state, reshaped)
 		var lineData = reshapeLineData(rawData)
+		var costsData = reshapeCostsData(rawData)
+		var barData = reshapeBarData(rawData)
+
 		buildPopulationChart(lineData)
+		buildCostInfo(costsData)
+		buildDemographicsChart(barData)
 
 
 	}
@@ -282,7 +288,6 @@ var ppf = function(){
 
 				var los = +losContainer.select(".controlSlider").node().value
 				var admissions = +admissionsContainer.select(".controlSlider").node().value
-				// console.log(parent, los, admissions)
 				
 				l.append("div")
 					.attr("class", "selectionItem selectionName parent")
@@ -359,6 +364,13 @@ var ppf = function(){
 			}
 		}
 		return [lineData, data.years];
+	}
+	function reshapeCostsData(data){
+		return data.costs.cumulative.baselineDiff
+
+	}
+	function reshapeBarData(data){
+
 	}
 
 	function buildPopulationChart(allData){
@@ -477,7 +489,18 @@ var ppf = function(){
 	function buildDemographicsChart(data){
 
 	}
-	function buildCostInfo(data){
+	function buildCostInfo(cost){
+		d3.select("#costText #costYear").text(MAX_YEAR)
+		d3.select("#costText #costWord").text(function(){ return (cost <= 0 ) ? "savings" : "increase"})
+
+		var testString = d3.format(".4s")(Math.abs(cost))
+		var sigFigs = testString.split(".")[0].length + 1
+
+		var formatString = "$." + sigFigs + "s"
+
+		var textCost = (cost == 0) ? "$0" : d3.format(formatString)(Math.abs(cost)).replace("k"," thousand").replace("M", " million").replace("G", " billion")
+
+		d3.select("#costText #costDollars").text(textCost)
 
 	}
 	/*******************************************************/
@@ -486,7 +509,6 @@ var ppf = function(){
 	var forecastCount = 1;
 	function saveForecast(){
 		var forecast = {"inputs": getChildInputs(), "state": getState(), "parents": getParentInputs()}
-		console.log(forecast)
 		d3.select("#saveForecast").classed("deactivated",true)
 
 		var l = d3.select("#savedForecastsList")
@@ -501,14 +523,18 @@ var ppf = function(){
 		row.append("input")
 			.attr("value",name)
 
+
+		var share = row.append("div")
+			.attr("class","shareForecast forecastButton")
+			.on("click", shareForecast)
+		
 		var edit = row.append("div")
 			.attr("class","editForecast forecastButton")
-		var share = row.append("div")
-			// .text("share")
-			.attr("class","shareForecast forecastButton")
-			.on("click", function(d){ shareForecast(d) })
+			.on("click", editForecast)
+
 		var del = row.append("div")
 			.attr("class","deleteForecast forecastButton")
+			.on("click", deleteForecast)
 
 
     // background-image: url(../img/unlocked.png);
@@ -533,13 +559,14 @@ var ppf = function(){
 		d3.select("#saveForecast").classed("deactivated",true)
 	}
 	function shareForecast(d){
-		console.log(d)
+		// console.log(d)
 
 	}
-	function deleteForecast(obj){
+	function deleteForecast(d){
+		// console.log(this)
 
 	}
-	function editForecast(obj){
+	function editForecast(d){
 
 	}
 	// function disableSaveForecast(){
@@ -665,6 +692,7 @@ var ppf = function(){
 			else if(raw < -100){ value = -100 }
 			else if(raw == "-"){ value = 0}
 			else{ value = +raw}
+			console.log(d, value)
 
 			updateInputs(d.offense, d.indicator, d.tier, value, "textBox")
 		})

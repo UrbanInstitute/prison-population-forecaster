@@ -76,6 +76,14 @@ body{
     font-family: Lato;
     color: #5c5859;
 }
+
+/*******************************************************/
+/******************** COST SECTION *********************/
+/*******************************************************/
+
+#costHighlight{
+    color: #ec008b;
+}
 /*******************************************************/
 /******************** LEFT SIDE BAR ********************/
 /*******************************************************/
@@ -637,14 +645,14 @@ input[type=range]:focus::-ms-fill-upper {
 
 }
 .shareForecast{
-    background-image: url(../img/locked.png);
+    background-image: url(../img/share.png);
     background-size: 12px;
 }
 .editForecast{
-    background-image: url(../img/unlocked.png);
+    background-image: url(../img/edit.png);
     background-size: 17px;
 }
 .deleteForecast{
-    background-image: url(../img/unlocked.png);
+    background-image: url(../img/delete.png);
     background-size: 17px;
 }
