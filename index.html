@@ -111,6 +111,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <div id = "leftContent">
       <select id = "stateSelect">
         <!-- <option value = "all">All states</option> -->
+        <option value="CA">California</option>
         <option value="AL">Alabama</option>
         <option value="AK">Alaska</option>
         <option value="AZ">Arizona</option>
@@ -118,7 +119,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <!-- not in counts.allstates data -->
         <!-- <option value="AR">Arkansas</option> -->
 
-        <option value="CA">California</option>
+        
         <option value="CO">Colorado</option>
         
         <!-- not in counts.allstates data -->
@@ -1026,7 +1027,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     </div>
   </div>
   <div id = "lineChart"></div>
-  <div id = "demographicSection"></div>
+  <div id = "demographicSection">
+    <div id = "barChart"></div>
+  </div>
   <div id = "costSection">
     <div id = "costTitle" class = "chartSectionTitle">Cost</div>
     <div id = "costText">By <span id = "costYear"></span>, these changes would lead to a <span id = "costHighlight">cumulative <span id = "costWord"></span> of <span id = "costDollars"></span></span>.</div>

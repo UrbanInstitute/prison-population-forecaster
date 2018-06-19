@@ -76,6 +76,9 @@ body{
     font-family: Lato;
     color: #5c5859;
 }
+.y.axis .tick:first-child line{
+    stroke: #000 !important;
+}
 
 /*******************************************************/
 /******************** COST SECTION *********************/
@@ -83,6 +86,30 @@ body{
 
 #costHighlight{
     color: #ec008b;
+}
+#costSection{
+    display: none;
+}
+
+.barsGroup text{
+    fill: #ec008b;
+    font-size: 12px;
+    font-family: Lato;
+    font-weight: bold;
+}
+
+
+/*******************************************************/
+/**************** DEMOGRAPHICS SECTION *****************/
+/*******************************************************/
+
+#demographicSection{
+    position: fixed;
+    top: 510px;
+    left: 320px;
+}
+.bar.x.axis .tick line, .bar.x.axis path{
+    opacity: 0;
 }
 /*******************************************************/
 /******************** LEFT SIDE BAR ********************/
