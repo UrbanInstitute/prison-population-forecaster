@@ -1,6 +1,33 @@
 body{
 	font-family: Lato;
 }
+#headerAboutLink{
+    display: inline-block;
+    float: right;
+}
+#headerAboutLink{
+    font-weight: normal !important;
+    font-size: 16px;
+    color: #1696d2 !important;
+    cursor: pointer;
+    top: 2px;
+    position: relative;
+}
+#printIcon{
+    display: inline-block;
+    float: right;
+    background-image: url(../img/print.png);
+    background-size: 32px;
+    background-repeat: no-repeat;
+    width: 32px;
+    height: 42px;
+    margin-left: 33px;
+    background-position: 0px 10px;
+    cursor: pointer;
+}
+#printIcon:hover{
+    background-image: url(../img/printHover.png);
+}
 
 /*******************************************************/
 /************** TITLE AND CENTER CONTAINER *************/
@@ -45,6 +72,7 @@ body{
 /*******************************************************/
 #lineChart{
     margin-top: 10px;
+    margin-left: -18px;
 }
 #bgRect{
     fill: #f5f5f5;
@@ -64,6 +92,16 @@ body{
 }*/
 .line.future.projection{
     stroke: #ec008b;
+    stroke-width: 3px;
+}
+.line.projection.saved{
+    stroke: #9d9d9d;
+    stroke-width: 1px;
+    cursor: pointer;
+}
+.line.projection.saved.active, .line.projection.saved.clickActive{
+    stroke: #1696d2;
+    stroke-width: 3px;
 }
 .axis.y .tick line{
     stroke: #dedddd
@@ -76,7 +114,7 @@ body{
     font-family: Lato;
     color: #5c5859;
 }
-.y.axis .tick:first-child line{
+.lineChart.y.axis .tick line.t0{
     stroke: #000 !important;
 }
 
@@ -88,7 +126,13 @@ body{
     color: #ec008b;
 }
 #costSection{
-    display: none;
+    display: block;
+    position: fixed;
+    right: 290px;
+    width: 247px;
+    top: 540px;
+    font-size: 18px;
+    line-height: 1.5;
 }
 
 .barsGroup text{
@@ -102,11 +146,29 @@ body{
 /*******************************************************/
 /**************** DEMOGRAPHICS SECTION *****************/
 /*******************************************************/
-
+.chartSectionTitle{
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
 #demographicSection{
     position: fixed;
-    top: 510px;
-    left: 320px;
+    top: 540px;
+    left: 330px;
+    width: 620px;
+}
+#popContainer{
+    font-size: 18px;
+    line-height: 1.5;
+}
+#popChangeText span{
+    color: #ec008b;
+    font-weight: bold;
+}
+#barTitle{
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 60px;
 }
 .bar.x.axis .tick line, .bar.x.axis path{
     opacity: 0;
@@ -649,7 +711,13 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 .savedForecast{
-    border-bottom: 1px solid #858282;
+    border-bottom: 2px solid #858282;
+    height: 29px;
+    width: calc(100% - 20px);
+    margin-top: 10px;
+}
+#savedForecastsList{
+    margin-top: 18px;
 }
 .savedForecast input{
     float: left;
@@ -658,14 +726,18 @@ input[type=range]:focus::-ms-fill-upper {
     font-family: Lato;
     font-size: 14px;
     color: #a2d4ec;
-    width: 110px;
+    width: 106px;
     text-overflow: ellipsis;
+}
+.savedForecast.active input, .savedForecast.clickActive input {
+    color: #1696d2;
+    font-weight: bold;
 }
 .forecastButton{
     display: inline-block;
     float: left;
-    width: 20px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
     background-repeat: no-repeat;
     background-position: 1px 1px;
     cursor: pointer;
@@ -673,7 +745,7 @@ input[type=range]:focus::-ms-fill-upper {
 }
 .shareForecast{
     background-image: url(../img/share.png);
-    background-size: 12px;
+    background-size: 17px;
 }
 .editForecast{
     background-image: url(../img/edit.png);
@@ -682,4 +754,13 @@ input[type=range]:focus::-ms-fill-upper {
 .deleteForecast{
     background-image: url(../img/delete.png);
     background-size: 17px;
+}
+.valCover{
+    position: relative;
+    background: transparent;
+    width: 106px;
+    height: 29px;
+    left: 0px;
+    top: 0px;
+    cursor: pointer;
 }

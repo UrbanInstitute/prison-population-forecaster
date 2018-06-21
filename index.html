@@ -71,7 +71,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <!-- START HEADER -->
     <div id="header-pinned" class="no-touch">
        <a target="_blank" href="http://www.urban.org" title="Home" rel="home" class="site-logo"></a>
-    <div class="title"><span class="feature-link"><a href="http://www.urban.org/features" class="title-linkback" alt="Urban Institute logo">Features</a></div>
+    <div class="title"><span class="feature-link"><a href="http://www.urban.org/features" class="title-linkback" alt="Urban Institute logo">Features</a>
+      <div id = "printIcon"></div>
+      <div id = "headerAboutLink">About this feature</div>
+    </div>
+
     <div class="share-icons">
         <div class="shareThisP">
             <span onclick="toggle_visibility('shareBox');">
@@ -1028,6 +1032,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   </div>
   <div id = "lineChart"></div>
   <div id = "demographicSection">
+    <div id = "popTitle" class = "chartSectionTitle">Population</div>
+    <div id = "popContainer">Compared with the 2025 baseline projection, these changes would lead to a<span id = "popChangeLetter"></span><span id = "popChangeText"></span></div>
+    <div id = "barTitle">Racial and ethnic makeup of the prison population in 2025</div>
     <div id = "barChart"></div>
   </div>
   <div id = "costSection">

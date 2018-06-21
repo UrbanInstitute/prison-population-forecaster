@@ -1,6 +1,6 @@
 // Polyfill from https://developer.mozilla.org/en-US/docs/Web/Events/wheel
 // creates a global "addWheelListener" method
-// example: addWheelListener( elem, function( e ) { console.log( e.deltaY ); e.preventDefault(); } );
+// example: addWheelListener( elem, function( e ) { console log( e.deltaY ); e.preventDefault(); } );
 (function(window,document) {
 
     var prefix = "", _addEventListener, support;
@@ -68,6 +68,11 @@
 
 
 var ppf = function(){
+
+	function moveToFront(selector){
+		var node = d3.select(selector).node()
+		node.parentNode.appendChild(node)
+	}
 	var MIN_YEAR = 2008;
 	var MAX_YEAR  = 2025
 
@@ -98,7 +103,9 @@ var ppf = function(){
 
 	}
 	function setState(state){
-		 $( "#stateSelect" ).val(state).selectmenu("refresh")
+		d3.selectAll(".line.saved:not(.state-" + state + ")").style("opacity",0)
+		d3.selectAll(".line.saved.state-" + state ).style("opacity",1)
+		$( "#stateSelect" ).val(state).selectmenu("refresh")
 	}
 	function getBase(){
 
@@ -184,6 +191,9 @@ var ppf = function(){
 	function updateInputs(offense, indicator, tier, amount, eventType){
 		var inputs = getChildInputs();
 		// var newInputs = {};
+		if(eventType == "reset"){
+			d3.selectAll(".parent.slider .sliderInput input").property("value","0%")
+		}
 		if(tier == "parent"){
 			setTextInput(offense, indicator, amount)
 			d3.select(".slider[data-offense=\"" + offense + "\"][data-indicator=\"" + indicator + "\"]").select(".controlSlider").property("value", amount)
@@ -208,6 +218,7 @@ var ppf = function(){
 	}
 	function sendInputs(state, inputs){
 		d3.select("#saveForecast").classed("deactivated",false)
+		declickForecasts()
 		var reshaped = []
 		for (var offense in inputs) {
 			if (inputs.hasOwnProperty(offense)) {
@@ -222,11 +233,12 @@ var ppf = function(){
 		var costsData = reshapeCostsData(rawData)
 		var barData = reshapeBarData(rawData)
 
-		// console.log(rawData)
 
-		buildPopulationChart(lineData)
+		buildPopulationChart(lineData, false)
 		buildCostInfo(costsData)
 		buildDemographicsChart(barData)
+
+		buildPopulationText(lineData)
 
 
 	}
@@ -384,7 +396,6 @@ var ppf = function(){
 		for (race in baseline){
 			if(baseline.hasOwnProperty(race) && baseline[race] != 0){ races.push(race) }
 		}
-		// console.log(races)
 
 		var barData = []
 
@@ -404,13 +415,16 @@ var ppf = function(){
 
 	}
 
-	function buildPopulationChart(allData){
+	function buildPopulationChart(allData, forecastCount){
 		var lineBaseline, lineProjected,
-			margin = {top: 20, right: 50, bottom: 30, left: 20},
-			width = 700 - margin.left - margin.right,
+			margin = {top: 20, right: 60, bottom: 30, left: 20},
+			width = 1100 - margin.left - margin.right,
 			height = 300 - margin.top - margin.bottom,
-			data = allData[0],
-			years = allData[1];
+			saveForecast = (typeof(forecastCount) == "number"),
+			data = (saveForecast) ? allData : allData[0],
+			years = (saveForecast) ? null : allData[1]
+
+
 
 			var x = d3.scaleLinear()
 			.rangeRound([0, width]);
@@ -426,26 +440,46 @@ var ppf = function(){
 			.x(function(d) { return x(d.year); })
 			.y(function(d) { return y(d.projected); });
 
-			var yMin = d3.min([
-					d3.min(data, function(d){ return d.projected}),
-					d3.min(data, function(d){ return d.baseline}),
-				])
-			var yMax = d3.max([
-					d3.max(data, function(d){ return d.projected}),
-					d3.max(data, function(d){ return d.baseline}),
-				])
+			var yMin, yMax;
+			if(saveForecast){
+				var hist = d3.select(".line.baseline.historical").datum()
+				yMin = d3.min([
+						d3.min(hist, function(d){ return d.projected}),
+						d3.min(hist, function(d){ return d.baseline}),
+						d3.min(data, function(d){ return d.projected}),
+						d3.min(data, function(d){ return d.baseline})
+					])
+				yMax = d3.max([
+						d3.max(hist, function(d){ return d.projected}),
+						d3.max(hist, function(d){ return d.baseline}),
+						d3.max(data, function(d){ return d.projected}),
+						d3.max(data, function(d){ return d.baseline})
+					])
 
-			x.domain([getMinYear(), years.max]);
+			}else{
+				yMin = d3.min([
+						d3.min(data, function(d){ return d.projected}),
+						d3.min(data, function(d){ return d.baseline})
+					])
+				yMax = d3.max([
+						d3.max(data, function(d){ return d.projected}),
+						d3.max(data, function(d){ return d.baseline})
+					])
+			}
+
+
+			x.domain([getMinYear(), MAX_YEAR]);
 			y.domain([0, yMax]);
 
-			var historicalData = data.filter(function(o){ return o.year <= years.diverge-1 && o.year >= getMinYear()})
-			var futureData = data.filter(function(o){ return o.year >= years.diverge-1 && o.year >= getMinYear()})
-
+			if(! saveForecast){
+				var historicalData = data.filter(function(o){ return o.year <= years.diverge-1 && o.year >= getMinYear()})
+				var futureData = data.filter(function(o){ return o.year >= years.diverge-1 && o.year >= getMinYear()})
+			}
 
 		if(d3.select("#lineChart").select("svg").node() == null){
-			var svg = d3.select("#lineChart").append("svg").attr("width", 900).attr("height", 500),
+			var svg = d3.select("#lineChart").append("svg").attr("width", 1100).attr("height", 500),
 
-			g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")").attr("id", "lineChartG");
 
 			g.append("rect")
 				.attr("id","bgRect")
@@ -462,6 +496,11 @@ var ppf = function(){
 			.attr("transform", "translate(" + width + ",0)")
 			.select(".domain")
 			.remove();
+
+			d3.selectAll(".lineChart.y.axis .tick line")
+				.attr("class", function(d){
+					return "t" + d
+				})
 
 			g.append("g")
 			.attr("class","lineChart x axis")
@@ -486,6 +525,35 @@ var ppf = function(){
 			.attr("stroke-dasharray","1,5")
 			.attr("d", lineBaseline);
 
+		}
+		else if(saveForecast){
+			var g = d3.select("#lineChartG")
+			g.append("path")
+				.datum(allData)
+				.attr("data-count", forecastCount)
+				.attr("class", "line projection saved c" + forecastCount + " state-" + getState())
+				.attr("d", lineProjected)
+				.on("mouseover", function(d){
+					var c = d3.select(this).attr("data-count")
+					var datum = d3.select(".savedForecast.c" + c).datum()
+					highlightForecast(datum)
+				})
+				.on("mouseout", function(d){
+					var c = d3.select(this).attr("data-count")
+					var datum = d3.select(".savedForecast.c" + c).datum()
+					dehighlightForecasts(datum)
+				})
+				.on("click", function(d){
+					var c = d3.select(this).attr("data-count")
+					var datum = d3.select(".savedForecast.c" + c).datum()
+					loadForecast(datum)
+				})
+
+
+			var future = d3.select(".line.projection.future").node()
+			moveToFront(future)
+			// future.parentNode.appendChild(future)
+
 		}else{
 			d3.select("#bgRect")
 				.transition()
@@ -499,13 +567,17 @@ var ppf = function(){
 			.select(".domain")
 			.remove();
 
-
-			// d3.select(".lineChart.x.axis")
-			// .transition()
-			// .call(d3.axisBottom(x))
+			d3.selectAll(".lineChart.y.axis .tick line")
+				.attr("class", function(d){
+					return "t" + d
+				})
 
 			d3.select(".line.projection.future")
 			.datum(futureData)
+			.transition()
+			.attr("d", lineProjected);
+
+			d3.selectAll(".line.projection.saved")
 			.transition()
 			.attr("d", lineProjected);
 			
@@ -522,9 +594,41 @@ var ppf = function(){
 		}
 
 	}
+	function buildPopulationText(data){
+		console.log(data)
+		var comparisonYear = (true) ? data[1]["max"] : data[1]["diverge"],
+			popBase = data[0].filter(function(d){ return d.year == comparisonYear })[0]["baseline"],
+			popProj = data[0].filter(function(d){ return d.year == data[1]["max"] })[0]["projected"],
+			popDiff = popProj - popBase,
+			popDiffPercent = 100*(popDiff / popBase),
+			popDiffPercentInt = (String(popDiffPercent)).split(".")[0],
+			popDiffZero = popDiff == 0,
+			popDiffPositive = popDiff > 0,
+			popDiffWord1 = (popDiffPositive) ? "increase" : "decrease",
+			popDiffWord2 = (popDiffPositive) ? "more" : "fewer",
+			text =  "<span>"
+
+			console.log(popBase, comparisonYear, data[0].filter(function(d){ return d.year == comparisonYear }), data[0])
+
+			if(popDiffZero){
+				text = "Without any policy changes, the prison population in 2025 is estimated to be " + d3.foromat(".0f")(popProj) + " people."
+			}
+			if(popDiffPercentInt[0] == "8" || popDiffPercentInt == "18" ){ d3.select("#popChangeLetter").text("n") }
+
+			text += " " + d3.format(".1f")(popDiffPercent) + " percent "
+			text += popDiffWord1 + " ("
+			text += d3.format(",.0f")(Math.abs(popDiff)) + " "
+			text += popDiffWord2 + " people)</span> in the prison population in "
+			text += data[1]["max"] + "."
+
+			d3.select("#popChangeText").html(text)
+			
+
+
+
+	}
 	function buildDemographicsChart(data){
-		// console.log(data)
-	var margin = {top: 20, right: 20, bottom: 30, left: 50},
+	var margin = {top: 20, right: 20, bottom: 30, left: 38},
 	    width = 600 - margin.left - margin.right,
 	    height = 300 - margin.top - margin.bottom;
 	    
@@ -661,20 +765,23 @@ var ppf = function(){
 	/*******************************************************/
 	var forecastCount = 1;
 	function saveForecast(){
-		var forecast = {"inputs": getChildInputs(), "state": getState(), "parents": getParentInputs()}
+		var forecast = {"inputs": getChildInputs(), "state": getState(), "parents": getParentInputs(), "forecastCount": forecastCount}
 		d3.select("#saveForecast").classed("deactivated",true)
 
 		var l = d3.select("#savedForecastsList")
 		var name = (forecastCount == 1) ? "Sample forecast" : "Forecast " + forecastCount;
 		var row = l.append("div")
-			.attr("class","savedForecast")
+			.attr("class","savedForecast c" + forecastCount)
 			// .text(name)
 			.datum(forecast)
-			.on("click", function(d){
-				loadForecast(d)
-			})
+
+			// .on("click", function(d){
+			// 	loadForecast(d)
+			// })
 		row.append("input")
 			.attr("value",name)
+			.style("pointer-events","none")
+			.on("blur", lockForecast)
 
 
 		var share = row.append("div")
@@ -689,6 +796,18 @@ var ppf = function(){
 			.attr("class","deleteForecast forecastButton")
 			.on("click", deleteForecast)
 
+		var cover = row.append("div")
+			.attr("class","valCover")
+			.on("click", loadForecast)
+			.on("mouseover", highlightForecast)
+			.on("mouseout", dehighlightForecasts)
+
+
+		buildPopulationChart(d3.select(".line.projection.future").datum(), forecastCount)
+
+		if(forecastCount != 1){
+			clickForecast(forecastCount)
+		}
 
     // background-image: url(../img/unlocked.png);
 
@@ -710,17 +829,59 @@ var ppf = function(){
 		}
 		updateInputs(false, false, false, false, "runForecast")
 		d3.select("#saveForecast").classed("deactivated",true)
+
+		clickForecast(d.forecastCount)
+
+	}
+	function clickForecast(forecastCount){
+		d3.selectAll(".savedForecast").classed("clickActive", false)
+		d3.select(".savedForecast.c" + forecastCount).classed("clickActive", true)
+		d3.select(".line.projection.saved").classed("clickActive", false)
+		d3.select(".line.projection.saved.c" + forecastCount).classed("clickActive", true)
+
+		moveToFront(".line.projection.saved.c" + forecastCount)
+	}
+	function declickForecasts(){
+		d3.selectAll(".savedForecast").classed("clickActive", false)
+		d3.selectAll(".line.projection.saved").classed("clickActive", false)
+
+		// moveToFront(".line.projection.future")
+	}
+	function highlightForecast(d){
+		d3.select(".savedForecast.c" + d.forecastCount).classed("active", true)
+		d3.select(".line.projection.saved.c" + d.forecastCount).classed("active", true)
+		d3.select(".line.projection.saved.c" + d.forecastCount).node()
+
+		moveToFront(".line.projection.saved.c" + d.forecastCount)
+
+
+	}
+	function dehighlightForecasts(d){
+		d3.selectAll(".savedForecast.active").classed("active",false)
+		d3.selectAll(".line.projection.saved").classed("active", false)
+
+		if(d3.selectAll(".clickActive.line.saved").nodes().length == 0){
+			moveToFront(".line.projection.future")
+		}
+		
 	}
 	function shareForecast(d){
-		// console.log(d)
 
 	}
 	function deleteForecast(d){
-		// console.log(this)
 
 	}
 	function editForecast(d){
+		var row = d3.select(d3.select(this).node().parentNode)
+		row.select(".valCover").style("width","0px")
+		row.select("input").style("pointer-events","auto")
+		row.select("input").node().focus()
 
+	}
+	function lockForecast(d){
+		var row = d3.select(d3.select(this).node().parentNode)
+		row.select(".valCover").style("width","106px")
+		row.select("input").style("pointer-events","none")
 	}
 	// function disableSaveForecast(){
 
@@ -807,6 +968,7 @@ var ppf = function(){
 	change: function(event, data){
 		//state on change
 		//get state
+		setState(this.value)
 		var inputs = getChildInputs()
 		updateYourSelections(inputs)
 		sendInputs(this.value, inputs)
