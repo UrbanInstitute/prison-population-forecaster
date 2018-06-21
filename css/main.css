@@ -5,7 +5,7 @@ body{
     display: inline-block;
     float: right;
 }
-#headerAboutLink{
+#headerAboutLink a{
     font-weight: normal !important;
     font-size: 16px;
     color: #1696d2 !important;
