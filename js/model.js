@@ -165,7 +165,7 @@ function CostProjections(projData,baseData,lastYear,costpercap) {
 	// DW question: do we need to submit all scenarios to this every time?
 	// DW question: when would I use details = 0 and when = 1
 	// Lizzie answer, we can revisit details...might not need it. 
-function CatProjections(cat,stateData,all_scenarios,details) {	
+function CatProjections(cat,stateData,all_scenarios,details) {
 	// CatProjections <- function(category, counts.st, scen.cat, details) {
 	// Category Projections
   // #Given offense category & scenario, produce category-specific population projection
@@ -189,86 +189,185 @@ function CatProjections(cat,stateData,all_scenarios,details) {
 	var e_multiplier = 1;
 	var l_multiplier = 1;
 
-  for (var i = 0; i < all_scenarios.length; i++) {
-  	if (all_scenarios[i][0] === cat) {  		
-  		// DW question Can the calculation of whether there are two scenarios of same category be calculated beforehand?
-  		// Find multiplier for All scenarios that have been changed by the USER and that have categories/data in the selected state.
-  		if (all_scenarios[i][2] === 1) {
+	for (var i = 0; i < all_scenarios.length; i++) {
+		if (all_scenarios[i][0] === cat) {  		
+			// DW question Can the calculation of whether there are two scenarios of same category be calculated beforehand?
+			// Find multiplier for All scenarios that have been changed by the USER and that have categories/data in the selected state.
+			if (all_scenarios[i][2] === 1) {
 				var e_multiplier = 1 + all_scenarios[i][1];
-  		} else if (all_scenarios[i][2] === 2) {
-  			var l_multiplier = 1 + all_scenarios[i][1];
-  		}
-  	}
-  }
+			} else if (all_scenarios[i][2] === 2) {
+				var l_multiplier = 1 + all_scenarios[i][1];
+			}
+		}
+	}
   
-  // #calculate 2025 values for admissions (e) & LOS (l)
-  
-  		// #admissions calculations
-    	var yearIndex = stateData[cat].length - 1;
-    	
-    	var last5e = [stateData[cat][yearIndex - 5][1],stateData[cat][yearIndex - 4][1],stateData[cat][yearIndex - 3][1],stateData[cat][yearIndex - 2][1],stateData[cat][yearIndex - 1][1]];
-    	var e_pc_1 = (last5e[1] - last5e[0])/last5e[0]; //#oldest year
-			var e_pc_2 = (last5e[2] - last5e[1])/last5e[1];
-			var e_pc_3 = (last5e[3] - last5e[2])/last5e[2];
-			var e_pc_4 = (last5e[4] - last5e[3])/last5e[3]; //#most recent year
+  	// #calculate 2025 values for admissions (e) & LOS (l)
+  			
+		// #admissions calculations
+	var yearIndex = stateData[cat].length - 1;
+	
 
-			// DW note for Lizzie: begin to see small changes in numbers because of e rounding.  
-			// #calculate weighted mean of percent changes (x4, then adjusted by tanh to bound between -1 and 1)
-			var e_pct_chg = Math.tanh((weightedMean([e_pc_1, e_pc_2, e_pc_3, e_pc_4],[1,2,2,3])*4))			
-		  // #apply e_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
-			var e_final = e_multiplier*(weightedMean(last5e,[1,1,2,2,3])+ (e_pct_chg*weightedMean(last5e,[1,1,2,2,3])))
+	// Enter section from Lizzie's v4, where you can do the math even if there's only 3 or 4 years of history
 
-			// #length of stay calculations
-			var last5l = [stateData[cat][yearIndex - 5][2],stateData[cat][yearIndex - 4][2],stateData[cat][yearIndex - 3][2],stateData[cat][yearIndex - 2][2],stateData[cat][yearIndex - 1][2]];
-			var l_pc_1 = (last5l[1] - last5l[0])/last5l[0]; //#oldest year
-			var l_pc_2 = (last5l[2] - last5l[1])/last5l[1];
-			var l_pc_3 = (last5l[3] - last5l[2])/last5l[2];
-			var l_pc_4 = (last5l[4] - last5l[3])/last5l[3]; //#most recent year
-			var l_pct_chg = Math.tanh((weightedMean([l_pc_1, l_pc_2, l_pc_3, l_pc_4],[1,2,2,3])*4))			
-			var l_final = l_multiplier*(weightedMean(last5l,[1,1,2,2,3])+ (l_pct_chg*weightedMean(last5l,[1,1,2,2,3])))			
+	if (lastyr-firstyr >= 4 ) {
+		var last5e = [stateData[cat][yearIndex - 5][1],stateData[cat][yearIndex - 4][1],stateData[cat][yearIndex - 3][1],stateData[cat][yearIndex - 2][1],stateData[cat][yearIndex - 1][1]];
+
+		var e_pc_1 = (last5e[1] - last5e[0])/last5e[0]; //#oldest year
+		var e_pc_2 = (last5e[2] - last5e[1])/last5e[1];
+		var e_pc_3 = (last5e[3] - last5e[2])/last5e[2];
+		var e_pc_4 = (last5e[4] - last5e[3])/last5e[3]; //#most recent year
+
+		// DW note for Lizzie: begin to see small changes in numbers because of e rounding.  
+		// #calculate weighted mean of percent changes (x4, then adjusted by tanh to bound between -1 and 1)
+		var e_pct_chg = Math.tanh((weightedMean([e_pc_1, e_pc_2, e_pc_3, e_pc_4],[1,2,2,3])*4))			
+	  	// #apply e_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
+		var e_final = e_multiplier*(weightedMean(last5e,[1,1,2,2,3])+ (e_pct_chg*weightedMean(last5e,[1,1,2,2,3])))
+
+		// #length of stay calculations
+		var last5l = [stateData[cat][yearIndex - 5][2],stateData[cat][yearIndex - 4][2],stateData[cat][yearIndex - 3][2],stateData[cat][yearIndex - 2][2],stateData[cat][yearIndex - 1][2]];
+		var l_pc_1 = (last5l[1] - last5l[0])/last5l[0]; //#oldest year
+		var l_pc_2 = (last5l[2] - last5l[1])/last5l[1];
+		var l_pc_3 = (last5l[3] - last5l[2])/last5l[2];
+		var l_pc_4 = (last5l[4] - last5l[3])/last5l[3]; //#most recent year
+		var l_pct_chg = Math.tanh((weightedMean([l_pc_1, l_pc_2, l_pc_3, l_pc_4],[1,2,2,3])*4))			
+		var l_final = l_multiplier*(weightedMean(last5l,[1,1,2,2,3])+ (l_pct_chg*weightedMean(last5l,[1,1,2,2,3])))			
 
 
 			// #last year of real data      
-      var e_lastval = stateData[cat][yearIndex - 1][1];  
-      var l_lastval = stateData[cat][yearIndex - 1][2];
-    
-   		// #calculate step for equal interval between years 
-      var e_step = (e_final-e_lastval)/(getProjEndYear()-lastyr);
-      var l_step = (l_final-l_lastval)/(getProjEndYear()-lastyr);
+		var e_lastval = stateData[cat][yearIndex - 1][1];  
+		var l_lastval = stateData[cat][yearIndex - 1][2];
 
-	
+			// #calculate step for equal interval between years 
+		var e_step = (e_final-e_lastval)/(getProjEndYear()-lastyr);
+		var l_step = (l_final-l_lastval)/(getProjEndYear()-lastyr);
+  	}
+  	else if (lastyr-firstyr === 3) {
 
-      // #calculate intervening years using step between last real year and 2025 target value
-      // In the below, i set the first item in the array as the lastyr value (2014 for AZ), then added to it is 2015 through 2025
+  		// Three years!!!
 
-      var nt_values = [];
-      var e_values = [];
-      var l_values = [];
-      var p_values = [];
-      var n_values = [];
-      // Add historical data to these places, from start year to current year
-      for (var i = 0; i < yearIndex; i++) {      	
-      	nt_values.push(stateData[cat][i][0])
-      	e_values.push(stateData[cat][i][1])
-      	l_values.push(stateData[cat][i][2])
-      	p_values.push(1-(1/l_values[i]))
-      	n_values.push(stateData[cat][i+1][0])
-      }
+		var last5e = [stateData[cat][yearIndex - 4][1],stateData[cat][yearIndex - 3][1],stateData[cat][yearIndex - 2][1],stateData[cat][yearIndex - 1][1]];
 
-      // Add final n_value as the nt of the lastyr by appending to nt_values array
-      nt_values.push(n_values[n_values.length-1])
+		var e_pc_1 = (last5e[1] - last5e[0])/last5e[0]; //#oldest year
+		var e_pc_2 = (last5e[2] - last5e[1])/last5e[1];
+		var e_pc_3 = (last5e[3] - last5e[2])/last5e[2];
+		// var e_pc_3 = (last5e[4] - last5e[3])/last5e[3]; //#most recent year
 
-      // Predict the FUTURE (lastyr to projected end year)
-      for (var i = yearIndex; i <= (getProjEndYear() - firstyr); i++) {
+		// DW note for Lizzie: begin to see small changes in numbers because of e rounding.  
+		// #calculate weighted mean of percent changes (x4, then adjusted by tanh to bound between -1 and 1)
+		var e_pct_chg = Math.tanh((weightedMean([e_pc_1, e_pc_2, e_pc_3],[2,2,3])*4))			
+	  	// #apply e_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
+		var e_final = e_multiplier*(weightedMean(last5e,[1,2,2,3])+ (e_pct_chg*weightedMean(last5e,[1,2,2,3])))
 
-      	e_values.push(e_values[i-1]+e_step);       	
-      	l_values.push(l_values[i-1]+l_step); //might not need this step because p is calculated?
-      	
-      	if (l_values[i] < 0) {
-      		l_values[i] = 0;
-      	}
+		// #length of stay calculations
+		var last5l = [stateData[cat][yearIndex - 4][2],stateData[cat][yearIndex - 3][2],stateData[cat][yearIndex - 2][2],stateData[cat][yearIndex - 1][2]];
+		var l_pc_1 = (last5l[1] - last5l[0])/last5l[0]; //#oldest year
+		var l_pc_2 = (last5l[2] - last5l[1])/last5l[1];
+		var l_pc_3 = (last5l[3] - last5l[2])/last5l[2];
+		// var l_pc_3 = (last5l[4] - last5l[3])/last5l[3]; //#most recent year
+		var l_pct_chg = Math.tanh((weightedMean([l_pc_1, l_pc_2, l_pc_3],[2,2,3])*4))			
+		var l_final = l_multiplier*(weightedMean(last5l,[1,2,2,3])+ (l_pct_chg*weightedMean(last5l,[1,2,2,3])))			
+
+
+			// #last year of real data      
+		var e_lastval = stateData[cat][yearIndex - 1][1];  
+		var l_lastval = stateData[cat][yearIndex - 1][2];
+
+			// #calculate step for equal interval between years 
+		var e_step = (e_final-e_lastval)/(getProjEndYear()-lastyr);
+		var l_step = (l_final-l_lastval)/(getProjEndYear()-lastyr);
+  	}
+  	else if (lastyr-firstyr === 2) {
+
+  		// Two years!!!!
+
+		var last5e = [stateData[cat][yearIndex - 3][1],stateData[cat][yearIndex - 2][1],stateData[cat][yearIndex - 1][1]];
+
+		var e_pc_1 = (last5e[1] - last5e[0])/last5e[0]; //#oldest year
+		var e_pc_2 = (last5e[2] - last5e[1])/last5e[1];
+		// var e_pc_3 = (last5e[3] - last5e[2])/last5e[2];
+		// var e_pc_4 = (last5e[4] - last5e[3])/last5e[3]; //#most recent year
+
+		// DW note for Lizzie: begin to see small changes in numbers because of e rounding.  
+		// #calculate weighted mean of percent changes (x4, then adjusted by tanh to bound between -1 and 1)
+		var e_pct_chg = Math.tanh((weightedMean([e_pc_1, e_pc_2],[2,3])*4))			
+	  	// #apply e_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
+		var e_final = e_multiplier*(weightedMean(last5e,[2,2,3])+ (e_pct_chg*weightedMean(last5e,[2,2,3])))
+
+		// #length of stay calculations
+		var last5l = [stateData[cat][yearIndex - 3][2],stateData[cat][yearIndex - 2][2],stateData[cat][yearIndex - 1][2]];
+		var l_pc_1 = (last5l[1] - last5l[0])/last5l[0]; //#oldest year
+		var l_pc_2 = (last5l[2] - last5l[1])/last5l[1];
+		// var l_pc_3 = (last5l[3] - last5l[2])/last5l[2];
+		// var l_pc_4 = (last5l[4] - last5l[3])/last5l[3]; //#most recent year
+		var l_pct_chg = Math.tanh((weightedMean([l_pc_1, l_pc_2],[2,3])*4))			
+		var l_final = l_multiplier*(weightedMean(last5l,[2,2,3])+ (l_pct_chg*weightedMean(last5l,[2,2,3])))			
+
+
+			// #last year of real data      
+		var e_lastval = stateData[cat][yearIndex - 1][1];  
+		var l_lastval = stateData[cat][yearIndex - 1][2];
+
+			// #calculate step for equal interval between years 
+		var e_step = (e_final-e_lastval)/(getProjEndYear()-lastyr);
+		var l_step = (l_final-l_lastval)/(getProjEndYear()-lastyr);
+  	}
+
+
+	// #calculate intervening years using step between last real year and 2025 target value
+	// In the below, i set the first item in the array as the lastyr value (2014 for AZ), then added to it is 2015 through 2025
+
+	var nt_values = [];
+	var e_values = [];
+	var l_values = [];
+	var p_values = [];
+	var n_values = [];
+	// Add historical data to these places, from start year to current year
+	for (var i = 0; i < yearIndex; i++) {      	
+		nt_values.push(stateData[cat][i][0])
+		e_values.push(stateData[cat][i][1])
+		l_values.push(stateData[cat][i][2])
+		p_values.push(1-(1/l_values[i]))
+		n_values.push(stateData[cat][i+1][0])
+	}
+
+	// Add final n_value as the nt of the lastyr by appending to nt_values array
+	nt_values.push(n_values[n_values.length-1])
+
+	// Predict the FUTURE (lastyr to projected end year)
+	for (var i = yearIndex; i <= (getProjEndYear() - firstyr); i++) {
+
+		e_values.push(e_values[i-1]+e_step);       	
+		l_values.push(l_values[i-1]+l_step);
+		
+		// Added text to avoid a floating point error. 
+		if (l_values[i] < 0) {
+			// console.log(l_values[i-1] + l_step)
+			// console.log(l_values)
+			// console.log(l_step)
+			l_values[i] = 0;
+		} 
+      	//yields 
+      		// l = 0
+      		// p = -Infinity
+      		// n = e*l = e*0 = 0
+
+      	// else 
+      		// l = 0.0001
+      		// p = -9999
+      		// n = e*0.0001 = small
+
+      	// else
+      		// l = -0.0001
+      		// p = 10001
+      		// n = nt*big + e = big
 
       	p_values.push(1-(1/l_values[i]));     
+
+		// 1 = .5 ==> 1-(1/.5) = -1 proportion left... error so we calculate differently
+      	// l = 1  ==> 1-(1/1)  = 0 proportion
+      	// l = 2  ==> 1-(1/2)  = 0.5 proportion left
+      	// l = 10 ==> 1-(1/10) = 0.9 proportion left
+
 
       	// if(cat == "kidnapping" && i == (getProjEndYear()-firstyr)){
       	// 	console.log(l_values[i])
@@ -289,11 +388,10 @@ function CatProjections(cat,stateData,all_scenarios,details) {
       	if (i !== (getProjEndYear() - firstyr)) {
       		nt_values.push(n_values[i]);
       	}
+    }
 
-      }     
-
-      return n_values;
-}	
+    return n_values;
+}
 
 function weightedMean(values, weights) {
 	var valSum = 0;
