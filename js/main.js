@@ -69,6 +69,22 @@
 
 var ppf = function(){
 
+	function parseQueryString(query) {
+		var obj = {},
+			qPos = query.indexOf("?"),
+			tokens = query.substr(qPos + 1).split('&'),
+			i = tokens.length - 1;
+
+		if (qPos !== -1 || query.indexOf("=") !== -1) {
+			for (; i >= 0; i--) {
+				var s = tokens[i].split('=');
+				obj[unescape(s[0])] = s.hasOwnProperty(1) ? unescape(s[1]) : null;
+			};
+		}
+		return obj;
+	}
+
+
 	function moveToFront(selector){
 		var node = d3.select(selector).node()
 		node.parentNode.appendChild(node)
@@ -595,7 +611,6 @@ var ppf = function(){
 
 	}
 	function buildPopulationText(data){
-		console.log(data)
 		var comparisonYear = (true) ? data[1]["max"] : data[1]["diverge"],
 			popBase = data[0].filter(function(d){ return d.year == comparisonYear })[0]["baseline"],
 			popProj = data[0].filter(function(d){ return d.year == data[1]["max"] })[0]["projected"],
@@ -608,7 +623,6 @@ var ppf = function(){
 			popDiffWord2 = (popDiffPositive) ? "more" : "fewer",
 			text =  "<span>"
 
-			console.log(popBase, comparisonYear, data[0].filter(function(d){ return d.year == comparisonYear }), data[0])
 
 			if(popDiffZero){
 				text = "Without any policy changes, the prison population in 2025 is estimated to be " + d3.foromat(".0f")(popProj) + " people."
@@ -866,6 +880,20 @@ var ppf = function(){
 		
 	}
 	function shareForecast(d){
+		var inputs = d.inputs;
+		var parents = d.parents;
+		var state = d.state
+
+		for (var attr in parents) {
+			if(parents.hasOwnProperty(attr)){
+				inputs[attr] = parents[attr];
+			}
+		}
+
+		var queryObj = {"inputs": inputs, "state": state},
+			queryString = encodeURIComponent(JSON.stringify(queryObj))
+
+		console.log(queryString)
 
 	}
 	function deleteForecast(d){
@@ -1113,6 +1141,27 @@ var ppf = function(){
 
 	function init(){
 		bindControlData()
+		x = {"arson": { "admissions": {"value": "40", "locked": true}, "los": {"value": "50", "locked": true} } }
+		y = JSON.stringify(x)
+		z = encodeURIComponent(y)
+
+		q = JSON.parse(decodeURIComponent(z))
+
+		var parameters = parseQueryString(window.location.search);
+
+		if(parameters.hasOwnProperty("forecast")){
+			var forecastString = parameters["forecast"],
+				forecast = JSON.parse(decodeURIComponent(forecastString)),
+				inputs = forecast.inputs,
+				state = forecast.state;
+
+			setState(state)
+			setInputs(inputs)
+		}
+
+
+		// setState("KS")
+		// setInputs({"violent": { "admissions": {"value": "-20", "locked": true}, "los": {"value": "-20", "locked": true} } })
 		updateInputs(false, false, false, false, "init")
 		d3.select("#saveForecast").classed("deactivated",true)
 		saveForecast()
