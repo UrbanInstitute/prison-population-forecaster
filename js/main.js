@@ -891,11 +891,58 @@ var ppf = function(){
 		}
 
 		var queryObj = {"inputs": inputs, "state": state},
-			queryString = encodeURIComponent(JSON.stringify(queryObj))
+			queryString = encodeForecast(queryObj)
 
 		console.log(queryString)
 
 	}
+	function encodeForecast(d){
+
+	console.log(d)
+
+		var allOffenses = OFFENSES.concat(PARENTS).map(function(value,index) { return value[0]; }),
+			inputs = Object.assign({}, d.inputs),
+			output = Array.apply(null, {length: allOffenses.length}).map(Number.call, Number)
+		for(var attr in inputs){
+			if(inputs.hasOwnProperty(attr)){
+				var ind = allOffenses.indexOf(attr)
+				var los = inputs[attr]["los"]["value"]
+				var admissions = inputs[attr]["admissions"]["value"]
+
+				output.splice(ind, 1, [parseInt(los),parseInt(admissions)])
+			}
+		}
+
+		output.push(d.state)
+		var merged = [].concat.apply([], output);
+
+		// console.log(merged)
+		// console.log(allOffenses)
+
+
+		console.log(encodeURIComponent(JSON.stringify(merged)).replace(/%2C/g,","))
+		return encodeURIComponent(JSON.stringify(merged)).replace(/%2C/g,",")
+
+	}
+	function decodeForecast(d){
+		var allOffenses = OFFENSES.concat(PARENTS).map(function(value,index) { return value[0]; }),
+			input = JSON.parse(decodeURIComponent(d)),
+			output = {"inputs":{}, "state": input[allOffenses.length*2]}
+
+		for(var i = 0; i < allOffenses.length*2; i += 2){
+			var los = input[i],
+				admissions = input[i+1],
+				offense = allOffenses[i/2]
+
+			output["inputs"][offense] = { "admissions": { "value": String(admissions), "locked": false }, "los": {"value": String(los), "locked": false } }
+
+		}
+
+		return output
+
+
+	}
+
 	function deleteForecast(d){
 
 	}
@@ -1151,7 +1198,7 @@ var ppf = function(){
 
 		if(parameters.hasOwnProperty("forecast")){
 			var forecastString = parameters["forecast"],
-				forecast = JSON.parse(decodeURIComponent(forecastString)),
+				forecast = decodeForecast(forecastString),
 				inputs = forecast.inputs,
 				state = forecast.state;
 
