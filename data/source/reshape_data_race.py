@@ -7,7 +7,7 @@ def rounders(d,r):
 	else:
 		return round(float(d), r) 
 
-with open('race.csv', 'rb') as f:
+with open('race_test.csv', 'rb') as f:
     reader = csv.reader(f)
     rows = list(reader)
 
@@ -43,7 +43,7 @@ for i in range(1, len(rows)):
 	
 # print output
 
-with open('race.json', 'w') as f:	
+with open('race2.json', 'w') as f:	
     json.dump(output, f)    
 
 
