@@ -1,11 +1,11 @@
-# PPF Model (2_model_v2.R)
-# Purpose: produce PPF projections, graphs and other information on projections
-# Created 3/14 by Lizzy Pelletier
-# Last updated 8/8
+# PPF Model (2_model_v4.R)
+# Purpose: produce PPF projections
+# Created 11/2 by Lizzy Pelletier
+# Last updated 6/1
 
 
 ## Set to WD that also contains counts.RData ##
-# setwd("L:/RawData")
+#setwd("L:/")
 
 
 
@@ -31,7 +31,7 @@ ExpandScenario <-function(scen.to.expand) {
 # Returns: policy impact scenario (list of lists) including all subcategory scenarios
   
   ExpandOne <- function(one.scenario) {
-    #print(one.scenario)
+    
     #expands one individual scenario
     
     if ("violent" %in% one.scenario[[1]]){
@@ -57,7 +57,6 @@ ExpandScenario <-function(scen.to.expand) {
     } else {
       expanded <- list(one.scenario)
     }
-    # print(expanded)
     return(expanded)
   }
   
@@ -87,8 +86,9 @@ GetMultiplier<-function(category, scen.mult, type) {
   
   #CATEGORY IS INCLUDED IN ONE OR MORE POLICY CHANGE SCENARIOS
     if(category %in% unlist(scen.mult)){ 
-      # print(scen.mult)
+      
       relevant_scen<-scen.mult[sapply(scen.mult, function(x) category %in% x)] #capture any sub-scenarios that affect "category"
+      
       #IF ONE RELEVANT SCENARIO (i.e. either admissions or LOS)
       if (length(relevant_scen)==1){ 
         
@@ -98,7 +98,6 @@ GetMultiplier<-function(category, scen.mult, type) {
         } else { 
           #reduction type does not match: multiplier = 1 (baseline - no change)
           multiplier <- 1
-
         }
       
       #IF TWO RELEVANT SCENARIOS (i.e. both admissions and LOS )
@@ -117,12 +116,12 @@ GetMultiplier<-function(category, scen.mult, type) {
           multiplier <- 1
         }
       }
-      # print(multiplier)
-
+    
   #CATEGORY IS NOT AFFECTED BY SCENARIO
     } else { 
       multiplier<-1 #baseline
     }
+      
   return(as.numeric(multiplier))
     
 }
@@ -151,83 +150,84 @@ CatProjections <- function(category, counts.st, scen.cat, details) {
   #set relevant years
   lastyr<-max(counts.st$year)-1  #last year of real data
   firstyr<-min(counts.st$year)   #first year of real data
-  firstyr_formean<-lastyr-4   #first year of data to be incorporated into projections
   
-  #generate empty data frame from firstyr to 2025 as base for projections; merge to counts data
-  proj_base<-as.data.frame(firstyr:2025)
-
-  names(proj_base)<-"year"
-  proj<-merge(proj_base, subset(counts.st, counts.st$ppf_cat==category), by="year", all.x=TRUE)
-
-  #get scenario-dependent multiplier for e (admissions/entrances) and l (length of stay)
-  e_multiplier<-GetMultiplier(category, scen.mult=scen.cat, type=1)
-  l_multiplier<-GetMultiplier(category, scen.mult=scen.cat, type=2)
-
-  #calculate 2025 values for admissions (e) & LOS (l)
+  #FIVE OR MORE YEARS AVAILABLE; LASTYR - FIRSTYR >=4
   
+
+# standard one for five or more years, the same as v2
+  if(lastyr-firstyr>=4) {
+    firstyr_formean<-lastyr-4   #first year of data to be incorporated into projections
+    
+    #generate empty data frame from firstyr to 2025 as base for projections; merge to counts data
+    proj_base<-as.data.frame(firstyr:2025)
+    names(proj_base)<-"year"
+    proj<-merge(proj_base, subset(counts.st, counts.st$ppf_cat==category), by="year", all.x=TRUE)
+    
+    #get scenario-dependent multiplier for e (admissions/entrances) and l (length of stay)
+    e_multiplier<-GetMultiplier(category, scen.mult=scen.cat, type=1)
+    l_multiplier<-GetMultiplier(category, scen.mult=scen.cat, type=2)
+    
+    #calculate 2025 values for admissions (e) & LOS (l)
+    
     #admissions
-      #e_vals = values necessary to make calculation (E (admissions) in recent years)  
-        e_vals<-subset(proj, proj$year<=lastyr & proj$year>=firstyr_formean, select=c("year", "e"))         
-      #calculate percent change for each interval in most recent 5 years
-        e_pc_1 <- (e_vals$e[2] - e_vals$e[1])/e_vals$e[1] #oldest year
-        e_pc_2 <- (e_vals$e[3] - e_vals$e[2])/e_vals$e[2]
-        e_pc_3 <- (e_vals$e[4] - e_vals$e[3])/e_vals$e[3]
-        e_pc_4 <- (e_vals$e[5] - e_vals$e[4])/e_vals$e[4] #most recent year
-      #calculate weighted mean of percent changes (x4, then adjusted by tanh to bound between -1 and 1)
-        e_pct_chg <- tanh(weighted.mean(c(e_pc_1, e_pc_2, e_pc_3, e_pc_4), c(1, 2, 2, 3))*4)
-      #apply e_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
-        e_final<- e_multiplier*(weighted.mean(as.vector(e_vals$e), c(1, 1, 2, 2, 3)) + (e_pct_chg*weighted.mean(as.vector(e_vals$e), c(1, 1, 2, 2, 3))))
-
+    #e_vals = values necessary to make calculation (E (admissions) in recent years)  
+    e_vals<-subset(proj, proj$year<=lastyr & proj$year>=firstyr_formean, select=c("year", "e")) 
+    #calculate percent change for each interval in most recent 5 years
+    e_pc_1 <- (e_vals$e[2] - e_vals$e[1])/e_vals$e[1] #oldest year
+    e_pc_2 <- (e_vals$e[3] - e_vals$e[2])/e_vals$e[2]
+    e_pc_3 <- (e_vals$e[4] - e_vals$e[3])/e_vals$e[3]
+    e_pc_4 <- (e_vals$e[5] - e_vals$e[4])/e_vals$e[4] #most recent year
+    #calculate weighted mean of percent changes (x4, then adjusted by tanh to bound between -1 and 1)
+    e_pct_chg <- tanh(weighted.mean(c(e_pc_1, e_pc_2, e_pc_3, e_pc_4), c(1, 2, 2, 3))*4)
+    #apply e_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
+    e_final<- e_multiplier*(weighted.mean(as.vector(e_vals$e), c(1, 1, 2, 2, 3)) + (e_pct_chg*weighted.mean(as.vector(e_vals$e), c(1, 1, 2, 2, 3))))
+    
     #LOS
-      #l_vals = values necessary to make calcuation (L in recent years)
-        l_vals<-subset(proj, proj$year<=lastyr & proj$year>=firstyr_formean, select=c("year", "l"))
-      #calculate percent change for each interval in most recent 5 years
-        l_pc_1 <- (l_vals$l[2] - l_vals$l[1])/l_vals$l[1] #oldest year
-        l_pc_2 <- (l_vals$l[3] - l_vals$l[2])/l_vals$l[2]
-        l_pc_3 <- (l_vals$l[4] - l_vals$l[3])/l_vals$l[3]
-        l_pc_4 <- (l_vals$l[5] - l_vals$l[4])/l_vals$l[4] #most recent year
-      #calculate weighted mean of percent changes (x4, then adjusted by tanh to bound between -1 and 1)
-        l_pct_chg <- tanh(weighted.mean(c(l_pc_1, l_pc_2, l_pc_3, l_pc_4), c(1, 2, 2, 3))*4)
-      #apply l_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
-        l_final <- l_multiplier*(weighted.mean(as.vector(l_vals$l), c(1, 1, 2, 2, 3)) + (l_pct_chg*weighted.mean(as.vector(l_vals$l), c(1, 1, 2, 2, 3))))        
-        
-  # generate intervening years using linear step between last yr of real data and 2025 projection value
-        
+    #l_vals = values necessary to make calcuation (L in recent years)
+    l_vals<-subset(proj, proj$year<=lastyr & proj$year>=firstyr_formean, select=c("year", "l"))
+    #calculate percent change for each interval in most recent 5 years
+    l_pc_1 <- (l_vals$l[2] - l_vals$l[1])/l_vals$l[1] #oldest year
+    l_pc_2 <- (l_vals$l[3] - l_vals$l[2])/l_vals$l[2]
+    l_pc_3 <- (l_vals$l[4] - l_vals$l[3])/l_vals$l[3]
+    l_pc_4 <- (l_vals$l[5] - l_vals$l[4])/l_vals$l[4] #most recent year
+    #calculate weighted mean of percent changes (x4, then adjusted by tanh to bound between -1 and 1)
+    l_pct_chg <- tanh(weighted.mean(c(l_pc_1, l_pc_2, l_pc_3, l_pc_4), c(1, 2, 2, 3))*4)
+    #apply l_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
+    l_final <- l_multiplier*(weighted.mean(as.vector(l_vals$l), c(1, 1, 2, 2, 3)) + (l_pct_chg*weighted.mean(as.vector(l_vals$l), c(1, 1, 2, 2, 3))))
+    
+    
+    # generate intervening years using linear step between last yr of real data and 2025 projection value
+    
     #last year of real data
-      e_lastval<-proj$e[proj$year==lastyr]  
-      l_lastval<-proj$l[proj$year==lastyr]      
-
+    e_lastval<-proj$e[proj$year==lastyr]  
+    l_lastval<-proj$l[proj$year==lastyr]
+    
     #calculate step for equal interval between years 
-      e_step<-(e_final-e_lastval)/(2025-lastyr) 
-      l_step<-(l_final-l_lastval)/(2025-lastyr)
-      
+    e_step<-(e_final-e_lastval)/(2025-lastyr) 
+    l_step<-(l_final-l_lastval)/(2025-lastyr)
+    
     #calculate intervening years using step between last real year and 2025 target value
-      proj$e[proj$year>lastyr]<-seq(from=e_lastval+e_step, to=e_final, by=e_step) 
-      proj$l[proj$year>lastyr]<-seq(from=l_lastval+l_step, to=l_final, by=l_step)
-  
-      
-  # convert l to p (used to calculate N (stock population))
-  # l = estimate for LOS based on proportion remaining in prison after one year
-  # p = proportion remaining in prison after one year
-  # L= 1/(1-p)
-  # p = 1-(1/l)
-
+    proj$e[proj$year>lastyr]<-seq(from=e_lastval+e_step, to=e_final, by=e_step) 
+    proj$l[proj$year>lastyr]<-seq(from=l_lastval+l_step, to=l_final, by=l_step)
+    
+    
+    # convert l to p (used to calculate N (stock population))
+    # l = estimate for LOS based on proportion remaining in prison after one year
+    # p = proportion remaining in prison after one year
+    # L= 1/(1-p)
+    # p = 1-(1/l)
     proj$p <- 1-(1/proj$l)
-
-  #generate projected n's based on estimates for admissions and LOS
+    
+    
+    #generate projected n's based on estimates for admissions and LOS
     
     #nt = stock pop in previous yr
     #p = proportion still in prison from prev yr stock
     #e = admissions over the year
     #n = admissions in current year (t+1 implied)
-    # print(proj)
-    # DW note: Edits will happen in this area from Lizzie
-  
+    
     proj$n<-(proj$nt*proj$p)+proj$e 
-    # print(category)
-    # print(lastyr - firstyr + 2)
-    # print(proj)
-    # print(2025-firstyr+1)
+    
     for(i in (lastyr-firstyr+2):(2025-firstyr+1)){
       
       #n from year i-1 becomes nt for year i
@@ -236,18 +236,207 @@ CatProjections <- function(category, counts.st, scen.cat, details) {
       #Convert projections for e and p to n (population)
       
       # (a) when p>=0 (corresponding to LOS >= 1 year):
-        # n = (nt*p) + e
-        if(proj$p[[i]]>=0){ 
-          proj$n[[i]]<-(proj$nt[[i]]*proj$p[[i]])+proj$e[[i]]
-          
-      # (b) when p<0 (corresponding to LOS < 1 year):
+      # n = (nt*p) + e
+      if(proj$p[[i]]>=0){ 
+        proj$n[[i]]<-(proj$nt[[i]]*proj$p[[i]])+proj$e[[i]]
+        
+        # (b) when p<0 (corresponding to LOS < 1 year):
         # n = e*l
-        }else if(proj$p[[i]]<0) {
-          proj$n[[i]]<-proj$e[[i]]*proj$l[[i]]
+      }else if(proj$p[[i]]<0) {
+        proj$n[[i]]<-proj$e[[i]]*proj$l[[i]]
       }
     }
-    # print(proj)
-  #generate output dataframe conditional on details (# of vars required)
+  
+  #FOUR YEARS AVAILABLE; LASTYR-FIRSTYR==3
+# New area #1
+    
+  } else if (lastyr-firstyr==3) {
+    
+    firstyr_formean<-lastyr-3   #first year of data to be incorporated into projections
+    
+    #generate empty data frame from firstyr to 2025 as base for projections; merge to counts data
+    proj_base<-as.data.frame(firstyr:2025)
+    names(proj_base)<-"year"
+    proj<-merge(proj_base, subset(counts.st, counts.st$ppf_cat==category), by="year", all.x=TRUE)
+    
+    #get scenario-dependent multiplier for e (admissions/entrances) and l (length of stay)
+    e_multiplier<-GetMultiplier(category, scen.mult=scen.cat, type=1)
+    l_multiplier<-GetMultiplier(category, scen.mult=scen.cat, type=2)
+    
+    #calculate 2025 values for admissions (e) & LOS (l)
+    
+    #admissions
+    #e_vals = values necessary to make calculation (E (admissions) in recent years)  
+    e_vals<-subset(proj, proj$year<=lastyr & proj$year>=firstyr_formean, select=c("year", "e")) 
+    #calculate percent change for each interval in most recent 5 years
+    e_pc_1 <- (e_vals$e[2] - e_vals$e[1])/e_vals$e[1] #oldest year
+    e_pc_2 <- (e_vals$e[3] - e_vals$e[2])/e_vals$e[2]
+    e_pc_3 <- (e_vals$e[4] - e_vals$e[3])/e_vals$e[3]
+    #calculate weighted mean of percent changes (x3, then adjusted by tanh to bound between -1 and 1)
+    e_pct_chg <- tanh(weighted.mean(c(e_pc_1, e_pc_2, e_pc_3), c(2, 2, 3))*4)
+    #apply e_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
+    e_final<- e_multiplier*(weighted.mean(as.vector(e_vals$e), c(1, 2, 2, 3)) + (e_pct_chg*weighted.mean(as.vector(e_vals$e), c(1, 2, 2, 3))))
+    
+    #LOS
+    #l_vals = values necessary to make calcuation (L in recent years)
+    l_vals<-subset(proj, proj$year<=lastyr & proj$year>=firstyr_formean, select=c("year", "l"))
+    #calculate percent change for each interval in most recent 5 years
+    l_pc_1 <- (l_vals$l[2] - l_vals$l[1])/l_vals$l[1] #oldest year
+    l_pc_2 <- (l_vals$l[3] - l_vals$l[2])/l_vals$l[2]
+    l_pc_3 <- (l_vals$l[4] - l_vals$l[3])/l_vals$l[3]
+    #calculate weighted mean of percent changes (x3, then adjusted by tanh to bound between -1 and 1)
+    l_pct_chg <- tanh(weighted.mean(c(l_pc_1, l_pc_2, l_pc_3), c(2, 2, 3))*4)
+    #apply l_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
+    l_final <- l_multiplier*(weighted.mean(as.vector(l_vals$l), c( 1, 2, 2, 3)) + (l_pct_chg*weighted.mean(as.vector(l_vals$l), c(1, 2, 2, 3))))
+    
+    
+    # generate intervening years using linear step between last yr of real data and 2025 projection value
+    
+    #last year of real data
+    e_lastval<-proj$e[proj$year==lastyr]  
+    l_lastval<-proj$l[proj$year==lastyr]
+    
+    #calculate step for equal interval between years 
+    e_step<-(e_final-e_lastval)/(2025-lastyr) 
+    l_step<-(l_final-l_lastval)/(2025-lastyr)
+    
+    #calculate intervening years using step between last real year and 2025 target value
+    proj$e[proj$year>lastyr]<-seq(from=e_lastval+e_step, to=e_final, by=e_step) 
+    proj$l[proj$year>lastyr]<-seq(from=l_lastval+l_step, to=l_final, by=l_step)
+    
+    
+    # convert l to p (used to calculate N (stock population))
+    # l = estimate for LOS based on proportion remaining in prison after one year
+    # p = proportion remaining in prison after one year
+    # L= 1/(1-p)
+    # p = 1-(1/l)
+    proj$p <- 1-(1/proj$l)
+    
+    
+    #generate projected n's based on estimates for admissions and LOS
+    
+    #nt = stock pop in previous yr
+    #p = proportion still in prison from prev yr stock
+    #e = admissions over the year
+    #n = admissions in current year (t+1 implied)
+    
+    proj$n<-(proj$nt*proj$p)+proj$e 
+    
+    for(i in (lastyr-firstyr+2):(2025-firstyr+1)){
+      
+      #n from year i-1 becomes nt for year i
+      proj$nt[[i]]<-proj$n[[i-1]]
+      
+      #Convert projections for e and p to n (population)
+      
+      # (a) when p>=0 (corresponding to LOS >= 1 year):
+      # n = (nt*p) + e
+      if(proj$p[[i]]>=0){ 
+        proj$n[[i]]<-(proj$nt[[i]]*proj$p[[i]])+proj$e[[i]]
+        
+        # (b) when p<0 (corresponding to LOS < 1 year):
+        # n = e*l
+      }else if(proj$p[[i]]<0) {
+        proj$n[[i]]<-proj$e[[i]]*proj$l[[i]]
+      }
+    }
+
+ #THREE YEARS AVAILABLE; LASTYR-FIRSTYR==2
+    # New area #2
+
+
+  } else if (lastyr-firstyr==2) {
+    firstyr_formean<-lastyr-2   #first year of data to be incorporated into projections
+    
+    #generate empty data frame from firstyr to 2025 as base for projections; merge to counts data
+    proj_base<-as.data.frame(firstyr:2025)
+    names(proj_base)<-"year"
+    proj<-merge(proj_base, subset(counts.st, counts.st$ppf_cat==category), by="year", all.x=TRUE)
+    
+    #get scenario-dependent multiplier for e (admissions/entrances) and l (length of stay)
+    e_multiplier<-GetMultiplier(category, scen.mult=scen.cat, type=1)
+    l_multiplier<-GetMultiplier(category, scen.mult=scen.cat, type=2)
+    
+    #calculate 2025 values for admissions (e) & LOS (l)
+    
+    #admissions
+    #e_vals = values necessary to make calculation (E (admissions) in recent years)  
+    e_vals<-subset(proj, proj$year<=lastyr & proj$year>=firstyr_formean, select=c("year", "e")) 
+    #calculate percent change for each interval in most recent 5 years
+    e_pc_1 <- (e_vals$e[2] - e_vals$e[1])/e_vals$e[1] #oldest year
+    e_pc_2 <- (e_vals$e[3] - e_vals$e[2])/e_vals$e[2]
+    #calculate weighted mean of percent changes (x2, then adjusted by tanh to bound between -1 and 1)
+    e_pct_chg <- tanh(weighted.mean(c(e_pc_1, e_pc_2), c(2, 3))*4)
+    #apply e_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
+    e_final<- e_multiplier*(weighted.mean(as.vector(e_vals$e), c(2, 2, 3)) + (e_pct_chg*weighted.mean(as.vector(e_vals$e), c(2, 2, 3))))
+    
+    #LOS
+    #l_vals = values necessary to make calcuation (L in recent years)
+    l_vals<-subset(proj, proj$year<=lastyr & proj$year>=firstyr_formean, select=c("year", "l"))
+    #calculate percent change for each interval in most recent 5 years
+    l_pc_1 <- (l_vals$l[2] - l_vals$l[1])/l_vals$l[1] #oldest year
+    l_pc_2 <- (l_vals$l[3] - l_vals$l[2])/l_vals$l[2]
+    #calculate weighted mean of percent changes (x2, then adjusted by tanh to bound between -1 and 1)
+    l_pct_chg <- tanh(weighted.mean(c(l_pc_1, l_pc_2), c(2, 3))*4)
+    #apply l_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
+    l_final <- l_multiplier*(weighted.mean(as.vector(l_vals$l), c(2, 2, 3)) + (l_pct_chg*weighted.mean(as.vector(l_vals$l), c(2, 2, 3))))
+    
+    
+    # generate intervening years using linear step between last yr of real data and 2025 projection value
+    
+    #last year of real data
+    e_lastval<-proj$e[proj$year==lastyr]  
+    l_lastval<-proj$l[proj$year==lastyr]
+    
+    #calculate step for equal interval between years 
+    e_step<-(e_final-e_lastval)/(2025-lastyr) 
+    l_step<-(l_final-l_lastval)/(2025-lastyr)
+    
+    #calculate intervening years using step between last real year and 2025 target value
+    proj$e[proj$year>lastyr]<-seq(from=e_lastval+e_step, to=e_final, by=e_step) 
+    proj$l[proj$year>lastyr]<-seq(from=l_lastval+l_step, to=l_final, by=l_step)
+    
+    
+    # convert l to p (used to calculate N (stock population))
+    # l = estimate for LOS based on proportion remaining in prison after one year
+    # p = proportion remaining in prison after one year
+    # L= 1/(1-p)
+    # p = 1-(1/l)
+    proj$p <- 1-(1/proj$l)
+    
+    
+    #generate projected n's based on estimates for admissions and LOS
+    
+    #nt = stock pop in previous yr
+    #p = proportion still in prison from prev yr stock
+    #e = admissions over the year
+    #n = admissions in current year (t+1 implied)
+    
+    proj$n<-(proj$nt*proj$p)+proj$e 
+    
+    for(i in (lastyr-firstyr+2):(2025-firstyr+1)){
+      
+      #n from year i-1 becomes nt for year i
+      proj$nt[[i]]<-proj$n[[i-1]]
+      
+      #Convert projections for e and p to n (population)
+      
+      # (a) when p>=0 (corresponding to LOS >= 1 year):
+      # n = (nt*p) + e
+      if(proj$p[[i]]>=0){ 
+        proj$n[[i]]<-(proj$nt[[i]]*proj$p[[i]])+proj$e[[i]]
+        
+        # (b) when p<0 (corresponding to LOS < 1 year):
+        # n = e*l
+      }else if(proj$p[[i]]<0) {
+        proj$n[[i]]<-proj$e[[i]]*proj$l[[i]]
+      }
+    }
+  } 
+    
+    
+ 
+    #generate output dataframe conditional on details (# of vars required)
     if (details==0){
       final_projections<-subset(proj, select=c("year", "n"))
       names(final_projections)<-c("year", paste(category, "n", sep="_"))
@@ -258,10 +447,12 @@ CatProjections <- function(category, counts.st, scen.cat, details) {
       names(final_projections_d)<-c("year", paste(category, "e", sep="_"), paste(category, "l", sep="_"), paste(category, "p", sep="_"), paste(category, "n", sep="_"))
       return(final_projections_d)
     }
-  
-}
+    
 
-# main function
+}   
+
+
+
 
 StateProjections <- function(ST, scenarios.list) { 
   #Produces projection outcome dataframe including:
@@ -277,23 +468,18 @@ StateProjections <- function(ST, scenarios.list) {
     #scenarios.list = a scenario list
   
   STfile <- subset(counts.allstates, counts.allstates$state==ST)
-  #print(STfile)
-  # write.csv(co, file="costs.csv")
   
   state.categories<-unique(STfile$ppf_cat)
   
-  # print(state.categories)
-  
   all.scenarios <-ExpandScenario(scenarios.list) #expand scenarios if they include umbrella category (e.g., violent or nonviolent)
   
-  # Last year of real data
   lastyr <- max(STfile$year)-1
+  
 
   # Get scenario population projection counts in each category
     p.s<-lapply(state.categories, CatProjections, counts.st=STfile, 
                 scen.cat=all.scenarios, details=0) 
   
-  # print(p.s)
   
   #Calculate race/ethnicity percentages in 2025
     
@@ -302,23 +488,19 @@ StateProjections <- function(ST, scenarios.list) {
             p.s[[i]]$ppf_cat <- paste(gsub("_n", "", names(p.s[[i]])[2]))
             names(p.s[[i]])[2] <- "n"
           }
-      # print(p.s)
-
+      
       # Combine 2025 population projections in each category; merge to R/E counts dataframe
         re.2025<- merge(Reduce(rbind, lapply(p.s, subset, year==2025)), 
                        subset(re, state==ST, by="ppf_cat"))
-        # print(re.2025)
-
+  
       #Multiply n in each category by R/E percentages; sum up N allocated to each R/E category
         re.2025.n <- matrix(colSums(as.data.frame(lapply(re.2025[, c("white", "black", "hispanic", "native", "asian", "hawaiian", "other")],
                        function(x, y) x * y,
                        y = re.2025$n))), nrow=1, ncol=7)
-        # print(re.2025.n)
-
+  
       #Convert R/E population counts to percentages of population
         re.2025.pct <- matrix(re.2025.n/sum(re.2025.n), nrow=7, ncol=1)
 
-        # print(re.2025.pct)
 
   #Process final projections for scenario
         
@@ -333,6 +515,7 @@ StateProjections <- function(ST, scenarios.list) {
         p.s.m$val <- lapply(p.s.m$year, function(x) paste("n", x, sep="_")) #generate "val" - measure name variable
         p.s.m <- subset(p.s.m, select=c("val", "p"))
         p.s.m$val <- as.character(p.s.m$val)
+
   
   #Generate final o (outcome) dataframe; combine R/E percentages and population
         
@@ -341,65 +524,18 @@ StateProjections <- function(ST, scenarios.list) {
         o$val<-as.character(o$val)
         o$p <- as.numeric(as.character(o$p))
         o <- rbind(o, p.s.m)
-
-        # print(o)
   
   #Merge o with baseline results
         o <- merge(o, GetBaselineLastYr(ST))
-        
-        print(o)
-# 
-
-  #Produce cost estimate
   
-
-        ann.pc <- co$pcexpend[co$stabbrev==ST] #annual per capita cost for state
-        # print(ann.pc)
-        yrlist <- (lastyr+1):2025 #set list of years over which to calculate cost savings
-        
-      #Savings in one year
-        OneYrSavings <- function(year, o.df, reference) {
-          #Inputs:
-              #year: year in which to calculate cost savings
-              #o.df: dataframe including population projections in baseline and with scenario applied
-              #reference: which reference point to use ("b" for baseline; "ly" for last year of real data)
-          #Output:
-              #cost savings in one year
-          
-          if(reference=="b"){ #cost savings relative to baseline
-            people <- o.df$p[o.df$val==paste("n", year, sep="_")] - o.df$b[o.df$val==paste("n", year, sep="_")] #number fewer people in prison
-            pct <- (people / o.df$b[o.df$val==paste("n", year, sep="_")]) #percent change relative to baseline
-            
-          } else if(reference=="ly"){ #cost savings relative to last year of real data
-            people <- o.df$p[o.df$val==paste("n", year, sep="_")] - o.df$b[o.df$val==paste("n", lastyr, sep="_")] #number fewer people in prison
-            pct <- (people / o.df$b[o.df$val==paste("n", lastyr, sep="_")]) #percent change relative to last year of real data
-          }
-          # print(pct)
-          #if percent change is less than 12%, only marginal costs affected (use per capita figure * .12)
-            if(abs(pct)<=.12){ 
-              sav <- (ann.pc*(.12))*people
-          #if percent change is greater than 12%, begin to cut into capital costs (use per capita figure * whatever percent reduction is)
-            } else if(abs(pct)>.12){ 
-              sav <- (ann.pc*(abs(pct)))*people
-            }          
-          return(sav)
-        }
-        
-        #Cumulative savings in all years
-          allyrs.b <- as.numeric(Reduce(sum, lapply(yrlist, OneYrSavings, o.df=o, reference="b"))) #relative to baseline
-          allyrs.ly <- as.numeric(Reduce(sum, lapply(yrlist, OneYrSavings, o.df=o, reference="ly"))) #relative to last year of real data
-          
-        #Generate cost dataframe
-          cost<-as.data.frame(matrix(cbind("cost", allyrs.b, allyrs.ly), nrow=1, ncol=3))
-          names(cost) <- c("val", "b", "ly")
-          cost$p <- NA
-    
-  #Merge o to cost estimates
-      o<-rbind(o, cost)
+      o$b <- as.numeric(o$b)
+      o$ly <- as.numeric(o$ly)
+      
       
   return(o)
  
 }
+
 
 
 
@@ -413,31 +549,26 @@ StateProjections <- function(ST, scenarios.list) {
 
 
 
-states <- unique(counts.allstates$state)
 
-##NOTE:
-## Still working on:
-## - having StateProjections pull from pre-generated baseline dataframe for baseline comparison
-## - having CatProjections pull from pre-generated baseline dataframe if cat is not affected by scenario
 
-GetBaselineByCat <- function(ST) {
-  STfile <- subset(counts.allstates, counts.allstates$state==ST)
-  
-  state.categories<-unique(STfile$ppf_cat)
-  
-  lastyr <- max(STfile$year)-1
-  
-  p.b <- lapply(state.categories, CatProjections, counts.st=STfile, 
-                 scen.cat=list(c("x",0,0)), details=0) 
-
-  for (i in 1:length(p.b)) { #add variable indicating ppf_cat
-    p.b[[i]]$ppf_cat <- paste(gsub("_n", "", names(p.b[[i]])[2]))
-    names(p.b[[i]])[2] <- "n"
-  }
-  p.b.merged <- do.call("rbind", p.b)  
-  
-  p.b.merged$state <- ST
-}
+# GetBaselineByCat <- function(ST) {
+#   STfile <- subset(counts.allstates, counts.allstates$state==ST)
+#   
+#   state.categories<-unique(STfile$ppf_cat)
+#   
+#   lastyr <- max(STfile$year)-1
+#   
+#   p.b <- lapply(state.categories, CatProjections, counts.st=STfile, 
+#                  scen.cat=list(c("x",0,0)), details=0) 
+# 
+#   for (i in 1:length(p.b)) { #add variable indicating ppf_cat
+#     p.b[[i]]$ppf_cat <- paste(gsub("_n", "", names(p.b[[i]])[2]))
+#     names(p.b[[i]])[2] <- "n"
+#   }
+#   p.b.merged <- do.call("rbind", p.b)  
+#   
+#   p.b.merged$state <- ST
+# }
 
 
 
@@ -524,17 +655,23 @@ GetBaselineLastYr <- function(ST) {
 #(2) number between -1 and 1 indicating percent (.1 for 10% increase, -.5 for 50% decrease, -1 for 100% decrease, etc)
 #(3) reduction type indicator; 1==admissions; 2==length of stay
 
+# # 
+# setwd("L:/RawData")
+# load("costs.RData")
+# load("counts_2015.RData")
+# # 
+# # test1 <- list(c("burglary", -.5, 2), c("burglary", -.2, 1))
+# test2 <- list(c("other", -.1, 1))
+# 
+# # 
+# a <- StateProjections("AZ", test1)
+# StateProjections("WA", test1)
+# 
 
 load("costs.RData")
 load("counts.RData")
 
-test1 <- list(c("burglary", -.5, 2), c("drug", -.2, 1), c("drug", -.4, 2))
-test2 <- list(c("other", -.1, 1))
-test3 <- list(c("property",-.2,2),c("drug", -.2, 1), c("drug", -.4, 2))
-test4 <- list(c("drug",.9,2),c("drug", .9, 1), c("violent", .9, 2),c("violent", .9, 1), c("other",.9,2),c("other", .9, 1),c("property",.9,2),c("property", .9, 1))
-test5 <- list(c("drug",-.9,2),c("drug", -.9, 1), c("violent", -.9, 2),c("violent", -.9, 1), c("other",-.9,2),c("other", -.9, 1),c("property",-.9,2),c("property", -.9, 1))
-test6 <- list(c("violent",-.28,2))
-test7 <- list(c("property",-.49,5),c("violent",-.37,2))
+test2 <- list(c("violent", -1, 2))
+StateProjections("ME", test2)
 
-StateProjections("CA", test1)
- # StateProjections("WA", test1)
+

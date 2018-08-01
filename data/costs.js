@@ -1,152 +1,152 @@
-var costs = {
-   "AL": {
-      "pcexpend": 16285.14056
-   },
-   "AK": {
-      "pcexpend": 48706.3103
-   },
-   "AZ": {
-      "pcexpend": 21652.45871
-   },
-   "AR": {
-      "pcexpend": 21196.78689
-   },
-   "CA": {
-      "pcexpend": 52043.48732
-   },
-   "CO": {
-      "pcexpend": 29395.76921
-   },
-   "CT": {
-      "pcexpend": 39986.43987
-   },
-   "DE": {
-      "pcexpend": 34689.7474
-   },
-   "FL": {
-      "pcexpend": 16881.80187
-   },
-   "GA": {
-      "pcexpend": 19067.64165
-   },
-   "HI": {
-      "pcexpend": 38808.16327
-   },
-   "ID": {
-      "pcexpend": 27010.80432
-   },
-   "IL": {
-      "pcexpend": 28302.12519
-   },
-   "IN": {
-      "pcexpend": 18774.90536
-   },
-   "IA": {
-      "pcexpend": 29829.16902
-   },
-   "KS": {
-      "pcexpend": 27244.67974
-   },
-   "KY": {
-      "pcexpend": 36806.66997
-   },
-   "LA": {
-      "pcexpend": 21900.16034
-   },
-   "ME": {
-      "pcexpend": 34633.92451
-   },
-   "MD": {
-      "pcexpend": 46172.99915
-   },
-   "MA": {
-      "pcexpend": 90149.42089
-   },
-   "MI": {
-      "pcexpend": 34430.06066
-   },
-   "MN": {
-      "pcexpend": 32315.78947
-   },
-   "MS": {
-      "pcexpend": 22628.20415
-   },
-   "MO": {
-      "pcexpend": 19616.52509
-   },
-   "MT": {
-      "pcexpend": 49453.35043
-   },
-   "NE": {
-      "pcexpend": 19257.65111
-   },
-   "NV": {
-      "pcexpend": 16520.83826
-   },
-   "NH": {
-      "pcexpend": 30094.01396
-   },
-   "NJ": {
-      "pcexpend": 47770.30943
-   },
-   "NM": {
-      "pcexpend": 43228.41105
-   },
-   "NY": {
-      "pcexpend": 51148.56193
-   },
-   "NC": {
-      "pcexpend": 27486.23755
-   },
-   "ND": {
-      "pcexpend": 47658.01887
-   },
-   "OH": {
-      "pcexpend": 19958.87114
-   },
-   "OK": {
-      "pcexpend": 18036.91541
-   },
-   "OR": {
-      "pcexpend": 35908.01822
-   },
-   "PA": {
-      "pcexpend": 36039.59409
-   },
-   "RI": {
-      "pcexpend": 52555.37823
-   },
-   "SC": {
-      "pcexpend": 21917.12813
-   },
-   "SD": {
-      "pcexpend": 32812.37525
-   },
-   "TN": {
-      "pcexpend": 29309.44031
-   },
-   "TX": {
-      "pcexpend": 21607.05881
-   },
-   "UT": {
-      "pcexpend": 37899.18975
-   },
-   "VT": {
-      "pcexpend": 31925.72006
-   },
-   "VA": {
-      "pcexpend": 31113.0782
-   },
-   "WA": {
-      "pcexpend": 36486.43772
-   },
-   "WV": {
-      "pcexpend": 45855.80365
-   },
-   "WI": {
-      "pcexpend": 35950.86833
-   },
-   "WY": {
-      "pcexpend": 47726.46686
-   }
+var costs =  {
+	"AL": {
+		"pcexpend":	17306.91734
+	},
+	"AK": {
+		"pcexpend":	57623.97561
+	},
+	"AZ": {
+		"pcexpend":	22461.89935
+	},
+	"AR": {
+		"pcexpend":	21305.62595
+	},
+	"CA": {
+		"pcexpend":	60740.69554
+	},
+	"CO": {
+		"pcexpend":	35463.45007
+	},
+	"CT": {
+		"pcexpend":	42301.85971
+	},
+	"DE": {
+		"pcexpend":	38231.78499
+	},
+	"FL": {
+		"pcexpend":	17738.67417
+	},
+	"GA": {
+		"pcexpend":	20256.58629
+	},
+	"HI": {
+		"pcexpend":	38265.28727
+	},
+	"ID": {
+		"pcexpend":	29709.03565
+	},
+	"IL": {
+		"pcexpend":	27963.71107
+	},
+	"IN": {
+		"pcexpend":	19660.79896
+	},
+	"IA": {
+		"pcexpend":	30257.1074
+	},
+	"KS": {
+		"pcexpend":	27824.29456
+	},
+	"KY": {
+		"pcexpend":	38073.8356
+	},
+	"LA": {
+		"pcexpend":	23148.15417
+	},
+	"ME": {
+		"pcexpend":	34587.67123
+	},
+	"MD": {
+		"pcexpend":	54249.91647
+	},
+	"MA": {
+		"pcexpend":	101038.4494
+	},
+	"MI": {
+		"pcexpend":	34986.22971
+	},
+	"MN": {
+		"pcexpend":	34387.86803
+	},
+	"MS": {
+		"pcexpend":	19621.10689
+	},
+	"MO": {
+		"pcexpend":	19155.1943
+	},
+	"MT": {
+		"pcexpend":	50906.80101
+	},
+	"NE": {
+		"pcexpend":	20203.19501
+	},
+	"NV": {
+		"pcexpend":	15396.67548
+	},
+	"NH": {
+		"pcexpend":	32299.13566
+	},
+	"NJ": {
+		"pcexpend":	49473.19405
+	},
+	"NM": {
+		"pcexpend":	43063.62613
+	},
+	"NY": {
+		"pcexpend":	52481.57716
+	},
+	"NC": {
+		"pcexpend":	28058.20321
+	},
+	"ND": {
+		"pcexpend":	48056.43341
+	},
+	"OH": {
+		"pcexpend":	21386.27489
+	},
+	"OK": {
+		"pcexpend":	18474.36038
+	},
+	"OR": {
+		"pcexpend":	36118.45786
+	},
+	"PA": {
+		"pcexpend":	37970.04872
+	},
+	"RI": {
+		"pcexpend":	56613.34675
+	},
+	"SC": {
+		"pcexpend":	22699.66271
+	},
+	"SD": {
+		"pcexpend":	32681.84389
+	},
+	"TN": {
+		"pcexpend":	31112.47475
+	},
+	"TX": {
+		"pcexpend":	22142.00089
+	},
+	"UT": {
+		"pcexpend":	39558.8905
+	},
+	"VT": {
+		"pcexpend":	40249.14286
+	},
+	"VA": {
+		"pcexpend":	31520.60467
+	},
+	"WA": {
+		"pcexpend":	37735.10626
+	},
+	"WV": {
+		"pcexpend":	43631.89873
+	},
+	"WI": {
+		"pcexpend":	35866.10806
+	},
+	"WY": {
+		"pcexpend":	46430.83333
+	}
 }
