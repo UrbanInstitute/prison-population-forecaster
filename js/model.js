@@ -1,13 +1,13 @@
-// define functions
-//  variables and functions called are at the bottom!!!!
+// Data is pulled in via .js files referenced in the index.html
+
+// define lots of functions
 
 function getProjEndYear(){
 	return 2025;
 }
+
 // Main function
 function StateProjections(ST,scenarios_list) {
-	var tSPstart = performance.now();
-
 	var racesums = {"white":0,
 								"black":0,
 								"hispanic":0,
@@ -38,26 +38,18 @@ function StateProjections(ST,scenarios_list) {
 								"other":0};								
 	var popThruYears = {};
 
-	// -- Grab the data from the selected state!
-	var stateData = usdata[ST];
+	// -- Grab the historical counts data from the selected state!
+	var stateData = counts[ST];
 	// Data is organized by state, crime, and then each array is [nt, e, l]
 
-	// -- Grab unique categories of crimes... for loop?
-
+	// -- Grab unique categories of crimes
 	var categories = stateData.catList
 
-  // all.scenarios <-ExpandScenario(scenarios.list) #expand scenarios if they include umbrella category (e.g., violent or nonviolent)
-  var all_scenarios = ExpandScenario(scenarios_list)
-  var lastyr = stateData.endYear - 1;
-  var firstyr = stateData.startYear;
-
-  // DW question: Do we need to loop through all categories if they're not modified in scenarios list??
-  // Lizzie answer we will do prepopulated baselines so that you only have to calculate new populations if scenario is modified.
-  // # Get scenario population projection counts in each category
-  // p.s<-lapply(state.categories, CatProjections, counts.st=STfile, scen.cat=all.scenarios, details=0) 
-  // expanded.list <- lapply(scen.to	.expand, ExpandOne)  
-
-	// I predict that we should only have to do this if categories === all_scenarios[i].category
+	var all_scenarios = ExpandScenario(scenarios_list)
+	var lastyr = stateData.endYear - 1;
+	var firstyr = stateData.startYear;
+	
+	// Get scenario population projection counts in each category
 	var population_totals = {};
 
 	population_totals.years = {};
@@ -65,19 +57,21 @@ function StateProjections(ST,scenarios_list) {
 	population_totals.years.endYear = lastyr;
 	population_totals.years.projYear = getProjEndYear();
 
+
+	// IMPORTANT: This is where you go to the main part of the model...where you project the population for each category. 
 	for (var i = 0; i < categories.length; i++) {
-		var details = 0; 
 		// categories are the categories that are present in each individual state (might not be ALL possible categories)
+
+		var details = 0; 
+		//   #If details == 0, just returns year and N
+  		//   #If details == 1, also returns e, p, l
+		
 		//All_scenarios is all scenarios that have been modified by the user in the input
 		population_totals[categories[i]] = CatProjections(categories[i],stateData,all_scenarios,details)
-
 	}
 
-// DW note: can make this more efficient and smaller...ignore "unknown" and ignore "hisp_f"
+	// DW note: can make this more efficient and smaller...ignore "unknown" and ignore "hisp_f"
 	var RE = racedata[ST]
-	// console.log(population_totals)
-
-	// console.log(RE)
 
 	// multiply number of people by percent for each category, sum up by race
 	for (cat in RE) {		
@@ -91,7 +85,6 @@ function StateProjections(ST,scenarios_list) {
 		}		
 	}
 
-
 	var popTotal = 0;
 	var popLYTotal = 0;
 	for (race in racesums) {
@@ -99,13 +92,13 @@ function StateProjections(ST,scenarios_list) {
 		popLYTotal += raceLYsums[race];
 	}
 	
+	// calculate ethnicity percents. 
 	for (race in racesums) {
 		racePCT[race] = racesums[race] / popTotal;
 		raceLYPCT[race] = raceLYsums[race] / popLYTotal;
 	}
 
-	// To ADD!
-	// console.log(raceLYPCT, racePCT)
+	// sum up the populations overall
 	for (cat in population_totals) {
 		if (cat != "years") {
 			for (var i = 0; i < population_totals[cat].length; i++) {
@@ -117,22 +110,12 @@ function StateProjections(ST,scenarios_list) {
 					popThruYears[yearT] += population_totals[cat][i];
 				}
 			}
-			// console.log(popThruYears)
 		}
-	}
-	// console.log(popThruYears)
-	// console.log(racePCT)
-	
-
- 	// How long did everything take
-	var tSPend = performance.now();
-
-	var msFormat = d3.format(".2f")
-	d3.select("#runTime")
-		.text("StateProjections run took " + msFormat(tSPend - tSPstart) + " milliseconds.")			
+	}		
 	return [popThruYears, racePCT, raceLYPCT]
 }
 
+// projected cost savings/increase function
 function CostProjections(projData,baseData,lastYear,costpercap) {
 	var costData = {};
 	var costCumulativeBaseline = 0;
@@ -162,12 +145,8 @@ function CostProjections(projData,baseData,lastYear,costpercap) {
 	return costData;
 }
 
-	// DW question: do we need to submit all scenarios to this every time?
-	// DW question: when would I use details = 0 and when = 1
-	// Lizzie answer, we can revisit details...might not need it. 
 function CatProjections(cat,stateData,all_scenarios,details) {
-	// CatProjections <- function(category, counts.st, scen.cat, details) {
-	// Category Projections
+  // Category Projections
   // #Given offense category & scenario, produce category-specific population projection
   // #Inputs:
   //   #category = category string 
@@ -175,11 +154,7 @@ function CatProjections(cat,stateData,all_scenarios,details) {
   //   #scen.cat = scenario
   //   #details = 0 to just return population projections; 1 to return all variables including admissions, LOS
 
-  // #Returns: Dataframe of projections for category
-  //   #If details == 0, just returns year and N
-  //   #If details == 1, also returns e, p, l
 
-	// DW question: do you need to calculate these for EVERY category/scenario??
 	var lastyr = stateData.endYear - 1;  //#last year of real data....DW
 	var firstyr = stateData.startYear;   //#first year of real data
 	// var firstyr_formean = lastyr-4   //#first year of data to be incorporated into projections
@@ -191,7 +166,6 @@ function CatProjections(cat,stateData,all_scenarios,details) {
 
 	for (var i = 0; i < all_scenarios.length; i++) {
 		if (all_scenarios[i][0] === cat) {  		
-			// DW question Can the calculation of whether there are two scenarios of same category be calculated beforehand?
 			// Find multiplier for All scenarios that have been changed by the USER and that have categories/data in the selected state.
 			if (all_scenarios[i][2] === 1) {
 				var e_multiplier = 1 + all_scenarios[i][1];
@@ -207,8 +181,7 @@ function CatProjections(cat,stateData,all_scenarios,details) {
 	var yearIndex = stateData[cat].length - 1;
 	
 
-	// Enter section from Lizzie's v4, where you can do the math even if there's only 3 or 4 years of history
-
+	//  if there are 5 or more years of historic data, do the following calculations. 
 	if (lastyr-firstyr >= 4 ) {
 		var last5e = [stateData[cat][yearIndex - 5][1],stateData[cat][yearIndex - 4][1],stateData[cat][yearIndex - 3][1],stateData[cat][yearIndex - 2][1],stateData[cat][yearIndex - 1][1]];
 
@@ -217,7 +190,6 @@ function CatProjections(cat,stateData,all_scenarios,details) {
 		var e_pc_3 = (last5e[3] - last5e[2])/last5e[2];
 		var e_pc_4 = (last5e[4] - last5e[3])/last5e[3]; //#most recent year
 
-		// DW note for Lizzie: begin to see small changes in numbers because of e rounding.  
 		// #calculate weighted mean of percent changes (x4, then adjusted by tanh to bound between -1 and 1)
 		var e_pct_chg = Math.tanh((weightedMean([e_pc_1, e_pc_2, e_pc_3, e_pc_4],[1,2,2,3])*4))			
 	  	// #apply e_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
@@ -241,18 +213,16 @@ function CatProjections(cat,stateData,all_scenarios,details) {
 		var e_step = (e_final-e_lastval)/(getProjEndYear()-lastyr);
 		var l_step = (l_final-l_lastval)/(getProjEndYear()-lastyr);
   	}
-  	else if (lastyr-firstyr === 3) {
 
-  		// Three years!!!
+  	//  if there are 4 years of historic data, do the following calculations. 
+  	else if (lastyr-firstyr === 3) {
 
 		var last5e = [stateData[cat][yearIndex - 4][1],stateData[cat][yearIndex - 3][1],stateData[cat][yearIndex - 2][1],stateData[cat][yearIndex - 1][1]];
 
 		var e_pc_1 = (last5e[1] - last5e[0])/last5e[0]; //#oldest year
 		var e_pc_2 = (last5e[2] - last5e[1])/last5e[1];
-		var e_pc_3 = (last5e[3] - last5e[2])/last5e[2];
-		// var e_pc_3 = (last5e[4] - last5e[3])/last5e[3]; //#most recent year
+		var e_pc_3 = (last5e[3] - last5e[2])/last5e[2]; //#most recent year
 
-		// DW note for Lizzie: begin to see small changes in numbers because of e rounding.  
 		// #calculate weighted mean of percent changes (x4, then adjusted by tanh to bound between -1 and 1)
 		var e_pct_chg = Math.tanh((weightedMean([e_pc_1, e_pc_2, e_pc_3],[2,2,3])*4))			
 	  	// #apply e_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
@@ -262,11 +232,10 @@ function CatProjections(cat,stateData,all_scenarios,details) {
 		var last5l = [stateData[cat][yearIndex - 4][2],stateData[cat][yearIndex - 3][2],stateData[cat][yearIndex - 2][2],stateData[cat][yearIndex - 1][2]];
 		var l_pc_1 = (last5l[1] - last5l[0])/last5l[0]; //#oldest year
 		var l_pc_2 = (last5l[2] - last5l[1])/last5l[1];
-		var l_pc_3 = (last5l[3] - last5l[2])/last5l[2];
-		// var l_pc_3 = (last5l[4] - last5l[3])/last5l[3]; //#most recent year
+		var l_pc_3 = (last5l[3] - last5l[2])/last5l[2]; //#most recent year
+
 		var l_pct_chg = Math.tanh((weightedMean([l_pc_1, l_pc_2, l_pc_3],[2,2,3])*4))			
 		var l_final = l_multiplier*(weightedMean(last5l,[1,2,2,3])+ (l_pct_chg*weightedMean(last5l,[1,2,2,3])))			
-
 
 			// #last year of real data      
 		var e_lastval = stateData[cat][yearIndex - 1][1];  
@@ -276,18 +245,15 @@ function CatProjections(cat,stateData,all_scenarios,details) {
 		var e_step = (e_final-e_lastval)/(getProjEndYear()-lastyr);
 		var l_step = (l_final-l_lastval)/(getProjEndYear()-lastyr);
   	}
-  	else if (lastyr-firstyr === 2) {
 
-  		// Two years!!!!
+  	//  if there are 3 years of historic data, do the following calculations. 
+  	else if (lastyr-firstyr === 2) {
 
 		var last5e = [stateData[cat][yearIndex - 3][1],stateData[cat][yearIndex - 2][1],stateData[cat][yearIndex - 1][1]];
 
 		var e_pc_1 = (last5e[1] - last5e[0])/last5e[0]; //#oldest year
-		var e_pc_2 = (last5e[2] - last5e[1])/last5e[1];
-		// var e_pc_3 = (last5e[3] - last5e[2])/last5e[2];
-		// var e_pc_4 = (last5e[4] - last5e[3])/last5e[3]; //#most recent year
+		var e_pc_2 = (last5e[2] - last5e[1])/last5e[1];//#most recent year		
 
-		// DW note for Lizzie: begin to see small changes in numbers because of e rounding.  
 		// #calculate weighted mean of percent changes (x4, then adjusted by tanh to bound between -1 and 1)
 		var e_pct_chg = Math.tanh((weightedMean([e_pc_1, e_pc_2],[2,3])*4))			
 	  	// #apply e_pct_chg to weighted mean of values in recent years; apply multiplier to simulate change from policy scenario
@@ -296,12 +262,10 @@ function CatProjections(cat,stateData,all_scenarios,details) {
 		// #length of stay calculations
 		var last5l = [stateData[cat][yearIndex - 3][2],stateData[cat][yearIndex - 2][2],stateData[cat][yearIndex - 1][2]];
 		var l_pc_1 = (last5l[1] - last5l[0])/last5l[0]; //#oldest year
-		var l_pc_2 = (last5l[2] - last5l[1])/last5l[1];
-		// var l_pc_3 = (last5l[3] - last5l[2])/last5l[2];
-		// var l_pc_4 = (last5l[4] - last5l[3])/last5l[3]; //#most recent year
+		var l_pc_2 = (last5l[2] - last5l[1])/last5l[1]; //#most recent year
+		
 		var l_pct_chg = Math.tanh((weightedMean([l_pc_1, l_pc_2],[2,3])*4))			
 		var l_final = l_multiplier*(weightedMean(last5l,[2,2,3])+ (l_pct_chg*weightedMean(last5l,[2,2,3])))			
-
 
 			// #last year of real data      
 		var e_lastval = stateData[cat][yearIndex - 1][1];  
@@ -341,9 +305,6 @@ function CatProjections(cat,stateData,all_scenarios,details) {
 		
 		// Added text to avoid a floating point error. 
 		if (l_values[i] < 0) {
-			// console.log(l_values[i-1] + l_step)
-			// console.log(l_values)
-			// console.log(l_step)
 			l_values[i] = 0;
 		} 
       	//yields 
@@ -362,16 +323,6 @@ function CatProjections(cat,stateData,all_scenarios,details) {
       		// n = nt*big + e = big
 
       	p_values.push(1-(1/l_values[i]));     
-
-		// 1 = .5 ==> 1-(1/.5) = -1 proportion left... error so we calculate differently
-      	// l = 1  ==> 1-(1/1)  = 0 proportion
-      	// l = 2  ==> 1-(1/2)  = 0.5 proportion left
-      	// l = 10 ==> 1-(1/10) = 0.9 proportion left
-
-
-      	// if(cat == "kidnapping" && i == (getProjEndYear()-firstyr)){
-      	// 	console.log(l_values[i])
-      	// }
 
       	// #generate projected n's based on estimates for admissions and LOS
       	if (p_values[i] >= 0) {
@@ -448,18 +399,14 @@ function ExpandOne(one_scenario,expanded_list) {
 	}
 }
 
-
-// DW NOTES MI, ME and DC and maybe some other states don't go through 2015
-
-
-
 var offenses = [ ["violent","All Violent"], ["drug", "All Drug"], ["property", "All Property"], ["nonviolent", "All Nonviolent"], ["other", "All Other"], ["arson", "Arson"],["assault", "Assault"],["burglary", "Burglary"],["drugposs", "Drug possession"],["drugtraff", "Drug trafficking"],["dwi", "DWI"],["fraud", "Fraud"],["homicide", "Homicide"],["kidnapping", "Kidnapping"],["larceny", "Larceny"],["otherdrug", "Other drug"],["otherprop", "Other property"],["otherviol", "Other violent"],["public_oth", "Public other"],["robbery", "Robbery"],["sexassault", "Sexual assault"],["weapons", "Weapons"],["mvtheft", "Motor vehicle theft"] ]
 
 function runModel(chosenState, projectedParameters){
 
-	// Temp change to static for testing
+	//  if you want to do static testing, set the chosen state and parameters here. 
 	// var chosenState = "DE";	
 	// var projectedParameters = [["property",-0.2,2],["drug",-0.2,1],["drug",-0.4,2]];
+
 	var costpercap = costs[chosenState].pcexpend;
 
 
@@ -467,7 +414,7 @@ function runModel(chosenState, projectedParameters){
 	var baselineParameters = [];
 	var projectedFinalData = 	StateProjections(chosenState, projectedParameters);
 	var baselineFinalData  = 	StateProjections(chosenState, baselineParameters);
-	var costsFinalData = CostProjections(projectedFinalData[0],baselineFinalData[0],(usdata[chosenState].endYear - 1),costpercap);
+	var costsFinalData = CostProjections(projectedFinalData[0],baselineFinalData[0],(counts[chosenState].endYear - 1),costpercap);
 	
 
 	var minYear = d3.min(Object.keys(baselineFinalData[0]))
@@ -475,106 +422,7 @@ function runModel(chosenState, projectedParameters){
 	var projYear = d3.min(Object.keys(projectedFinalData[0]))
 
 
-	return {"projected": projectedFinalData, "baseline": baselineFinalData, "costs": costsFinalData, "years": {"min": +minYear, "max": +maxYear, "diverge": +usdata[chosenState].endYear}}
-	
-	// d3.select("#outputs").selectAll("*").remove()
-	// var projectionTable = d3.select("#outputs")
-	// 	.append("table")
-
-	// var header = projectionTable.append("tr")
-	// var genericFormatter = d3.format(".5f")
-	// header.append("th")
-	// 	.text("Year")
-	// header.append("th")
-	// 	.text("Baseline population")
-	// header.append("th")
-	// 	.text("Projected population")
-	// for(var i = minYear; i <= maxYear; i++){
-	// 	var tr = projectionTable.append("tr")
-	// 	tr.append("td")
-	// 		.text(i)
-	// 	tr.append("td")
-	// 		.text(genericFormatter(baselineFinalData[0][i]))
-	// 	tr.append("td")
-	// 		.text(genericFormatter(projectedFinalData[0][i]))
-	// }
-
-	// var raceTable = d3.select("#outputs")
-	// 	.append("table")
-	// var raceHeader = raceTable.append("tr")
-	// raceHeader.append("th")
-	// 	.text("Race")
-	// raceHeader.append("th")
-	// 	.text("Baseline proportion")
-	// raceHeader.append("th")
-	// 	.text("Projected vs baseline")
-	// raceHeader.append("th")
-	// 	.text("Projected vs last yr")
-
-	// var races = Object.keys(baselineFinalData[1])
-
-	// for(var i = 0; i < races.length; i ++){
-	// 	var race = races[i]
-	// 	var tr = raceTable.append("tr")
-	// 	tr.append("td")
-	// 		.text(race)
-	// 	tr.append("td")
-	// 		.text(genericFormatter(baselineFinalData[1][race]))
-	// 	tr.append("td")
-	// 		.text(genericFormatter(projectedFinalData[1][race]))
-	// 	tr.append("td")
-	// 		.text(genericFormatter(projectedFinalData[2][race]))
-	// }
-
-	// var costTable = d3.select("#outputs")
-	// 	.append("table")
-	// var costHeader = costTable.append("tr")
-	// costHeader.append("th")
-	// 	.text("Year")
-	// costHeader.append("th")
-	// 	.text("Cost vs baseline")
-	// costHeader.append("th")
-	// 	.text("Cost diff vs last yr")
-
-	// var costKeys = Object.keys(costsFinalData)
-	// for(var i = 0; i < costKeys.length; i++) {
- //    	costKeys[i] = parseInt(costKeys[i]);
-	// }
-	// var minCostYear = d3.min(costKeys)
-	// var maxCostYear = d3.max(costKeys)
-	
-	// // console.log(costsFinalData, parseInt.apply(null, Object.keys(costsFinalData)))
-	// var dollars = d3.format("$,.2f")
-
-	// console.log(costsFinalData)
-	// for(var i = minCostYear; i <= maxCostYear; i++){
-	// 	var tr = costTable.append("tr")
-	// 	tr.append("td")
-	// 		.text(i)
-	// 	tr.append("td")
-	// 		.text(dollars(costsFinalData[i]["baselineDiff"]))
-	// 	tr.append("td")
-	// 		.text(dollars(costsFinalData[i]["lastYearDiff"]))
-	// }
-	// var last_tr = costTable.append("tr")
-	// last_tr.append("td")
-	// 	.text("cumulative")
-	// last_tr.append("td")
-	// 	.text(dollars(costsFinalData["cumulative"]["baselineDiff"]))
-	// last_tr.append("td")
-	// 	.text(dollars(costsFinalData["cumulative"]["lastYearDiff"]))
-
-
-
-	// MI, ME and DC and maybe some other states don't go through 2015
-	// StateProjections("AZ", test1)
-
-
-	// var tEnd = performance.now();
-	// console.log("Entire Page took " + (tEnd - tStart) + " milliseconds.")		
-	// console.log('%c Notes for Ben:', 'color: Tomato ; font-size: x-large')
-	// console.log('%cThere is a lot of refactoring that can go on to improve performance, most notably precalculating baseline projections for each state.', 'color: Tomato ; font-size: medium')	
-	// console.log('%cThere are a few states where the data coverage is not ideal, and this may break for the time being. A few lines of code would fix that. It would also break the R script too, but just wanted you to know', 'color: Tomato ; font-size: medium')	
+	return {"projected": projectedFinalData, "baseline": baselineFinalData, "costs": costsFinalData, "years": {"min": +minYear, "max": +maxYear, "diverge": +counts[chosenState].endYear}}
 
 }
 
