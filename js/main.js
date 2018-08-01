@@ -1212,14 +1212,19 @@ var ppf = function(){
 
 		var parameters = parseQueryString(window.location.search);
 		var name = "Sample forecast"
+		var state = ""
+		if(parameters.hasOwnProperty("state")){
+			setState(parameters.state)
+		}
 		if(parameters.hasOwnProperty("forecast")){
 			var forecastString = parameters["forecast"],
 				forecast = decodeForecast(forecastString),
 				inputs = forecast.inputs,
 				state = forecast.state;
 			name = forecast.name;
-
-			setState(state)
+			if(! parameters.hasOwnProperty("state")){
+				setState(state)
+			}
 			setInputs(inputs)
 		}
 
