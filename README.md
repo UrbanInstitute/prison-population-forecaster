@@ -4,8 +4,9 @@ Model.html is a work in progress. In the future it will run the commands found i
 
 ## Model and Data file organization
  
-###/data
+### /data
 
+```
 ┣━ costs.js
 ┣━ counts.js
 ┣━ race.js
@@ -24,7 +25,7 @@ Model.html is a work in progress. In the future it will run the commands found i
 	┃ 	┗━ intermediate counts data file, a result of the `r2csv.R` script. Used in `reshape_data_counts.py` to create `../counts.js`, a json file with variable heading.
 	┗━ costs.csv
 		┗━ intermediate costs data file, a result of the `r2csv.R` script. 
-	
+```	
 
 ┃
 ┗┓
