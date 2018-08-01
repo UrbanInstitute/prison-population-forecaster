@@ -3,10 +3,7 @@
 
 
 ## Model and Data file organization
- 
-
 ```
-
 /data
 	┣━ costs.js ━━━━┓
 	┣━ counts.js 	┣━ all these are the result of the data transformations taking place in the /source folder
