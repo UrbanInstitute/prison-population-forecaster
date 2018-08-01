@@ -272,7 +272,6 @@ var ppf = function(){
 	}
 
 	function buildSelection(container, number, tier, indicator){
-
 		var text = (indicator == "los") ? "Length of prison term" : "Admissions";
 		var widthClass;
 		if(Math.abs(number) == 100){
@@ -326,14 +325,24 @@ var ppf = function(){
 				buildSelection(l, los, "parent", "los")
 
 
+				var parameters = parseQueryString(window.location.search);
+				if(parameters.test == "b"){
+					l.append("div")
+						.attr("class","selectionItem exceptionsLabel " + parent)
+						.text("Exceptions")
+				}
 				
 				for(var i = 0; i < SUBCATEGORIES[parent].length; i++){
 					var child = SUBCATEGORIES[parent][i]
 					 	childAdmissions = +inputs[child]["admissions"]["value"],
 					 	childLos = +inputs[child]["los"]["value"]
+					 	console.log(childAdmissions, inputs, child)
 					if(childAdmissions != +admissions){
+						l.select(".exceptionsLabel." + parent)
+							.style("display", "block")
+
 						l.append("div")
-							.attr("class", "selectionItem selectionName child admissions " + child)
+							.attr("class", "selectionItem selectionName child admissions " + child + " parent-" + parent)
 							.text(OFFENSES.filter(function(c){ return c[0] == child})[0][1])
 						buildSelection(l, childAdmissions, "child", "admissions")
 					}else{
@@ -342,8 +351,12 @@ var ppf = function(){
 
 					if(childLos != +los){
 						if(childAdmissions == admissions){
+							console.log(l.select(".exceptionsLabel." + parent).node())
+							l.select(".exceptionsLabel." + parent)
+								.style("display", "block")
+
 							l.append("div")
-								.attr("class", "selectionItem selectionName child los " + child)
+								.attr("class", "selectionItem selectionName child los " + child + " parent-" + parent)
 								.text(OFFENSES.filter(function(c){ return c[0] == child})[0][1])
 						}
 						buildSelection(l, childLos, "child", "los")
@@ -352,7 +365,11 @@ var ppf = function(){
 					}
 
 					if(childLos == los && childAdmissions == admissions){
-						d3.selectAll(".selectionItem." + child).remove()	
+						d3.selectAll(".selectionItem." + child).remove()
+					}
+					if(d3.selectAll(".selectionItem.parent-" +  parent).nodes().length == 0){
+						l.select(".exceptionsLabel." + parent)
+							.style("display", "none")
 					}
 				}
 
@@ -778,12 +795,12 @@ var ppf = function(){
 	/******************** FORECASTS ************************/
 	/*******************************************************/
 	var forecastCount = 1;
-	function saveForecast(){
+	function saveForecast(name){
 		var forecast = {"inputs": getChildInputs(), "state": getState(), "parents": getParentInputs(), "forecastCount": forecastCount}
 		d3.select("#saveForecast").classed("deactivated",true)
 
 		var l = d3.select("#savedForecastsList")
-		var name = (forecastCount == 1) ? "Sample forecast" : "Forecast " + forecastCount;
+		var name = (forecastCount == 1) ? name : "Forecast " + forecastCount;
 		var row = l.append("div")
 			.attr("class","savedForecast c" + forecastCount)
 			// .text(name)
@@ -880,9 +897,10 @@ var ppf = function(){
 		
 	}
 	function shareForecast(d){
-		var inputs = d.inputs;
-		var parents = d.parents;
-		var state = d.state
+		var inputs = d.inputs,
+			parents = d.parents,
+			state = d.state,
+			name = d3.select(this.parentNode).select("input").node().value;
 
 		for (var attr in parents) {
 			if(parents.hasOwnProperty(attr)){
@@ -890,15 +908,12 @@ var ppf = function(){
 			}
 		}
 
-		var queryObj = {"inputs": inputs, "state": state},
+		var queryObj = {"inputs": inputs, "state": state, "name": name },
 			queryString = encodeForecast(queryObj)
 
-		console.log(queryString)
 
 	}
 	function encodeForecast(d){
-
-	console.log(d)
 
 		var allOffenses = OFFENSES.concat(PARENTS).map(function(value,index) { return value[0]; }),
 			inputs = Object.assign({}, d.inputs),
@@ -914,6 +929,7 @@ var ppf = function(){
 		}
 
 		output.push(d.state)
+		output.push(d.name)
 		var merged = [].concat.apply([], output);
 
 		// console.log(merged)
@@ -927,7 +943,7 @@ var ppf = function(){
 	function decodeForecast(d){
 		var allOffenses = OFFENSES.concat(PARENTS).map(function(value,index) { return value[0]; }),
 			input = JSON.parse(decodeURIComponent(d)),
-			output = {"inputs":{}, "state": input[allOffenses.length*2]}
+			output = {"inputs":{}, "state": input[allOffenses.length*2], "name": input[allOffenses.length*2 + 1]}
 
 		for(var i = 0; i < allOffenses.length*2; i += 2){
 			var los = input[i],
@@ -1195,12 +1211,13 @@ var ppf = function(){
 		q = JSON.parse(decodeURIComponent(z))
 
 		var parameters = parseQueryString(window.location.search);
-
+		var name = "Sample forecast"
 		if(parameters.hasOwnProperty("forecast")){
 			var forecastString = parameters["forecast"],
 				forecast = decodeForecast(forecastString),
 				inputs = forecast.inputs,
 				state = forecast.state;
+			name = forecast.name;
 
 			setState(state)
 			setInputs(inputs)
@@ -1211,7 +1228,7 @@ var ppf = function(){
 		// setInputs({"violent": { "admissions": {"value": "-20", "locked": true}, "los": {"value": "-20", "locked": true} } })
 		updateInputs(false, false, false, false, "init")
 		d3.select("#saveForecast").classed("deactivated",true)
-		saveForecast()
+		saveForecast(name)
 	}
 	init();
 }();
