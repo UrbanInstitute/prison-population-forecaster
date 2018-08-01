@@ -1,9 +1,4 @@
-WHen selecting a saved forecast:
-	it turns urban blue
-	big button disabled
-
-
-3 buttons next to forecast
-	edit
-	share
-	delete
+dropdown in population for baseline
+mouseover on line chart
+about text
+y axis label "People"

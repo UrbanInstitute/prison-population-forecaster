@@ -84,6 +84,8 @@ var ppf = function(){
 		return obj;
 	}
 
+	// function 
+
 
 	function moveToFront(selector){
 		var node = d3.select(selector).node()
@@ -449,10 +451,15 @@ var ppf = function(){
 	}
 
 	function buildPopulationChart(allData, forecastCount){
+		var w, h;
+
+		w = window.innerWidth - 220 - 280 - 50 - 50;
+		h = (window.innerHeight - 220 - 150) * .5
+
 		var lineBaseline, lineProjected,
 			margin = {top: 20, right: 60, bottom: 30, left: 20},
-			width = 1100 - margin.left - margin.right,
-			height = 300 - margin.top - margin.bottom,
+			width = w - margin.left - margin.right,
+			height = h - margin.top - margin.bottom,
 			saveForecast = (typeof(forecastCount) == "number"),
 			data = (saveForecast) ? allData : allData[0],
 			years = (saveForecast) ? null : allData[1]
@@ -510,7 +517,7 @@ var ppf = function(){
 			}
 
 		if(d3.select("#lineChart").select("svg").node() == null){
-			var svg = d3.select("#lineChart").append("svg").attr("width", 1100).attr("height", 500),
+			var svg = d3.select("#lineChart").append("svg").attr("width", w).attr("height", h),
 
 			g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")").attr("id", "lineChartG");
 
@@ -642,7 +649,7 @@ var ppf = function(){
 
 
 			if(popDiffZero){
-				text = "Without any policy changes, the prison population in 2025 is estimated to be " + d3.foromat(".0f")(popProj) + " people."
+				text = "Without any policy changes, the prison population in 2025 is estimated to be " + d3.format(".0f")(popProj) + " people."
 			}
 			if(popDiffPercentInt[0] == "8" || popDiffPercentInt == "18" ){ d3.select("#popChangeLetter").text("n") }
 
@@ -659,9 +666,15 @@ var ppf = function(){
 
 	}
 	function buildDemographicsChart(data){
+	var w, h;
+
+
+	w = window.innerWidth - 220 - 280 - 50 - 50 - 300;
+	h = (window.innerHeight - 220 - 350) * .5
+
 	var margin = {top: 20, right: 20, bottom: 30, left: 38},
-	    width = 600 - margin.left - margin.right,
-	    height = 300 - margin.top - margin.bottom;
+	    width = w - margin.left - margin.right,
+	    height = h - margin.top - margin.bottom;
 	    
 
 	var x0 = d3.scaleBand()
@@ -679,7 +692,7 @@ var ppf = function(){
 	    .range(["#000000", "#ec008b"]);
 
 	if(d3.select("#barChart").select("svg").node() == null){
-		var svg = d3.select("#barChart").append("svg").attr("width", 600).attr("height", 300),
+		var svg = d3.select("#barChart").append("svg").attr("width", w).attr("height", h),
 
 		g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")").attr("id","barsGroups");
 
@@ -1236,4 +1249,5 @@ var ppf = function(){
 		saveForecast(name)
 	}
 	init();
+	// $(window).resize(init)
 }();

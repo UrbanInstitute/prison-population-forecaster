@@ -130,7 +130,7 @@ body{
     position: fixed;
     right: 290px;
     width: 247px;
-    top: 540px;
+    top: calc(50% + 40px);
     font-size: 18px;
     line-height: 1.5;
 }
@@ -153,9 +153,9 @@ body{
 }
 #demographicSection{
     position: fixed;
-    top: 540px;
+    top: calc(50% + 40px);
     left: 330px;
-    width: 620px;
+    width: calc(100% - 900px);
 }
 #popContainer{
     font-size: 18px;
@@ -769,4 +769,18 @@ input[type=range]:focus::-ms-fill-upper {
     left: 0px;
     top: 0px;
     cursor: pointer;
+}
+
+
+/*******************************************************/
+/*********************** MOBILE ************************/
+/*******************************************************/
+.breakpoint, .datum{
+    display: none;
+    width: 0px;
+    height: 0px;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    pointer-events: none;
 }
