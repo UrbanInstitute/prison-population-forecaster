@@ -273,6 +273,17 @@ var ppf = function(){
 		}
 	}
 
+	function formatPP(val){
+		if(+val == 0){
+			return "+0"
+		}
+		else if(+val < 0){
+			return val
+		}else{
+			return "+" + val
+		}	
+	}
+
 	function buildSelection(container, number, tier, indicator){
 		var text = (indicator == "los") ? "Length of prison term" : "Admissions";
 		var widthClass;
@@ -726,12 +737,12 @@ var ppf = function(){
 		.attr("fill", function(d) { return z(d.key); });
 
 		bars.selectAll("text")
-		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key], diff: (d[key] - d["baseline"])/d["baseline"]}; }); })
+		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key], diff: (d[key] - d["baseline"])}; }); })
 		.enter().append("text")
 		.style("opacity", function(d){ return ((d.key) == "baseline") ? 0 : 1})
 		.attr("x", function(d) { return x1(d.key) + .5*(30 - x1.bandwidth()); })
 		.attr("y", function(d) { return y(d.value) -5; })
-		.text(function(d){ return formatPercent(d3.format(".1f")(d.diff *100)) })
+		.text(function(d){ return formatPP(d3.format(".2f")(d.diff *100)) })
 
 
 		g.append("g")
@@ -768,13 +779,13 @@ var ppf = function(){
 		d3.select("#barsGroups").select("g.barsGroup").selectAll("text").style("opacity",0)
 
 		bars.selectAll("text")
-		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key], diff: (d[key] - d["baseline"])/d["baseline"]}; }); })
+		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key], diff: (d[key] - d["baseline"])}; }); })
 		// .selectAll("text")
 		.style("opacity", function(d){ return ((d.key) == "baseline") ? 0 : 1})
 		.transition()
 		.attr("x", function(d) { return x1(d.key); })
 		.attr("y", function(d) { return y(d.value) - 5; })
-		.text(function(d){ return formatPercent(d3.format(".1f")(d.diff *100)) })
+		.text(function(d){ return formatPP(d3.format(".2f")(d.diff *100)) })
 
 
 		d3.select(".x.bar.axis")
@@ -1197,6 +1208,21 @@ var ppf = function(){
 
 		}
 	})
+
+	/*******************************************************/
+	/****************** ABOUT SECTION **********************/
+	/*******************************************************/
+
+	d3.select("#aboutClose")
+		.on("mouseover", function(){
+			d3.select(this)
+				.attr("src","img/closeHover.png")
+		})
+		.on("mouseout", function(){
+			d3.select(this)
+				.attr("src","img/close.png")
+		})
+
 
 	/*******************************************************/
 	/********************* INITIALIZE **********************/

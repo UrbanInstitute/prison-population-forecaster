@@ -773,6 +773,64 @@ input[type=range]:focus::-ms-fill-upper {
 
 
 /*******************************************************/
+/******************** ABOUT DRAWER *********************/
+/*******************************************************/
+#aboutContainer{
+    width: 100%;
+    position: absolute;
+    top: 50px;
+    background: white;
+    height: 10000px;
+    z-index: 100;
+}
+#aboutContainer a{
+    color: #1696d2;
+    text-decoration: none;
+}
+#aboutWell{
+    max-width: 725px;
+    width: 100%;
+    margin: 0 auto;
+    margin-top: 110px;
+}
+.aboutHeader{
+    font-weight: 300;
+    font-size: 34px;
+    text-transform: uppercase;
+    margin-top: 50px;
+    margin-bottom: 15px;
+}
+.aboutP{
+    font-size: 17px;
+    line-height: 1.7;
+}
+.aboutP.credits{
+    font-style: italic;
+    margin-bottom: 30px;
+}
+.creditLine{
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+.creditLine span{
+    font-weight: bold;
+}
+.github{
+    font-size: 14px;
+    display: block;
+    margin-top: 30px;
+}
+#aboutClose{
+    width: 25px;
+    position: absolute;
+    right: 30px;
+    top: 45px;
+    z-index: 100000000;
+    background: white;
+    cursor: pointer;
+}
+
+/*******************************************************/
 /*********************** MOBILE ************************/
 /*******************************************************/
 .breakpoint, .datum{
