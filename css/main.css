@@ -73,6 +73,7 @@ body{
 #lineChart{
     margin-top: 10px;
     margin-left: -18px;
+    position: relative;
 }
 #bgRect{
     fill: #f5f5f5;
@@ -102,6 +103,46 @@ body{
 .line.projection.saved.active, .line.projection.saved.clickActive{
     stroke: #1696d2;
     stroke-width: 3px;
+}
+
+.mouseoverDot.historical, .mouseoverDot.baseline{
+    stroke:#000;
+    stroke-width: 2px;
+    fill: #fff;
+}
+.mouseoverDot.future{
+    stroke: #ec008b;
+    stroke-width: 2px;
+    fill: #fff;
+}
+.dotActive{
+    stroke: #1696d2 !important;
+}
+
+#ttBox{
+    background: white;
+    bottom: 118px;
+    left: 30px;
+    position: relative;
+    width: 256px;
+    font-size: 14px;
+    padding: 10px;
+    border: 2px solid #444243;
+}
+#ttYear{
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+#ttPop, #ttCost{
+    font-weight: bold;
+}
+#ttPop span, #ttCost span{
+    color: #1696d2;
+}
+.ttLabel{
+    font-size: 14px;
+    position: absolute;
+    font-weight: bold;
 }
 .axis.y .tick line{
     stroke: #dedddd
@@ -173,6 +214,13 @@ body{
 .bar.x.axis .tick line, .bar.x.axis path{
     opacity: 0;
 }
+#popMenuContainer{
+    display: inline-block;
+    width: 207px;
+}
+#popMenuContainer select{
+    display: none;
+}
 /*******************************************************/
 /******************** LEFT SIDE BAR ********************/
 /*******************************************************/
@@ -212,6 +260,9 @@ body{
 	overflow: hidden;
     height: 40px;
     padding-top: 15px;
+}
+#stateSelect{
+    display: none;
 }
 #stateSelect-button{
     margin-left: 20px;
@@ -778,9 +829,9 @@ input[type=range]:focus::-ms-fill-upper {
 #aboutContainer{
     width: 100%;
     position: absolute;
-    top: 50px;
+    top: -800px;
     background: white;
-    height: 10000px;
+    height: 760px;
     z-index: 100;
 }
 #aboutContainer a{

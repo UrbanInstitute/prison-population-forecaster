@@ -67,7 +67,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
        <a target="_blank" href="http://www.urban.org" title="Home" rel="home" class="site-logo"></a>
     <div class="title"><span class="feature-link"><a href="http://www.urban.org/features" class="title-linkback" alt="Urban Institute logo">Features</a>
       <div id = "printIcon"></div>
-      <div id = "headerAboutLink"><a href = "https://urbanorg.app.box.com/folder/50514345504" target = "_blank">About this feature</a></div>
+      <div id = "headerAboutLink" class = "closed"><a>About this feature</a></div>
     </div>
 
     <div class="share-icons">
@@ -97,7 +97,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <!-- END HEADER -->
 
 <!-- START ABOUT DRAWER -->
-<!--   <div id = "aboutContainer">
+  <div id = "aboutContainer">
     <img src = "img/close.png" id = "aboutClose" />
     <div id = "aboutWell">
       <div class = "aboutHeader methodology">Methodology</div>
@@ -112,7 +112,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
       <a class = "github" href = "" target = "_blank">View this project on GitHub</a>
     </div>
-  </div> -->
+  </div>
 <!-- END ABOUT DRAWER -->
 
 
@@ -1047,8 +1047,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <div id = "lineChart"></div>
   <div id = "demographicSection">
     <div id = "popTitle" class = "chartSectionTitle">Population</div>
-    <div id = "popContainer">Compared with the 2025 baseline projection, these changes would lead to a<span id = "popChangeLetter"></span><span id = "popChangeText"></span></div>
-    <div id = "barTitle">Racial and ethnic makeup of the prison population in 2025</div>
+    <div id = "popContainer">Compared with the <div id = "popMenuContainer"><select id = "popMenu"><option value = "baseline" id = "popMenuBaseline">2025 baseline projection</option><option value = "last" id = "popMenuLast">population in 2015</option></select></div>, these changes would lead to a<span id = "popChangeLetter"></span><span id = "popChangeText"></span></div>
+    <div id = "barTitle">Racial and ethnic makeup of the prison population</div>
     <div id = "barChart"></div>
   </div>
   <div id = "costSection">

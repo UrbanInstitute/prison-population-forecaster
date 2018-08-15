@@ -1299,3 +1299,32 @@ a.ui-button:active,
 	-webkit-box-shadow: 0px 0px 5px #666666;
 	box-shadow: 0px 0px 5px #666666;
 }
+
+
+/***************************************************/
+/************** POPULATION MENU ********************/
+/***************************************************/
+#popMenuContainer .ui-selectmenu-button.ui-button {
+	text-align: left;
+    white-space: nowrap;
+    width: 203px;
+    height: 32px;
+    background: url(../../img/pop-select-2x.png) no-repeat right #fff;
+    background-size: 14px 8px;
+    border: none;
+    color: #000;
+    /* width: 45px; */
+}
+#popMenuContainer .ui-selectmenu-text{
+	width: 201px;
+	border-bottom: 2px dotted #1696d2;
+    font-weight: bold;
+    color: #1696d2;
+    padding-bottom: 3px;
+    margin: 0px;
+    margin-top: 5px;
+    margin-left: 2px;
+}
+#popMenuContainer .ui-selectmenu-icon.ui-icon{
+	display: none;
+}

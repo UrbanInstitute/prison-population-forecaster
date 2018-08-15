@@ -141,7 +141,9 @@ var ppf = function(){
 	function getMinYear(){
 		return MIN_YEAR;
 	}
-
+	function getBaselineType(){
+		return d3.select("#popMenu").node().value;
+	}
 
 	/*******************************************************/
 	/****************** INPUT MANAGERS *********************/
@@ -236,6 +238,7 @@ var ppf = function(){
 	}
 	function sendInputs(state, inputs){
 		d3.select("#saveForecast").classed("deactivated",false)
+		d3.selectAll(".mouseoverElem").remove()
 		declickForecasts()
 		var reshaped = []
 		for (var offense in inputs) {
@@ -254,9 +257,10 @@ var ppf = function(){
 
 		buildPopulationChart(lineData, false)
 		buildCostInfo(costsData)
-		buildDemographicsChart(barData)
+		buildDemographicsChart(barData, getBaselineType())
 
-		buildPopulationText(lineData)
+		buildPopulationText(lineData, getBaselineType())
+
 
 
 	}
@@ -282,6 +286,14 @@ var ppf = function(){
 		}else{
 			return "+" + val
 		}	
+	}
+	function formatCost(cost){
+		var testString = d3.format(".4s")(Math.abs(cost))
+		var sigFigs = testString.split(".")[0].length + 1
+
+		var formatString = "$." + sigFigs + "s"
+
+		return (cost == 0) ? "$0" : d3.format(formatString)(Math.abs(cost)).replace("k"," thousand").replace("M", " million").replace("G", " billion")
 	}
 
 	function buildSelection(container, number, tier, indicator){
@@ -339,17 +351,15 @@ var ppf = function(){
 
 
 				var parameters = parseQueryString(window.location.search);
-				if(parameters.test == "b"){
-					l.append("div")
-						.attr("class","selectionItem exceptionsLabel " + parent)
-						.text("Exceptions")
-				}
+				l.append("div")
+					.attr("class","selectionItem exceptionsLabel " + parent)
+					.text("Exceptions")
+				
 				
 				for(var i = 0; i < SUBCATEGORIES[parent].length; i++){
 					var child = SUBCATEGORIES[parent][i]
 					 	childAdmissions = +inputs[child]["admissions"]["value"],
 					 	childLos = +inputs[child]["los"]["value"]
-					 	console.log(childAdmissions, inputs, child)
 					if(childAdmissions != +admissions){
 						l.select(".exceptionsLabel." + parent)
 							.style("display", "block")
@@ -364,7 +374,6 @@ var ppf = function(){
 
 					if(childLos != +los){
 						if(childAdmissions == admissions){
-							console.log(l.select(".exceptionsLabel." + parent).node())
 							l.select(".exceptionsLabel." + parent)
 								.style("display", "block")
 
@@ -419,7 +428,7 @@ var ppf = function(){
 				var lineDatum = {"year": +year}
 				lineDatum["baseline"] = baseline[year]
 				lineDatum["projected"] = projected[year]
-				// lineDatum["cost"] = costs[year]["baselineDiff"]
+				lineDatum["cost"] = (typeof(costs[year]) == "undefined") ? year : costs[year]["baselineDiff"]
 				lineData.push(lineDatum)
 			}
 		}
@@ -433,6 +442,7 @@ var ppf = function(){
 		//baseline[1][race] = baseline proportion, 2025
 		//projected[1][race] = Projected vs baseline
 		//projected[2][race] = Projected vs last yr
+		console.log(data)
 		var baseline = data["baseline"][1]
 		var vsBaseline = data["projected"][1]
 		var vsLastYr = data["projected"][2]
@@ -450,9 +460,10 @@ var ppf = function(){
 				race = races[i]
 			group["race"] = race
 			group["baseline"] = baseline[race]
+			group["last"] = vsLastYr[race]
 			group["vsBaseline"] = vsBaseline[race]
-			group["vsLastYr"] = vsLastYr[race]
 
+			console.log(group)
 			barData.push(group)
 		}
 
@@ -526,7 +537,83 @@ var ppf = function(){
 				var historicalData = data.filter(function(o){ return o.year <= years.diverge-1 && o.year >= getMinYear()})
 				var futureData = data.filter(function(o){ return o.year >= years.diverge-1 && o.year >= getMinYear()})
 			}
+			function mouseoverChart(event){
+					var year = Math.round(x.invert(d3.mouse(this)[0] - margin.left))
+					var future = d3.select(".line.projection.future").data()[0].filter(function(o){ return o.year == year})[0]
+					var baseline = d3.select(".line.baseline.future").data()[0].filter(function(o){ return o.year == year})[0]
+					var historical = d3.select(".line.baseline.historical").data()[0].filter(function(o){ return o.year == year})[0]
 
+					if( ( typeof(historical) == "undefined" && typeof(baseline) == "undefined") || year > MAX_YEAR || d3.mouse(this)[0] < margin.left || d3.mouse(this)[1] < 10 || d3.mouse(this)[1] > height + margin.bottom){
+						d3.selectAll(".mouseoverElem").remove()
+					}
+					else if(typeof(historical) != "undefined"){
+						d3.selectAll(".mouseoverElem").remove()
+						d3.select("#lineChart").select("svg").select("#lineChartG")
+							.append("circle")
+							.attr("class", "mouseoverDot mouseoverElem historical")
+							.attr("r", 7)
+							.attr("cx", x(year))
+							.attr("cy", y(historical.baseline))
+
+						d3.select("#lineChart")
+							.append("div")
+							.attr("class", "ttLabel historical mouseoverElem")
+							.style("top", (y(historical.baseline) -10) + "px")
+							.style("left", (x(year) + 20) + "px")
+							.html("Population: <span>" + d3.format(",.0f")(historical.baseline) + "</span>")
+
+					}else{
+						d3.selectAll(".mouseoverElem").remove()
+
+						var activeClass = (d3.selectAll(".line.saved.clickActive").nodes().length == 0) ? "" : " dotActive"
+
+						d3.select("#lineChart").select("svg").select("#lineChartG")
+							.append("circle")
+							.attr("class", "mouseoverDot mouseoverElem baseline")
+							.attr("r", 7)
+							.attr("cx", x(year))
+							.attr("cy", y(baseline.baseline))
+							.attr("stroke-dasharray","2,2")
+						d3.select("#lineChart").select("svg").select("#lineChartG")
+							.append("circle")
+							.attr("class", "mouseoverDot mouseoverElem future" + activeClass)
+							.attr("r", 7)
+							.attr("cx", x(year))
+							.attr("cy", y(future.projected))
+
+						var projectedAdjust = (future.projected < future.baseline) ? 30 : -10;
+						var baselineAdjust = (future.projected > future.baseline) ? 30 : -10;
+
+						d3.select("#lineChart")
+							.append("div")
+							.attr("class", "ttLabel projection mouseoverElem")
+							.style("top", (y(future.projected) + projectedAdjust) + "px")
+							.style("left", (x(year) - 170) + "px")
+							.html("Forecast population: <span>" + d3.format(",.0f")(future.projected) + "</span>")
+
+						d3.select("#lineChart")
+							.append("div")
+							.attr("class", "ttLabel baseline mouseoverElem")
+							.style("top", (y(future.baseline) + baselineAdjust) + "px")
+							.style("left", (x(year) - 170) + "px")
+							.html("Baseline population: <span>" + d3.format(",.0f")(future.baseline) + "</span>")
+
+						var sign = (future.projected - future.baseline) < 0 ? "-" : "+";
+						var ttBox = d3.select("#lineChart")
+							.append("div")
+							.attr("class", "mouseoverElem")
+							.attr("id", "ttBox")
+						ttBox.append("div")
+							.attr("id","ttYear")
+							.text(year)
+						ttBox.append("div")
+							.attr("id", "ttPop")
+							.html("Population difference: <span>" + sign + d3.format(",.0f")(Math.abs(future.projected - future.baseline)) + "</span>")
+						ttBox.append("div")
+							.attr("id", "ttCost")
+							.html("Cost difference: <span>" + sign + formatCost(future.cost) + "</span>")
+					}
+			}
 		if(d3.select("#lineChart").select("svg").node() == null){
 			var svg = d3.select("#lineChart").append("svg").attr("width", w).attr("height", h),
 
@@ -539,7 +626,6 @@ var ppf = function(){
 				.attr("height",height)
 				.attr("width",x(years.diverge-1) - x(getMinYear()))
 				
-
 
 			g.append("g")
 			.attr("class","lineChart y axis")
@@ -643,10 +729,14 @@ var ppf = function(){
 			.attr("d", lineBaseline);	
 
 		}
+		d3.select("#lineChart").select("svg")
+			.on("mousemove", mouseoverChart)
 
 	}
-	function buildPopulationText(data){
-		var comparisonYear = (true) ? data[1]["max"] : data[1]["diverge"],
+	function buildPopulationText(data, baselineType){
+		d3.select("#popChangeText")
+			.datum(data)
+		var comparisonYear = (baselineType == "baseline") ? data[1]["max"] : data[1]["diverge"],
 			popBase = data[0].filter(function(d){ return d.year == comparisonYear })[0]["baseline"],
 			popProj = data[0].filter(function(d){ return d.year == data[1]["max"] })[0]["projected"],
 			popDiff = popProj - popBase,
@@ -670,13 +760,16 @@ var ppf = function(){
 			text += popDiffWord2 + " people)</span> in the prison population in "
 			text += data[1]["max"] + "."
 
-			d3.select("#popChangeText").html(text)
+			d3.select("#popChangeText")
+				.html(text)
 			
 
 
 
 	}
-	function buildDemographicsChart(data){
+	function buildDemographicsChart(data, baselineType){
+	d3.select("#barChart")
+		.datum(data)
 	var w, h;
 
 
@@ -699,8 +792,14 @@ var ppf = function(){
 	    .rangeRound([height, 0])
 	    .domain([0,1]);
 
-	var z = d3.scaleOrdinal()
-	    .range(["#000000", "#ec008b"]);
+	var z = (baselineType == "last") ?
+		d3.scaleOrdinal()
+	    	.range(["#000000", "#ec008b"])
+	    :
+	    d3.scaleOrdinal()
+	    	.range(["#f5f5f5", "#ec008b"]);
+
+
 
 	if(d3.select("#barChart").select("svg").node() == null){
 		var svg = d3.select("#barChart").append("svg").attr("width", w).attr("height", h),
@@ -730,11 +829,51 @@ var ppf = function(){
 		bars.selectAll("rect")
 		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key]}; }); })
 		.enter().append("rect")
-		.attr("x", function(d) { return x1(d.key); })
-		.attr("y", function(d) { return y(d.value); })
-		.attr("width", x1.bandwidth())
-		.attr("height", function(d) { return height - y(d.value); })
-		.attr("fill", function(d) { return z(d.key); });
+		.attr("x", function(d) {
+			if(d.key == "baseline"){
+				return x1(d.key) + .5*(30 - x1.bandwidth()) + 1;
+			}else{
+				return x1(d.key) + .5*(30 - x1.bandwidth());
+			}
+		})
+		.attr("y", function(d) {
+			if(d.key == "baseline"){
+				return y(d.value) + 2; 
+			}else{
+				return y(d.value); 
+			}
+		})
+		.attr("width", function(d){
+			if(d.key == "baseline"){
+				return x1.bandwidth() - 2;
+			}else{
+				return x1.bandwidth()
+			}
+		})
+		.attr("height", function(d) {
+			if(d.key == "baseline"){
+				return height - y(d.value) -2;
+			}else{
+				return height - y(d.value);
+			}
+		})
+		.attr("fill", function(d) { return z(d.key); })
+		.attr("stroke", function(d){
+			if(d.key == "baseline"){
+				return "#000"
+			}else{
+				return "none"
+			}
+		})
+		.attr("stroke-dasharray", function(d){
+			if(d.key == "baseline"){
+				return "2,2"
+			}else{
+				return "none"
+			}
+		})
+		.attr("stroke-width","2px")
+
 
 		bars.selectAll("text")
 		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key], diff: (d[key] - d["baseline"])}; }); })
@@ -752,7 +891,7 @@ var ppf = function(){
 
 	}else{
 
-		var keys = ["baseline","vsBaseline"]
+		var keys = [baselineType, "vsBaseline"]
 
 		x0.domain(data.map(function(d) { return d.race; }));
 		x1.domain(keys).rangeRound([0, x0.bandwidth()]);
@@ -770,18 +909,58 @@ var ppf = function(){
 		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key]}; }); })
 		.style("opacity",1)
 		.transition()
-		.attr("x", function(d) { return x1(d.key) + .5*(30 - x1.bandwidth()); })
-		.attr("y", function(d) { return y(d.value); })
-		.attr("width", x1.bandwidth())
-		.attr("height", function(d) { return height - y(d.value); })
-		.attr("fill", function(d) { return z(d.key); });
+		.attr("x", function(d) {
+			if(d.key == "baseline"){
+				return x1(d.key) + .5*(30 - x1.bandwidth()) + 1;
+			}else{
+				return x1(d.key) + .5*(30 - x1.bandwidth());
+			}
+		})
+		.attr("y", function(d) {
+			if(d.key == "baseline"){
+				return y(d.value) + 2; 
+			}else{
+				return y(d.value); 
+			}
+		})
+		.attr("width", function(d){
+			if(d.key == "baseline"){
+				return x1.bandwidth() - 2;
+			}else{
+				return x1.bandwidth()
+			}
+		})
+		.attr("height", function(d) {
+			if(d.key == "baseline"){
+				return height - y(d.value) -2;
+			}else{
+				return height - y(d.value);
+			}
+		})
+		.attr("fill", function(d) { return z(d.key); })
+		.attr("stroke", function(d){
+			if(d.key == "baseline"){
+				return "#000"
+			}else{
+				return "none"
+			}
+		})
+		.attr("stroke-dasharray", function(d){
+			if(d.key == "baseline"){
+				return "2,2"
+			}else{
+				return "none"
+			}
+		})
+		.attr("stroke-width","2px")
+
 
 		d3.select("#barsGroups").select("g.barsGroup").selectAll("text").style("opacity",0)
 
 		bars.selectAll("text")
 		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key], diff: (d[key] - d["baseline"])}; }); })
 		// .selectAll("text")
-		.style("opacity", function(d){ return ((d.key) == "baseline") ? 0 : 1})
+		.style("opacity", function(d){ return ((d.key) == "baseline" || d.key == "last") ? 0 : 1})
 		.transition()
 		.attr("x", function(d) { return x1(d.key); })
 		.attr("y", function(d) { return y(d.value) - 5; })
@@ -805,12 +984,7 @@ var ppf = function(){
 		d3.select("#costText #costYear").text(MAX_YEAR)
 		d3.select("#costText #costWord").text(function(){ return (cost <= 0 ) ? "savings" : "increase"})
 
-		var testString = d3.format(".4s")(Math.abs(cost))
-		var sigFigs = testString.split(".")[0].length + 1
-
-		var formatString = "$." + sigFigs + "s"
-
-		var textCost = (cost == 0) ? "$0" : d3.format(formatString)(Math.abs(cost)).replace("k"," thousand").replace("M", " million").replace("G", " billion")
+		var textCost = formatCost(cost)
 
 		d3.select("#costText #costDollars").text(textCost)
 
@@ -956,11 +1130,6 @@ var ppf = function(){
 		output.push(d.name)
 		var merged = [].concat.apply([], output);
 
-		// console.log(merged)
-		// console.log(allOffenses)
-
-
-		console.log(encodeURIComponent(JSON.stringify(merged)).replace(/%2C/g,","))
 		return encodeURIComponent(JSON.stringify(merged)).replace(/%2C/g,",")
 
 	}
@@ -1095,6 +1264,29 @@ var ppf = function(){
 	}
 	});
 
+	$( "#popMenu" ).selectmenu({
+	change: function(event, data){
+		// console.log(this.value)
+		if(this.value == "baseline"){
+			d3.select("#popMenuContainer .ui-selectmenu-button.ui-button").transition().style("width", "203px")
+			d3.select("#popMenuContainer .ui-selectmenu-text").transition().style("width", "201px")
+			d3.select("#popMenuContainer").transition().style("width", "215px")
+
+			buildPopulationText(d3.select("#popChangeText").datum(), "baseline")
+			buildDemographicsChart(d3.select("#barChart").datum(), "baseline")
+		}else{
+			d3.select("#popMenuContainer .ui-selectmenu-button.ui-button").transition().style("width", "157px")
+			d3.select("#popMenuContainer .ui-selectmenu-text").transition().style("width", "155px")
+			d3.select("#popMenuContainer").transition().style("width", "164px")
+
+			buildPopulationText(d3.select("#popChangeText").datum(), "last")
+			buildDemographicsChart(d3.select("#barChart").datum(), "last")
+
+		}
+
+	}
+	});
+
 	d3.selectAll(".lneg").on("click", function(d){
 		updateInputs(d.offense, d.indicator, d.tier, -100, "slideClick")
 	})
@@ -1222,6 +1414,26 @@ var ppf = function(){
 			d3.select(this)
 				.attr("src","img/close.png")
 		})
+		.on("click", function(){
+			d3.select("#headerAboutLink").classed("closed", true)
+			d3.select("#aboutContainer")
+				.transition()
+				.style("top", "-800px")
+		})
+
+	d3.select("#headerAboutLink")
+		.on("click", function(){
+			d3.select(this).classed("closed", function(){ return !d3.select(this).classed("closed") })
+			d3.select("#aboutContainer")
+				.transition()
+				.style("top", function(){
+					return (d3.select("#headerAboutLink").classed("closed") ? "-800px" : "50px")
+				})
+
+		})
+
+	
+						
 
 
 	/*******************************************************/
