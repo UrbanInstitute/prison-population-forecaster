@@ -68,6 +68,29 @@
 
 
 var ppf = function(){
+function wrap(text, width) {
+  text.each(function() {
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em")
+    while (word = words.pop()) {
+      line.push(word)
+      tspan.text(line.join(" "))
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop()
+        tspan.text(line.join(" "))
+        line = [word]
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
+      }
+    }
+  })
+}
 
 	function parseQueryString(query) {
 		var obj = {},
@@ -439,10 +462,9 @@ var ppf = function(){
 
 	}
 	function reshapeBarData(data){
-		//baseline[1][race] = baseline proportion, 2025
-		//projected[1][race] = Projected vs baseline
-		//projected[2][race] = Projected vs last yr
-		console.log(data)
+
+		var fullRaces = {"white": "White", "black": "Black", "hispanic": "Hispanic", "native": "Native American","asian":"Asian","other":"Other","hawaiian":"Hawaiian"}
+
 		var baseline = data["baseline"][1]
 		var vsBaseline = data["projected"][1]
 		var vsLastYr = data["projected"][2]
@@ -458,7 +480,7 @@ var ppf = function(){
 		for(var i = 0; i < races.length; i++){
 			var group = {},
 				race = races[i]
-			group["race"] = race
+			group["race"] = fullRaces[race]
 			group["baseline"] = baseline[race]
 			group["last"] = vsLastYr[race]
 			group["vsBaseline"] = vsBaseline[race]
@@ -774,19 +796,22 @@ var ppf = function(){
 
 
 	w = window.innerWidth - 220 - 280 - 50 - 50 - 300;
-	h = (window.innerHeight - 220 - 350) * .5
+	h = (window.innerHeight - 200 - 350) * .5
 
-	var margin = {top: 20, right: 20, bottom: 30, left: 38},
+	var margin = {top: 10, right: 20, bottom: 40, left: 38},
 	    width = w - margin.left - margin.right,
 	    height = h - margin.top - margin.bottom;
+	d3.select("#barTitle")
+		.style("position","fixed")
+		.style("bottom", (10 + h + 15) + "px")
 	    
 
 	var x0 = d3.scaleBand()
 	    .rangeRound([0, width])
-	    .paddingInner(0.1);
+	    .paddingInner(0.5);
 
 	var x1 = d3.scaleBand()
-	    .padding(0.05);
+	    .padding(0.04);
 
 	var y = d3.scaleLinear()
 	    .rangeRound([height, 0])
@@ -852,7 +877,7 @@ var ppf = function(){
 		})
 		.attr("height", function(d) {
 			if(d.key == "baseline"){
-				return height - y(d.value) -2;
+				return Math.max(0, height - y(d.value) -2);
 			}else{
 				return height - y(d.value);
 			}
@@ -876,7 +901,7 @@ var ppf = function(){
 
 
 		bars.selectAll("text")
-		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key], diff: (d[key] - d["baseline"])}; }); })
+		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key], diff: (d[key] - d[baselineType])}; }); })
 		.enter().append("text")
 		.style("opacity", function(d){ return ((d.key) == "baseline") ? 0 : 1})
 		.attr("x", function(d) { return x1(d.key) + .5*(30 - x1.bandwidth()); })
@@ -888,6 +913,8 @@ var ppf = function(){
 		.attr("class", "x bar axis")
 		.attr("transform", "translate(0," + height + ")")
 		.call(d3.axisBottom(x0))
+    	.selectAll(".tick text")
+      		.call(wrap, 100)
 
 	}else{
 
@@ -932,7 +959,7 @@ var ppf = function(){
 		})
 		.attr("height", function(d) {
 			if(d.key == "baseline"){
-				return height - y(d.value) -2;
+				return Math.max(0, height - y(d.value) -2);
 			}else{
 				return height - y(d.value);
 			}
@@ -958,7 +985,7 @@ var ppf = function(){
 		d3.select("#barsGroups").select("g.barsGroup").selectAll("text").style("opacity",0)
 
 		bars.selectAll("text")
-		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key], diff: (d[key] - d["baseline"])}; }); })
+		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key], diff: (d[key] - d[baselineType])}; }); })
 		// .selectAll("text")
 		.style("opacity", function(d){ return ((d.key) == "baseline" || d.key == "last") ? 0 : 1})
 		.transition()
@@ -969,8 +996,12 @@ var ppf = function(){
 
 		d3.select(".x.bar.axis")
 		.attr("transform", "translate(0," + height + ")")
-		.transition()
+		// .transition()
 		.call(d3.axisBottom(x0))
+		.selectAll(".tick text")
+	  		.call(wrap, 100)
+
+
 
 
 	}
