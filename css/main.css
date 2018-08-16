@@ -125,7 +125,7 @@ body{
     bottom: 118px;
     left: 30px;
     position: relative;
-    width: 256px;
+    width: 206px;
     font-size: 14px;
     padding: 10px;
     border: 2px solid #9d9d9d;
@@ -158,6 +158,10 @@ body{
 }
 .lineChart.y.axis .tick line.t0{
     stroke: #000 !important;
+}
+.axisLabel{
+    font-size: 16px;
+    font-style: italic;
 }
 
 /*******************************************************/
@@ -798,11 +802,11 @@ input[type=range]:focus::-ms-fill-upper {
     text-overflow: ellipsis;
 }
 .savedForecast.active input, .savedForecast.clickActive input {
-    color: #1696d2;
+    color: #000;
     font-weight: bold;
 }
 .savedForecast.active .forecastState, .savedForecast.clickActive .forecastState {
-    color: #1696d2;
+    color: #000;
     font-weight: bold;
 }
 .forecastState{

@@ -675,6 +675,12 @@ function wrap(text, width) {
 					return "t" + d
 				})
 
+			g.append("text")
+				.attr("class", "axisLabel")
+				.attr("x", width )
+				.attr("y", 0)
+				.text("People")
+
 			g.append("g")
 			.attr("class","lineChart x axis")
 			.attr("transform", "translate(0," + height + ")")
@@ -683,20 +689,55 @@ function wrap(text, width) {
 			.remove();
 
 			g.append("path")
+			.attr("id","lpf")
 			.datum(futureData)
 			.attr("class", "line projection future")
 			.attr("d", lineProjected);
 
+			g.append("text")
+		        .attr("dy", -4) //Move the text down
+			   .append("textPath") //append a textPath to the text element
+			    .attr("xlink:href", "#lpf") //place the ID of the path here
+			    .style("text-anchor","end") //place the text halfway on the arc
+			    .attr("startOffset", "100%")
+			    .style("font-size","13px")
+    			.style("letter-spacing","2px")
+			    .text("Forecasted population");
+
+
 			g.append("path")
+			.attr("id", "lbh")
 			.datum(historicalData)
 			.attr("class", "line baseline historical")
 			.attr("d", lineBaseline);
 
+
+			g.append("text")
+		        .attr("dy", -4) //Move the text down
+			   .append("textPath") //append a textPath to the text element
+			    .attr("xlink:href", "#lbh") //place the ID of the path here
+			    .style("text-anchor","middle") //place the text halfway on the arc
+			    .attr("startOffset", "50%")
+			    .style("font-size","13px")
+    			.style("letter-spacing","2px")
+			    .text("Historical population");
+
 			g.append("path")
+			.attr("id","lbf")
 			.datum(futureData)
 			.attr("class", "line baseline future")
 			.attr("stroke-dasharray","1,5")
 			.attr("d", lineBaseline);
+
+			g.append("text")
+		        .attr("dy", -4) //Move the text down
+			   .append("textPath") //append a textPath to the text element
+			    .attr("xlink:href", "#lbf") //place the ID of the path here
+			    .style("text-anchor","end") //place the text halfway on the arc
+			    .attr("startOffset", "100%")
+			    .style("font-size","13px")
+    			.style("letter-spacing","2px")
+			    .text("Baseline projection");
 
 		}
 		else if(saveForecast){
