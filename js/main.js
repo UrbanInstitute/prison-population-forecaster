@@ -603,7 +603,7 @@ function wrap(text, width) {
 							.attr("cx", x(year))
 							.attr("cy", y(future.projected))
 
-						var projectedAdjust = (future.projected < future.baseline) ? 30 : -10;
+						var projectedAdjust = (future.projected <= future.baseline) ? 30 : -10;
 						var baselineAdjust = (future.projected > future.baseline) ? 30 : -10;
 
 						d3.select("#lineChart")
@@ -794,7 +794,6 @@ function wrap(text, width) {
 		.datum(data)
 	var w, h;
 
-
 	w = window.innerWidth - 220 - 280 - 50 - 50 - 300;
 	h = (window.innerHeight - 200 - 350) * .5
 
@@ -822,7 +821,7 @@ function wrap(text, width) {
 	    	.range(["#000000", "#ec008b"])
 	    :
 	    d3.scaleOrdinal()
-	    	.range(["#f5f5f5", "#ec008b"]);
+	    	.range(["#9d9d9d", "#ec008b"]);
 
 
 
@@ -863,7 +862,7 @@ function wrap(text, width) {
 		})
 		.attr("y", function(d) {
 			if(d.key == "baseline"){
-				return y(d.value) + 2; 
+				return y(d.value) + 1; 
 			}else{
 				return y(d.value); 
 			}
@@ -877,7 +876,7 @@ function wrap(text, width) {
 		})
 		.attr("height", function(d) {
 			if(d.key == "baseline"){
-				return Math.max(0, height - y(d.value) -2);
+				return Math.max(0, height - y(d.value) -1);
 			}else{
 				return height - y(d.value);
 			}
@@ -945,7 +944,7 @@ function wrap(text, width) {
 		})
 		.attr("y", function(d) {
 			if(d.key == "baseline"){
-				return y(d.value) + 2; 
+				return y(d.value) + 1; 
 			}else{
 				return y(d.value); 
 			}
@@ -959,7 +958,7 @@ function wrap(text, width) {
 		})
 		.attr("height", function(d) {
 			if(d.key == "baseline"){
-				return Math.max(0, height - y(d.value) -2);
+				return Math.max(0, height - y(d.value) -1);
 			}else{
 				return height - y(d.value);
 			}
@@ -1021,6 +1020,200 @@ function wrap(text, width) {
 
 	}
 	/*******************************************************/
+	/********************* POP UPS *************************/
+	/*******************************************************/
+	function buildPopup(p, callback, datum){
+		closePopUp()
+		d3.select("body")
+			.append("div")
+			.attr("class","popUpCover")
+		var pop = d3.select("body")
+			.append("div")
+			.attr("class", "popUp " + p)
+
+		if(p != "share"){
+			pop.append("div")
+				.attr("class","popErrorContainer")
+				.append("img")
+					.attr("src","../img/error.png")
+
+		}
+		var popHeadText;
+		if(p == "share") { popHeadText = "Share a link to your forecast"}
+		else if(p == "unsaved") { popHeadText = "You have unsaved changes" }
+		else if(p == "delete") { popHeadText = "Are you sure you want to delete this forecast?"}
+
+		pop.append("div")
+			.attr("class", "popHead")
+			.text(popHeadText)
+
+		if(p == "share"){
+			var uc = pop.append("div")
+				.attr("class", "urlContainer")
+			uc.append("input")
+				.property("value",datum)
+		}
+
+		var bc = pop.append("div")
+			.attr("class","popButtonContainer")
+
+
+		if(p == "unsaved"){
+			bc.append("div")
+				.attr("class","popButton grey")
+				.html("That&rsquo;s fine")
+				.on("click", function(){
+					callback(datum)
+					closePopUp()
+				})
+			bc.append("div")
+				.attr("class","popButton blue")
+				.text("Save forecast")
+				.on("click", function(){
+					saveForecast()
+					closePopUp()
+				})
+		}
+		else if(p == "delete"){
+			bc.append("div")
+				.attr("class","popButton grey")
+				.text("Cancel")
+				.on("click", closePopUp)
+
+			bc.append("div")
+				.attr("class","popButton blue")
+				.text("Delete")
+				.on("click", function(){
+					callback(datum)
+					closePopUp()
+				})
+		}
+		else if(p == "share"){
+			bc.append("div")
+				.attr("class","popButton grey")
+				.text("Close")
+				.on("click", closePopUp)
+			bc.append("div")
+				.attr("class","popButton blue")
+				.text("Copy to clipboard")
+				.on("click", function(){
+
+
+  					$(".urlContainer input").select()
+  					document.execCommand("copy");
+
+  					d3.select(".copied")
+  						.style("opacity",1)
+
+				})
+
+			bc.append("div")
+				.attr("class","copied")
+				.text("Copied!")
+		}
+
+		var checkSelector = (p == "delete") ? "#popDelete" : "#popUnsaved";
+
+		if(p != "share"){
+			var cc = pop.append("div")
+				.attr("class", "checkContainer")
+
+			var svg = cc.append("div")
+				.attr("class","checkMarkContainer")
+				.append("svg")
+					.attr("width",22)
+					.attr("height",22)
+
+			svg.append("rect")
+				.style("fill","#858282")
+				.attr("width",15)
+				.attr("height",15)
+				.attr("left",0)
+				.attr("top",10)
+
+			var lineData = [
+				{ "x": 4,   "y": 6},
+				{ "x":7,  "y": 10},
+				{ "x": 18,  "y": 1}
+			];
+
+			var lineFunction = d3.line()
+				.x(function(d) { return d.x; })
+				.y(function(d) { return d.y; })
+		
+
+			svg.selectAll("path").remove()
+
+			var path = svg.append("path")
+				.attr("class","unchecked")
+				.attr("d", lineFunction(lineData))
+				.attr("stroke", "#000")
+				.attr("stroke-width", "3")
+				.attr("fill", "none");
+
+			var totalLength = path.node().getTotalLength();
+
+			path
+				.attr("stroke-dasharray", totalLength + " " + totalLength)
+				.attr("stroke-dashoffset", totalLength)
+
+			svg.on("mouseover", function(){
+				d3.select(this).select("rect")
+					.style("fill","#696969")
+			})
+			.on("mouseout", function(){
+				d3.select(this).select("rect")
+					.style("fill","#858282")
+			})
+			.on("click", function(){
+
+				if(d3.select(this).select("path").classed("unchecked")){
+					d3.select(this).select("path").classed("unchecked", false)
+
+					d3.select(this).select("rect")
+						.style("fill","#696969")
+
+					d3.select(checkSelector).classed("checked", true)
+
+					d3.select(this).select("path")
+						.transition()
+						.duration(500)
+						.attr("stroke-dashoffset", 0);
+				}else{
+					d3.select(this).select("path").classed("unchecked", true)
+
+					d3.select(this).select("rect")
+						.style("fill","#858282")
+
+					d3.select(checkSelector).classed("checked", true)
+
+					d3.select(this).select("path")
+						.transition()
+						.duration(500)
+						.attr("stroke-dashoffset", totalLength);
+
+				}
+			})
+
+
+			cc.append("span")
+			.html("Please don&rsquo;t show me this warning again")
+		}
+
+	}
+	function closePopUp(){
+		d3.selectAll(".mouseoverElem").remove()
+		d3.select(".popUp")
+			.transition()
+			.style("opacity",0)
+			.on("end", function(){
+				d3.select(this).remove()
+				d3.selectAll(".popUpCover").remove()
+			})
+	}
+	// buildPopup("unsaved")
+
+	/*******************************************************/
 	/******************** FORECASTS ************************/
 	/*******************************************************/
 	var forecastCount = 1;
@@ -1054,11 +1247,23 @@ function wrap(text, width) {
 
 		var del = row.append("div")
 			.attr("class","deleteForecast forecastButton")
-			.on("click", deleteForecast)
+			.on("click", function(d){
+				if(d3.select("#popDelete").classed("checked")){
+					deleteForecast(d)
+				}else{
+					buildPopup("delete",deleteForecast, d)
+				}
+			})
 
 		var cover = row.append("div")
 			.attr("class","valCover")
-			.on("click", loadForecast)
+			.on("click", function(d){
+				if(d3.select("#saveForecast").classed("deactivated") || d3.select("#popUnsaved").classed("checked")){
+					loadForecast(d)
+				}else{
+					buildPopup("unsaved",loadForecast, d)
+				}
+			})
 			.on("mouseover", highlightForecast)
 			.on("mouseout", dehighlightForecasts)
 
@@ -1140,6 +1345,8 @@ function wrap(text, width) {
 		var queryObj = {"inputs": inputs, "state": state, "name": name },
 			queryString = encodeForecast(queryObj)
 
+		buildPopup("share",false,window.location.href.split('?')[0] + "?forecast=" + queryString)
+
 
 	}
 	function encodeForecast(d){
@@ -1184,7 +1391,13 @@ function wrap(text, width) {
 	}
 
 	function deleteForecast(d){
-
+		d3.select(".savedForecast.c" + d.forecastCount).remove()
+		d3.select(".line.saved.c" + d.forecastCount)
+			.transition()
+			.style("opacity",0)
+			.on("end", function(){
+				d3.select(this).remove()
+			})
 	}
 	function editForecast(d){
 		var row = d3.select(d3.select(this).node().parentNode)
