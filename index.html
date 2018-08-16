@@ -1050,7 +1050,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <div id = "lineChart"></div>
   <div id = "demographicSection">
     <div id = "popTitle" class = "chartSectionTitle">Population</div>
-    <div id = "popContainer">Compared with the <div id = "popMenuContainer"><select id = "popMenu"><option value = "baseline" id = "popMenuBaseline">2025 baseline projection</option><option value = "last" id = "popMenuLast">population in 2015</option></select></div>, these changes would lead to a<span id = "popChangeLetter"></span><span id = "popChangeText"></span></div>
+    <div id = "popContainer">
+      <span id = "popChangeFirst">Compared with the</span>
+      <div id = "popMenuContainer">
+        <select id = "popMenu">
+          <option value = "baseline" id = "popMenuBaseline">2025 baseline projection</option>
+          <option value = "last" id = "popMenuLast">population in 2015</option>
+        </select>
+      </div>
+      <span id = "popChangeSecond">, these changes would lead to a<span id = "popChangeLetter"></span></span>
+      <span id = "popChangeText"></span>
+    </div>
+
     <div id = "barTitle">Racial and ethnic makeup of the prison population</div>
     <div id = "barChart"></div>
   </div>

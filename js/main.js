@@ -485,7 +485,6 @@ function wrap(text, width) {
 			group["last"] = vsLastYr[race]
 			group["vsBaseline"] = vsBaseline[race]
 
-			console.log(group)
 			barData.push(group)
 		}
 
@@ -559,6 +558,20 @@ function wrap(text, width) {
 				var historicalData = data.filter(function(o){ return o.year <= years.diverge-1 && o.year >= getMinYear()})
 				var futureData = data.filter(function(o){ return o.year >= years.diverge-1 && o.year >= getMinYear()})
 			}
+			function updateLastYearMenu() {
+				d3.select("#popMenuLast").text("population in " + (years.diverge-1))
+				$( "#popMenu" ).selectmenu("refresh")
+				if(getBaselineType() == "baseline"){
+					d3.select("#popMenuContainer .ui-selectmenu-button.ui-button").style("width", "203px")
+					d3.select("#popMenuContainer .ui-selectmenu-text").style("width", "201px")
+					d3.select("#popMenuContainer").style("width", "203px")				
+				}else{
+					d3.select("#popMenuContainer .ui-selectmenu-button.ui-button").style("width", "157px")
+					d3.select("#popMenuContainer .ui-selectmenu-text").style("width", "155px")
+					d3.select("#popMenuContainer").style("width", "158px")
+				}
+			}	
+
 			function mouseoverChart(event){
 					var year = Math.round(x.invert(d3.mouse(this)[0] - margin.left))
 					var future = d3.select(".line.projection.future").data()[0].filter(function(o){ return o.year == year})[0]
@@ -647,7 +660,8 @@ function wrap(text, width) {
 				.attr("y",0)
 				.attr("height",height)
 				.attr("width",x(years.diverge-1) - x(getMinYear()))
-				
+
+			updateLastYearMenu()
 
 			g.append("g")
 			.attr("class","lineChart y axis")
@@ -717,7 +731,8 @@ function wrap(text, width) {
 			d3.select("#bgRect")
 				.transition()
 					.attr("width",x(years.diverge-1) - x(getMinYear()))
-				
+			
+			updateLastYearMenu()	
 
 
 			d3.select(".lineChart.y.axis")
@@ -756,6 +771,8 @@ function wrap(text, width) {
 
 	}
 	function buildPopulationText(data, baselineType){
+
+
 		d3.select("#popChangeText")
 			.datum(data)
 		var comparisonYear = (baselineType == "baseline") ? data[1]["max"] : data[1]["diverge"],
@@ -771,19 +788,36 @@ function wrap(text, width) {
 			text =  "<span>"
 
 
-			if(popDiffZero){
-				text = "Without any policy changes, the prison population in 2025 is estimated to be " + d3.format(".0f")(popProj) + " people."
-			}
+			// if(popDiffZero){
+			// 	text = "Without any policy changes, the prison population in 2025 is estimated to be " + d3.format(".0f")(popProj) + " people."
+			// }
 			if(popDiffPercentInt[0] == "8" || popDiffPercentInt == "18" ){ d3.select("#popChangeLetter").text("n") }
 
-			text += " " + d3.format(".1f")(popDiffPercent) + " percent "
-			text += popDiffWord1 + " ("
-			text += d3.format(",.0f")(Math.abs(popDiff)) + " "
-			text += popDiffWord2 + " people)</span> in the prison population in "
+			if(popDiffPercent == 0){
+				text += " 0 percent change</span> in the prison population in "
+			}else{
+				text += " " + d3.format(".1f")(popDiffPercent) + " percent "
+				text += popDiffWord1 + " ("
+				text += d3.format(",.0f")(Math.abs(popDiff)) + " "
+				text += popDiffWord2 + " people)</span> in the prison population in "
+			}
+
 			text += data[1]["max"] + "."
+
+			d3.select("#popChangeFirst").text("Compared with the")
+			
+
+			var popChangeLetter = (popDiffPercentInt[0] == "8" || popDiffPercentInt == "18" ) ? "n" : ""
+			d3.select("#popChangeSecond").text(", these changes would lead to a" + popChangeLetter)
+
+
 
 			d3.select("#popChangeText")
 				.html(text)
+
+			
+
+
 			
 
 
@@ -1061,7 +1095,7 @@ function wrap(text, width) {
 		if(p == "unsaved"){
 			bc.append("div")
 				.attr("class","popButton grey")
-				.html("That&rsquo;s fine")
+				.html("Continue")
 				.on("click", function(){
 					callback(datum)
 					closePopUp()
@@ -1125,7 +1159,8 @@ function wrap(text, width) {
 					.attr("height",22)
 
 			svg.append("rect")
-				.style("fill","#858282")
+				.style("stroke","#9d9d9d")
+				.style("fill", "#d2d2d2")
 				.attr("width",15)
 				.attr("height",15)
 				.attr("left",0)
@@ -1157,21 +1192,10 @@ function wrap(text, width) {
 				.attr("stroke-dasharray", totalLength + " " + totalLength)
 				.attr("stroke-dashoffset", totalLength)
 
-			svg.on("mouseover", function(){
-				d3.select(this).select("rect")
-					.style("fill","#696969")
-			})
-			.on("mouseout", function(){
-				d3.select(this).select("rect")
-					.style("fill","#858282")
-			})
-			.on("click", function(){
+			svg.on("click", function(){
 
 				if(d3.select(this).select("path").classed("unchecked")){
 					d3.select(this).select("path").classed("unchecked", false)
-
-					d3.select(this).select("rect")
-						.style("fill","#696969")
 
 					d3.select(checkSelector).classed("checked", true)
 
@@ -1181,9 +1205,6 @@ function wrap(text, width) {
 						.attr("stroke-dashoffset", 0);
 				}else{
 					d3.select(this).select("path").classed("unchecked", true)
-
-					d3.select(this).select("rect")
-						.style("fill","#858282")
 
 					d3.select(checkSelector).classed("checked", true)
 
@@ -1231,6 +1252,11 @@ function wrap(text, width) {
 			// .on("click", function(d){
 			// 	loadForecast(d)
 			// })
+		row.append("span")
+			.attr("class","forecastState")
+			.text(function(d){
+				return d.state
+			})
 		row.append("input")
 			.attr("value",name)
 			.style("pointer-events","none")
@@ -1510,18 +1536,18 @@ function wrap(text, width) {
 
 	$( "#popMenu" ).selectmenu({
 	change: function(event, data){
-		// console.log(this.value)
+		console.log(this.value)
 		if(this.value == "baseline"){
 			d3.select("#popMenuContainer .ui-selectmenu-button.ui-button").transition().style("width", "203px")
 			d3.select("#popMenuContainer .ui-selectmenu-text").transition().style("width", "201px")
-			d3.select("#popMenuContainer").transition().style("width", "215px")
+			d3.select("#popMenuContainer").transition().style("width", "203px")
 
 			buildPopulationText(d3.select("#popChangeText").datum(), "baseline")
 			buildDemographicsChart(d3.select("#barChart").datum(), "baseline")
 		}else{
 			d3.select("#popMenuContainer .ui-selectmenu-button.ui-button").transition().style("width", "157px")
 			d3.select("#popMenuContainer .ui-selectmenu-text").transition().style("width", "155px")
-			d3.select("#popMenuContainer").transition().style("width", "164px")
+			d3.select("#popMenuContainer").transition().style("width", "158px")
 
 			buildPopulationText(d3.select("#popChangeText").datum(), "last")
 			buildDemographicsChart(d3.select("#barChart").datum(), "last")

@@ -622,7 +622,7 @@ input[type=range]:focus::-ms-fill-upper {
 /******************* RIGHT SIDE BAR ********************/
 /*******************************************************/
 #rightSideBar{
-    width: 200px;
+    width: 220px;
     padding-left: 20px;
     background: #5c5859;
     display: inline-block;
@@ -700,22 +700,22 @@ input[type=range]:focus::-ms-fill-upper {
     float: left;
 }
 .selectionValue.left.parent.digit3{
-    width: 140px;
+    width: 160px;
 }
 .selectionValue.left.child.digit3{
-    width: 130px;
+    width: 150px;
 }
 .selectionValue.left.parent.digit2{
-    width: 146px;
+    width: 166px;
 }
 .selectionValue.left.child.digit2{
-    width: 136px;
+    width: 156px;
 }
 .selectionValue.left.parent.digit1{
-    width: 164px;
+    width: 184px;
 }
 .selectionValue.left.child.digit1{
-    width: 154px;
+    width: 174px;
 }
 .selectionNum.digit3{
     width: 40px;
@@ -781,7 +781,7 @@ input[type=range]:focus::-ms-fill-upper {
 .savedForecast{
     border-bottom: 2px solid #858282;
     height: 29px;
-    width: calc(100% - 20px);
+    width: calc(100% - 10px);
     margin-top: 10px;
 }
 #savedForecastsList{
@@ -801,6 +801,18 @@ input[type=range]:focus::-ms-fill-upper {
     color: #1696d2;
     font-weight: bold;
 }
+.savedForecast.active .forecastState, .savedForecast.clickActive .forecastState {
+    color: #1696d2;
+    font-weight: bold;
+}
+.forecastState{
+    color: #fff;    
+    float: left;
+    margin-right: 9px;
+    font-size: 14px;
+    top: 1px;
+    position: relative;
+}
 .forecastButton{
     display: inline-block;
     float: left;
@@ -811,6 +823,8 @@ input[type=range]:focus::-ms-fill-upper {
     cursor: pointer;
 
 }
+
+
 .shareForecast{
     background-image: url(../img/share.png);
     background-size: 17px;
@@ -835,7 +849,7 @@ input[type=range]:focus::-ms-fill-upper {
 .valCover{
     position: relative;
     background: transparent;
-    width: 106px;
+    width: 128px;
     height: 29px;
     left: 0px;
     top: 0px;
@@ -965,8 +979,8 @@ input[type=range]:focus::-ms-fill-upper {
     top: 147px;
 }
 .popUp.unsaved .popButtonContainer{
-    width: 242px;
-    left: calc(50% - 121px);
+    width: 236px;
+    left: calc(50% - 118px);
 }
 .popUp.delete .popButtonContainer{
     width: 172px;
