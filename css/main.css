@@ -3,14 +3,16 @@ body{
 }
 #headerAboutLink{
     display: inline-block;
-    float: right;
+    float: none;
+    right: 70px;
+    position: absolute;
 }
 #headerAboutLink a{
     font-weight: normal !important;
     font-size: 16px;
     color: #1696d2 !important;
     cursor: pointer;
-    top: 2px;
+    top: -1px;
     position: relative;
 }
 #printIcon{
@@ -120,12 +122,48 @@ body{
     stroke: #1696d2 !important;
 }
 
-#ttBox{
+#lineLegend{
     background: white;
-    bottom: 118px;
+    bottom: 122px;
     left: 30px;
     position: relative;
-    width: 206px;
+    width: 200px;
+    font-size: 14px;
+    padding: 10px;
+    padding-bottom: 7px;
+    border: 2px solid #9d9d9d;
+}
+.ll-row{
+    margin-bottom: 3px;
+}
+.ll-text{
+    font-size: 14px;
+    font-weight: bold;
+    display: inline-block;
+}
+.ll-key{
+    width: 15px;
+    height: 10px;
+    margin-right: 10px;
+    display: inline-block;
+    position: relative;
+    top: -4px;
+}
+.ll-key.historical{
+    border-bottom: 3px solid black;
+}
+.ll-key.baseline{
+    border-bottom: 3px dotted black;
+}
+.ll-key.forecast{
+        border-bottom: 3px solid #ec008b;
+}
+#ttBox{
+    background: white;
+    bottom: 298px;
+    left: 30px;
+    position: relative;
+    width: 200px;
     font-size: 14px;
     padding: 10px;
     border: 2px solid #9d9d9d;
@@ -144,6 +182,7 @@ body{
     font-size: 14px;
     position: absolute;
     font-weight: bold;
+    background: rgba(255,255,255,.7)
 }
 .axis.y .tick line{
     stroke: #dedddd
@@ -229,6 +268,53 @@ body{
 #barChart{
     position: fixed;
     bottom: 10px;
+}
+#barLegend{
+    display: inline-block;
+    float: right;
+    margin-left: 20px;
+    font-size: 14px;
+    font-weight: bold;
+}
+.bl-row{
+    margin-bottom: 10px;
+}
+.bl-key, .bl-text{
+    display: inline-block;
+}
+.bl-key{
+    margin-right: 7px;
+    position: relative;
+    top: 2px;
+}
+.bl-key.last{
+    border: 7px solid black;
+    width: 0px;
+    height: 0px;
+}
+.bl-key.baseline{
+    border: 2px dotted black;
+    width: 10px;
+    height: 10px;
+    background: #9d9d9d;
+}
+.bl-key.forecast{
+    border: 7px solid #ec008b;
+    width: 0px;
+    height: 0px;
+}
+.bar-note{
+    font-style: italic;
+    opacity: 1;
+    font-weight: normal;
+    width: 118px;
+    font-size: 12px;
+    bottom: 37px;
+    position: absolute;
+}
+.bar-note a{
+    text-decoration: none;
+    color: #1696d2;
 }
 /*******************************************************/
 /******************** LEFT SIDE BAR ********************/
@@ -812,7 +898,7 @@ input[type=range]:focus::-ms-fill-upper {
 .forecastState{
     color: #fff;    
     float: left;
-    margin-right: 9px;
+    width: 29px;
     font-size: 14px;
     top: 1px;
     position: relative;

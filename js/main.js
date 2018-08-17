@@ -678,7 +678,7 @@ function wrap(text, width) {
 			g.append("text")
 				.attr("class", "axisLabel")
 				.attr("x", width )
-				.attr("y", 0)
+				.attr("y", -7)
 				.text("People")
 
 			g.append("g")
@@ -694,15 +694,15 @@ function wrap(text, width) {
 			.attr("class", "line projection future")
 			.attr("d", lineProjected);
 
-			g.append("text")
-		        .attr("dy", -4) //Move the text down
-			   .append("textPath") //append a textPath to the text element
-			    .attr("xlink:href", "#lpf") //place the ID of the path here
-			    .style("text-anchor","end") //place the text halfway on the arc
-			    .attr("startOffset", "100%")
-			    .style("font-size","13px")
-    			.style("letter-spacing","2px")
-			    .text("Forecasted population");
+			// g.append("text")
+		 //        .attr("dy", -4) //Move the text down
+			//    .append("textPath") //append a textPath to the text element
+			//     .attr("xlink:href", "#lpf") //place the ID of the path here
+			//     .style("text-anchor","end") //place the text halfway on the arc
+			//     .attr("startOffset", "100%")
+			//     .style("font-size","13px")
+   //  			.style("letter-spacing","2px")
+			//     .text("Forecasted population");
 
 
 			g.append("path")
@@ -712,15 +712,15 @@ function wrap(text, width) {
 			.attr("d", lineBaseline);
 
 
-			g.append("text")
-		        .attr("dy", -4) //Move the text down
-			   .append("textPath") //append a textPath to the text element
-			    .attr("xlink:href", "#lbh") //place the ID of the path here
-			    .style("text-anchor","middle") //place the text halfway on the arc
-			    .attr("startOffset", "50%")
-			    .style("font-size","13px")
-    			.style("letter-spacing","2px")
-			    .text("Historical population");
+			// g.append("text")
+		 //        .attr("dy", -4) //Move the text down
+			//    .append("textPath") //append a textPath to the text element
+			//     .attr("xlink:href", "#lbh") //place the ID of the path here
+			//     .style("text-anchor","middle") //place the text halfway on the arc
+			//     .attr("startOffset", "50%")
+			//     .style("font-size","13px")
+   //  			.style("letter-spacing","2px")
+			//     .text("Historical population");
 
 			g.append("path")
 			.attr("id","lbf")
@@ -729,15 +729,30 @@ function wrap(text, width) {
 			.attr("stroke-dasharray","1,5")
 			.attr("d", lineBaseline);
 
-			g.append("text")
-		        .attr("dy", -4) //Move the text down
-			   .append("textPath") //append a textPath to the text element
-			    .attr("xlink:href", "#lbf") //place the ID of the path here
-			    .style("text-anchor","end") //place the text halfway on the arc
-			    .attr("startOffset", "100%")
-			    .style("font-size","13px")
-    			.style("letter-spacing","2px")
-			    .text("Baseline projection");
+
+			var legend = d3.select("#lineChart").append("div")
+				.attr("id","lineLegend")
+			var l1 = legend.append("div").attr("class","ll-row")
+			l1.append("span").attr("class","ll-key historical")
+			l1.append("div").attr("class","ll-text").text("Historical population")
+
+			var l2 = legend.append("div").attr("class","ll-row")
+			l2.append("span").attr("class","ll-key baseline")
+			l2.append("div").attr("class","ll-text").text("Projected population")
+
+			var l3 = legend.append("div").attr("class","ll-row")
+			l3.append("span").attr("class","ll-key forecast")
+			l3.append("div").attr("class","ll-text").text("Forecast population")
+
+			// g.append("text")
+		 //        .attr("dy", -4) //Move the text down
+			//    .append("textPath") //append a textPath to the text element
+			//     .attr("xlink:href", "#lbf") //place the ID of the path here
+			//     .style("text-anchor","end") //place the text halfway on the arc
+			//     .attr("startOffset", "100%")
+			//     .style("font-size","13px")
+   //  			.style("letter-spacing","2px")
+			//     .text("Baseline projection");
 
 		}
 		else if(saveForecast){
@@ -870,7 +885,7 @@ function wrap(text, width) {
 	var w, h;
 
 	w = window.innerWidth - 220 - 280 - 50 - 50 - 300;
-	h = (window.innerHeight - 200 - 350) * .5
+	h = (window.innerHeight - 130 - 350) * .5
 
 	var margin = {top: 10, right: 20, bottom: 40, left: 38},
 	    width = w - margin.left - margin.right,
@@ -990,6 +1005,32 @@ function wrap(text, width) {
     	.selectAll(".tick text")
       		.call(wrap, 100)
 
+      	var bl = d3.select("#barChart")
+      		.append("div")
+      		.attr("id","barLegend")
+      	var bl1 = bl.append("div")
+      		.attr("class","bl-row")
+      	bl1.append("span")
+      		.attr("class","bl-key baseline change")
+      	bl1.append("div")
+      		.attr("class","bl-text baseline change")
+      		.text("2025 baseline")
+
+      	var bl2 = bl.append("div")
+      		.attr("class","bl-row")
+      	bl2.append("span")
+      		.attr("class","bl-key forecast")
+      	bl2.append("div")
+      		.attr("class","bl-text forecast")
+      		.text("2025 forecast")
+
+      	bl.append("div")
+      		.attr("class","bar-note")
+      		.style("opacity",function(d){
+      			return (d.filter(function(o){ return o.race == "Hispanic"}).length == 0) ? 1 : 0
+      		})
+      		.html(getStateName() + "<a href = \"http://apps.urban.org/features/latino-criminal-justice-data/\" target = \"_blank\"> does not report ethnicity</a> in its prison population data.")
+
 	}else{
 
 		var keys = [baselineType, "vsBaseline"]
@@ -1076,6 +1117,22 @@ function wrap(text, width) {
 	  		.call(wrap, 100)
 
 
+	  	var blText = (baselineType == "baseline") ? "2025 baseline" : d3.select("#popMenuLast").text().replace("population in ","") + " population"
+      	d3.selectAll(".bl-row .change")
+      		.classed("baseline", baselineType == "baseline")
+      		.classed("last", baselineType != "baseline")
+      	d3.select(".bl-text.change")
+      		.text(blText)
+      		
+      	d3.select(".bar-note")
+      		.datum(data)
+      		.html(getStateName() + "<a href = \"http://apps.urban.org/features/latino-criminal-justice-data/\" target = \"_blank\"> does not report ethnicity</a> in its prison population data.")
+      		.transition()
+      		.style("opacity",function(d){
+      			var op = (d.filter(function(o){ return o.race == "Hispanic"}).length == 0) ? 1 : 0
+      			console.log(d.filter(function(o){ return o.race == "Hispanic"}))
+      			return op
+      		})
 
 
 	}
