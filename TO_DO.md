@@ -1,23 +1,41 @@
-y axis label "People"
-make it work when AL is first state, not CA
-update share etc icons
-delete forecast button
-update print location
-double check word doc/ population text
-fix scroll for folks w/ no scroll wheel etc
 cross browser!
-print!
 mobile!
-weird header issue for serena
-use b version of labels
-Research team wants to try greying Cost out when you click on the baseline with no text underneath.
-state labels next to saved forecasts
+
+bar chart x axis black
+scroll buttons on left/right
+
+Bugs
+fix scroll for folks w/ no scroll wheel etc
 hide pink line behind blue line
-mouseout bug on svg (triggers over lines)
-error msg
-share pop up
-bar chart x labels
-bar chart legend
-bar chart note
 bar chart state change overlap w/ y axis
-fix zero pop text
+Switch to AK, save forecast...lines don't overlap. Also loading default MI
+Tooltip text position based on size
+left side bar full height
+
+Christina q's:
+should legend be aligned w/ cost?
+go over diff layouts
+border on cost thing?
+
+
+
+Mobile sizes:
+
+
+squeeze bottom text height
+Height 900-800:
+
+Normal:
+width 1301+ and height 800+
+
+Toggle center content:
+Width 1099+ and height X - 800
+
+Stack center content:
+Width 1099-1300 and height Y+
+
+Full mobile
+Width less than 1098 or height less than X
+
+target: X at 630
+

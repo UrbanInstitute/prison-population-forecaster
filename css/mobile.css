@@ -1,0 +1,91 @@
+/*******************************************************/
+/********************* BREAKPOINTS *********************/
+/*******************************************************/
+.breakpoint, .datum{
+    display: none;
+    width: 0px;
+    height: 0px;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    pointer-events: none;
+}
+@media(max-width: 1300px){
+	.breakpoint.width1300{
+		display: block;
+	}
+}
+@media(max-width: 1098px){
+	.breakpoint.width1098{
+		display: block;
+	}
+}
+@media(max-width: 500px){
+	.breakpoint.width500{
+		display: block;
+	}
+}
+@media(max-width: 320px){
+	.breakpoint.width320{
+		display: block;
+	}
+}
+/*@media(max-width: 1300px){
+}*/
+@media(max-height: 565px){
+	.breakpoint.height565{
+		display: block;
+	}
+}
+@media(max-height: 800px){
+	.breakpoint.height800{
+		display: block;
+	}
+}
+@media(max-height: 900px){
+	.breakpoint.height900{
+		display: block;
+	}
+}
+
+
+/*******************************************************/
+/*********************** SQUEEZE ***********************/
+/*******************************************************/
+body.squeeze #popContainer, body.squeeze #costText{
+	font-size: 16px;
+    line-height: 1.7;
+}
+body.squeeze #popMenuContainer .ui-selectmenu-button.ui-button{
+	height: 29px;
+}
+
+/*******************************************************/
+/************************ TOGGLE ***********************/
+/*******************************************************/
+#toggleButton{
+	position: fixed;
+    bottom: 46px;
+    left: 330px;
+ 	background: #1696d2;
+    color: #ffffff;
+    width: 120px;
+    font-size: 16px;
+    padding: 18px 13px 18px 13px;
+    text-align: center;
+    display: none;
+    z-index: 100000000;
+    cursor: pointer;
+}
+#toggleButton:hover{
+	background: #000;
+}
+@media(max-height: 600px){
+	.chartSectionTitle{
+		margin-bottom: 3px;
+	}
+	body.toggle #popContainer, body.toggle #costText{
+		font-size: 16px;
+	    line-height: 1.5;
+	}
+}

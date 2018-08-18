@@ -21,6 +21,8 @@
 
         <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic,900" rel="stylesheet" type="text/css">
         <link rel="stylesheet" type="text/css" href="css/main.css">
+        <link rel="stylesheet" type="text/css" href="css/mobile.css">
+        <link rel="stylesheet" type="text/css" href="css/print.css">
         <link rel="stylesheet" type="text/css" href="css/urban-header.css">
         <link rel="stylesheet" type="text/css" href="css/vendor/jquery-ui.css">
 
@@ -51,10 +53,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-MKBD2W');</script> -->
 <!-- End Google Tag Manager -->
 
-  <div id = "breakpoint1300" class = "breakpoint"></div>
-  <div id = "breakpoint1098" class = "breakpoint"></div>
-  <div id = "breakpoint800" class = "breakpoint"></div>
-  <div id = "breakpoint500" class = "breakpoint"></div>
+  <div class = "breakpoint width1300"></div>
+  <div class = "breakpoint width1098"></div>
+  <div class = "breakpoint width500"></div>
+  <div class = "breakpoint width320"></div>
+  <div class = "breakpoint height900"></div>
+  <div class = "breakpoint heightY"></div>
+  <div class = "breakpoint height800"></div>
+  <div class = "breakpoint height565"></div>
 
   <div id = "yearDatum" class = "datum"></div>
   <div id = "inclusionTypeDatum" class = "datum"></div>
@@ -132,7 +138,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <div id = "leftContent">
       <select id = "stateSelect">
         <!-- <option value = "all">All states</option> -->
-        <!-- <option value="CA">California</option> -->
+        
         <option value="AL">Alabama</option>
         <option value="AK">Alaska</option>
         <option value="AZ">Arizona</option>
@@ -140,7 +146,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <!-- not in counts.allstates data -->
         <!-- <option value="AR">Arkansas</option> -->
 
-        
+        <option value="CA">California</option>
         <option value="CO">Colorado</option>
         
         <!-- not in counts.allstates data -->
@@ -1062,8 +1068,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       <span id = "popChangeText"></span>
     </div>
 
-    <div id = "barTitle">Racial and ethnic makeup of the prison population</div>
-    <div id = "barChart"></div>
+    <div id = "barChart">
+      <div id = "barTitle">Racial and ethnic makeup of the prison population</div>
+    </div>
   </div>
   <div id = "costSection">
     <div id = "costTitle" class = "chartSectionTitle">Cost</div>
@@ -1081,12 +1088,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <div id = "saveForecast" class = "deactivated">Save My Forecast</div>
   </div>
   <div id = "savedContainer">
-    <div class = "selectionsTitle bottom">Saved Forecasts</div>
+    <div class = "selectionsTitle bottom">Saved Forecasts<div id = "printIcon"></div></div>
     <div id = "savedForecastsList"></div>
   </div>
 </div>
 <!-- START RIGHT CONTROLS -->
 
+<!-- START PRINT  -->
+<div id = "printContainer">
+</div>
+<!-- END PRINT  -->
+
+<div id = "toggleButton" class = "line"></div>
 
 
 

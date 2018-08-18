@@ -19,16 +19,19 @@ body{
     display: inline-block;
     float: right;
     background-image: url(../img/print.png);
-    background-size: 32px;
+    background-size: 27px;
     background-repeat: no-repeat;
-    width: 32px;
-    height: 42px;
-    margin-left: 33px;
-    background-position: 0px 10px;
+    width: 27px;
+    height: 27px;
+    /* margin-left: 11px; */
+    background-position: 0px 2px;
+    margin-right: 12px;
+    bottom: 5px;
     cursor: pointer;
+    position: relative;
 }
 #printIcon:hover{
-    background-image: url(../img/printHover.png);
+    background-image: url(../img/print-hover.png);
 }
 
 /*******************************************************/
@@ -108,6 +111,10 @@ body{
     stroke-width: 3px;
 }
 
+.mouseoverDot{
+    pointer-events: none;
+}
+
 .mouseoverDot.historical, .mouseoverDot.baseline{
     stroke:#000;
     stroke-width: 2px;
@@ -127,7 +134,7 @@ body{
     bottom: 122px;
     left: 30px;
     position: relative;
-    width: 200px;
+    width: 216px;
     font-size: 14px;
     padding: 10px;
     padding-bottom: 7px;
@@ -163,7 +170,7 @@ body{
     bottom: 298px;
     left: 30px;
     position: relative;
-    width: 200px;
+    width: 216px;
     font-size: 14px;
     padding: 10px;
     border: 2px solid #9d9d9d;
@@ -182,7 +189,8 @@ body{
     font-size: 14px;
     position: absolute;
     font-weight: bold;
-    background: rgba(255,255,255,.7)
+    background: rgba(255,255,255,.7);
+    pointer-events: none;
 }
 .axis.y .tick line{
     stroke: #dedddd
@@ -254,6 +262,7 @@ body{
     font-size: 16px;
     font-weight: bold;
     margin-top: 40px;
+    margin-bottom: 10px;
 }
 .bar.x.axis .tick line, .bar.x.axis path{
     opacity: 0;
@@ -275,9 +284,12 @@ body{
     margin-left: 20px;
     font-size: 14px;
     font-weight: bold;
+    bottom: 40px;
+    position: absolute;
 }
 .bl-row{
     margin-bottom: 10px;
+    width: 130px;
 }
 .bl-key, .bl-text{
     display: inline-block;
@@ -309,8 +321,7 @@ body{
     font-weight: normal;
     width: 118px;
     font-size: 12px;
-    bottom: 37px;
-    position: absolute;
+    padding-top: 7px;
 }
 .bar-note a{
     text-decoration: none;
@@ -1120,17 +1131,4 @@ input[type=range]:focus::-ms-fill-upper {
     margin-top: 10px;
     color: #696969;
     opacity: 0;
-}
-
-/*******************************************************/
-/*********************** MOBILE ************************/
-/*******************************************************/
-.breakpoint, .datum{
-    display: none;
-    width: 0px;
-    height: 0px;
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    pointer-events: none;
 }

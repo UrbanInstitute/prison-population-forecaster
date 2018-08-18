@@ -107,8 +107,29 @@ function wrap(text, width) {
 		return obj;
 	}
 
-	// function 
-
+	function widthIsUnder(size){
+		return d3.select(".breakpoint.width" + size).style("display") == "block"
+	}
+	function heightIsUnder(size){
+		return d3.select(".breakpoint.height" + size).style("display") == "block"
+	}
+	function getLayout(){
+		if(heightIsUnder(800) && !heightIsUnder(565) && !widthIsUnder(1098)){
+			return "toggle"
+		}
+		else if(heightIsUnder(900) && !heightIsUnder(800) && !widthIsUnder(1098)){
+			return "squeeze"
+		}
+		else if(!widthIsUnder(1300) && !heightIsUnder(900)){
+			return "normal"
+		}
+		else if(widthIsUnder(1300) && !widthIsUnder(1098)){
+			return "stack"
+		}
+		else if(widthIsUnder(1098) || heightIsUnder(565)){
+			return "mobile"
+		}
+	}
 
 	function moveToFront(selector){
 		var node = d3.select(selector).node()
@@ -154,6 +175,10 @@ function wrap(text, width) {
 	function setBase(base){
 
 	}
+	function PRINT(){
+		var parameters = parseQueryString(window.location.search);
+		return (parameters.hasOwnProperty("print"))
+	}
 	function getForecastID(){
 	//for unique id's, used to delete forecasts or refer to them (e.g. for print view organization)
 	//internal id that autoincrements w/ each new click of the "save" button
@@ -166,6 +191,13 @@ function wrap(text, width) {
 	}
 	function getBaselineType(){
 		return d3.select("#popMenu").node().value;
+	}
+	function getToggleState(){
+		if(d3.select("#toggleButton").classed("line")){
+			return "line"
+		}else{
+			return "bar"
+		}
 	}
 
 	/*******************************************************/
@@ -495,15 +527,29 @@ function wrap(text, width) {
 
 	function buildPopulationChart(allData, forecastCount){
 		var w, h;
+		var layout = getLayout();
 
-		w = window.innerWidth - 220 - 280 - 50 - 50;
-		h = (window.innerHeight - 220 - 150) * .5
+		if(PRINT()){
+			w = 800
+			h = 350
+
+		}
+		else{
+			if(layout == "normal" || layout == "squeeze"){
+				w = window.innerWidth - 220 - 280 - 50 - 50;
+				h = (window.innerHeight - 220 - 150) * .5
+			}
+			else if(layout == "toggle"){
+				w = window.innerWidth - 220 - 280 - 50 - 50;
+				h = (window.innerHeight - 350) 
+			}
+		}
 
 		var lineBaseline, lineProjected,
 			margin = {top: 20, right: 60, bottom: 30, left: 20},
 			width = w - margin.left - margin.right,
 			height = h - margin.top - margin.bottom,
-			saveForecast = (typeof(forecastCount) == "number"),
+			saveForecast = (typeof(forecastCount) == "number" && !PRINT() ),
 			data = (saveForecast) ? allData : allData[0],
 			years = (saveForecast) ? null : allData[1]
 
@@ -649,8 +695,9 @@ function wrap(text, width) {
 							.html("Cost difference: <span>" + sign + formatCost(future.cost) + "</span>")
 					}
 			}
-		if(d3.select("#lineChart").select("svg").node() == null){
-			var svg = d3.select("#lineChart").append("svg").attr("width", w).attr("height", h),
+		if(d3.select("#lineChart").select("svg").node() == null || PRINT() ){
+			var container = (PRINT()) ? "#printLineChart" + forecastCount : "#lineChart"
+			var svg = d3.select(container).append("svg").attr("width", w).attr("height", h),
 
 			g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")").attr("id", "lineChartG");
 
@@ -676,7 +723,7 @@ function wrap(text, width) {
 				})
 
 			g.append("text")
-				.attr("class", "axisLabel")
+				.attr("class", "y axisLabel")
 				.attr("x", width )
 				.attr("y", -7)
 				.text("People")
@@ -730,7 +777,7 @@ function wrap(text, width) {
 			.attr("d", lineBaseline);
 
 
-			var legend = d3.select("#lineChart").append("div")
+			var legend = d3.select(container).append("div")
 				.attr("id","lineLegend")
 			var l1 = legend.append("div").attr("class","ll-row")
 			l1.append("span").attr("class","ll-key historical")
@@ -766,11 +813,13 @@ function wrap(text, width) {
 					var c = d3.select(this).attr("data-count")
 					var datum = d3.select(".savedForecast.c" + c).datum()
 					highlightForecast(datum)
+					mouseoverChart()
 				})
 				.on("mouseout", function(d){
 					var c = d3.select(this).attr("data-count")
 					var datum = d3.select(".savedForecast.c" + c).datum()
 					dehighlightForecasts(datum)
+					mouseoverChart()
 				})
 				.on("click", function(d){
 					var c = d3.select(this).attr("data-count")
@@ -784,7 +833,24 @@ function wrap(text, width) {
 			// future.parentNode.appendChild(future)
 
 		}else{
+//FUNCTIONS NEEDED FOR RESIZE
+			d3.select("#lineChart").select("svg").attr("width", w).attr("height", h),
+
+			d3.select("#lineChartG").attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+			d3.select(".lineChart.x.axis")
+			.attr("transform", "translate(0," + height + ")")
+			.call(d3.axisBottom(x).tickFormat(d3.format(".0f")))
+			.select(".domain")
+			.remove();
+
+			d3.select(".y.axisLabel")
+				.attr("x", width )
+
+//END RESIZE
+
 			d3.select("#bgRect")
+				.attr("height",height)
 				.transition()
 					.attr("width",x(years.diverge-1) - x(getMinYear()))
 			
@@ -792,6 +858,7 @@ function wrap(text, width) {
 
 
 			d3.select(".lineChart.y.axis")
+			.attr("transform", "translate(" + width + ",0)")
 			.transition()
 			.call(d3.axisRight(y).ticks(5).tickSize(-width))
 			.select(".domain")
@@ -822,11 +889,16 @@ function wrap(text, width) {
 			.attr("d", lineBaseline);	
 
 		}
-		d3.select("#lineChart").select("svg")
-			.on("mousemove", mouseoverChart)
+		if(!PRINT()){
+			d3.select("#lineChart").select("svg")
+				.on("mousemove", mouseoverChart)
+				.on("mouseout", function(){
+					d3.selectAll(".mouseoverElem").remove()
+				})
+		}
 
 	}
-	function buildPopulationText(data, baselineType){
+	function buildPopulationText(data, baselineType, forecastCount){
 
 
 		d3.select("#popChangeText")
@@ -847,7 +919,8 @@ function wrap(text, width) {
 			// if(popDiffZero){
 			// 	text = "Without any policy changes, the prison population in 2025 is estimated to be " + d3.format(".0f")(popProj) + " people."
 			// }
-			if(popDiffPercentInt[0] == "8" || popDiffPercentInt == "18" ){ d3.select("#popChangeLetter").text("n") }
+			var popChangeLetter = (popDiffPercentInt[0] == "8" || popDiffPercentInt == "18" ) ? "n" : ""
+			d3.select("#popChangeLetter").text(popChangeLetter)
 
 			if(popDiffPercent == 0){
 				text += " 0 percent change</span> in the prison population in "
@@ -871,6 +944,12 @@ function wrap(text, width) {
 			d3.select("#popChangeText")
 				.html(text)
 
+			if(PRINT()){
+				var letter = 
+				d3.select(".pt" + forecastCount)
+					.html("Compared with the 2025 baseline projection, these changes would lead to a" + popChangeLetter + text)
+			}
+
 			
 
 
@@ -879,21 +958,30 @@ function wrap(text, width) {
 
 
 	}
-	function buildDemographicsChart(data, baselineType){
-	d3.select("#barChart")
+	function buildDemographicsChart(data, baselineType, forecastCount){ 
+	var container = (PRINT()) ? ".pbc" + forecastCount : "#barChart"
+	var layout = getLayout();
+	d3.select(container)
 		.datum(data)
 	var w, h;
-
-	w = window.innerWidth - 220 - 280 - 50 - 50 - 300;
-	h = (window.innerHeight - 130 - 350) * .5
+	if(PRINT()){
+		w = 600
+		h = 300
+	}else{
+		if(layout == "normal" || layout == "squeeze"){
+			w = window.innerWidth - 220 - 280 - 50 - 50 - 300;
+			h = (window.innerHeight - 130 - 350) * .5
+		}
+		else if(layout == "toggle"){
+			w = window.innerWidth - 120 - 280 - 50 - 50 - 300;
+			h = (window.innerHeight - 100) * .5
+		}
+	}
 
 	var margin = {top: 10, right: 20, bottom: 40, left: 38},
 	    width = w - margin.left - margin.right,
 	    height = h - margin.top - margin.bottom;
-	d3.select("#barTitle")
-		.style("position","fixed")
-		.style("bottom", (10 + h + 15) + "px")
-	    
+
 
 	var x0 = d3.scaleBand()
 	    .rangeRound([0, width])
@@ -915,8 +1003,8 @@ function wrap(text, width) {
 
 
 
-	if(d3.select("#barChart").select("svg").node() == null){
-		var svg = d3.select("#barChart").append("svg").attr("width", w).attr("height", h),
+	if(d3.select("#barChart").select("svg").node() == null || PRINT()){
+		var svg = d3.select(container).append("svg").attr("width", w).attr("height", h),
 
 		g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")").attr("id","barsGroups");
 
@@ -1005,7 +1093,7 @@ function wrap(text, width) {
     	.selectAll(".tick text")
       		.call(wrap, 100)
 
-      	var bl = d3.select("#barChart")
+      	var bl = d3.select(container)
       		.append("div")
       		.attr("id","barLegend")
       	var bl1 = bl.append("div")
@@ -1032,7 +1120,14 @@ function wrap(text, width) {
       		.html(getStateName() + "<a href = \"http://apps.urban.org/features/latino-criminal-justice-data/\" target = \"_blank\"> does not report ethnicity</a> in its prison population data.")
 
 	}else{
+//FUNCTIONS NEEDED FOR RESIZE
+		d3.select("#barChart svg").attr("width", w).attr("height", h),
 
+		d3.select("#barsGroups").attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+
+
+//END RESIZE
 		var keys = [baselineType, "vsBaseline"]
 
 		x0.domain(data.map(function(d) { return d.race; }));
@@ -1042,13 +1137,20 @@ function wrap(text, width) {
 		var bars = d3.select("#barsGroups").select("g.barsGroup")
 		.selectAll("g")
 		.data(data)
-		// .select("g")
+
+		var enter = bars.enter().append("g")
+		bars = enter.merge(bars)
 		.attr("transform", function(d) { return "translate(" + x0(d.race) + ",0)"; })
 
-		d3.select("#barsGroups").select("g.barsGroup").selectAll("rect").style("opacity",0)
+		
 
-		bars.selectAll("rect")
+		var rects = bars.selectAll("rect")
 		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key]}; }); })
+
+		rects
+		.enter()
+		.append("rect")
+		.merge(rects)
 		.style("opacity",1)
 		.transition()
 		.attr("x", function(d) {
@@ -1096,25 +1198,42 @@ function wrap(text, width) {
 		})
 		.attr("stroke-width","2px")
 
+		// rects.exit().remove()
 
 		d3.select("#barsGroups").select("g.barsGroup").selectAll("text").style("opacity",0)
 
-		bars.selectAll("text")
+
+
+		var texts = bars.selectAll("text")
 		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key], diff: (d[key] - d[baselineType])}; }); })
-		// .selectAll("text")
+
+		texts
+		.enter()
+		.append("text")
+		.merge(texts)
 		.style("opacity", function(d){ return ((d.key) == "baseline" || d.key == "last") ? 0 : 1})
 		.transition()
 		.attr("x", function(d) { return x1(d.key); })
 		.attr("y", function(d) { return y(d.value) - 5; })
 		.text(function(d){ return formatPP(d3.format(".2f")(d.diff *100)) })
 
+		bars.exit().remove()
+		rects.exit().remove()
+		texts.exit().remove()
+
+
+
+		d3.select(".y.bar.axis")
+		.call(d3.axisLeft(y).ticks(5, "%").tickSize(-width))
+		.select(".domain")
+		.remove();
 
 		d3.select(".x.bar.axis")
 		.attr("transform", "translate(0," + height + ")")
-		// .transition()
 		.call(d3.axisBottom(x0))
-		.selectAll(".tick text")
-	  		.call(wrap, 100)
+    	.selectAll(".tick text")
+      		.call(wrap, 100)
+
 
 
 	  	var blText = (baselineType == "baseline") ? "2025 baseline" : d3.select("#popMenuLast").text().replace("population in ","") + " population"
@@ -1130,7 +1249,6 @@ function wrap(text, width) {
       		.transition()
       		.style("opacity",function(d){
       			var op = (d.filter(function(o){ return o.race == "Hispanic"}).length == 0) ? 1 : 0
-      			console.log(d.filter(function(o){ return o.race == "Hispanic"}))
       			return op
       		})
 
@@ -1142,13 +1260,16 @@ function wrap(text, width) {
 	    // g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	}
-	function buildCostInfo(cost){
-		d3.select("#costText #costYear").text(MAX_YEAR)
-		d3.select("#costText #costWord").text(function(){ return (cost <= 0 ) ? "savings" : "increase"})
+	function buildCostInfo(cost, forecastCount){
+
+		var container = (PRINT()) ? ".ct" + forecastCount : "#costText"
+
+		d3.select(container + " #costYear").text(MAX_YEAR)
+		d3.select(container + " #costWord").text(function(){ return (cost <= 0 ) ? "savings" : "increase"})
 
 		var textCost = formatCost(cost)
 
-		d3.select("#costText #costDollars").text(textCost)
+		d3.select(container + " #costDollars").text(textCost)
 
 	}
 	/*******************************************************/
@@ -1454,11 +1575,11 @@ function wrap(text, width) {
 		}
 		
 	}
-	function shareForecast(d){
+	function getQueryString(d, obj){
 		var inputs = d.inputs,
 			parents = d.parents,
 			state = d.state,
-			name = d3.select(this.parentNode).select("input").node().value;
+			name = d3.select(obj.parentNode).select("input").node().value;
 
 		for (var attr in parents) {
 			if(parents.hasOwnProperty(attr)){
@@ -1469,9 +1590,12 @@ function wrap(text, width) {
 		var queryObj = {"inputs": inputs, "state": state, "name": name },
 			queryString = encodeForecast(queryObj)
 
+		return queryString
+
+	}
+	function shareForecast(d){
+		var queryString = getQueryString(d, this)
 		buildPopup("share",false,window.location.href.split('?')[0] + "?forecast=" + queryString)
-
-
 	}
 	function encodeForecast(d){
 
@@ -1634,7 +1758,6 @@ function wrap(text, width) {
 
 	$( "#popMenu" ).selectmenu({
 	change: function(event, data){
-		console.log(this.value)
 		if(this.value == "baseline"){
 			d3.select("#popMenuContainer .ui-selectmenu-button.ui-button").transition().style("width", "203px")
 			d3.select("#popMenuContainer .ui-selectmenu-text").transition().style("width", "201px")
@@ -1724,6 +1847,10 @@ function wrap(text, width) {
 			if(d3.select(this).classed("deactivated")){ return false}
 			else{ saveForecast() }
 		})
+	d3.select("#printIcon")
+		.on("click", function(){
+			window.open(buildPrintURL(), "_blank")
+		})
 
 	var mouseX = 0,
 		leftTop = 48,
@@ -1732,43 +1859,43 @@ function wrap(text, width) {
 		mouseX = event.pageX;
 	})
 
-
-	addWheelListener(window, function(event){
-		var left = d3.select("#leftSidebar")
-		var right = d3.select("#rightSideBar")
-		var leftWidth = left.node().getBoundingClientRect().width;
-		var rightWidth = right.node().getBoundingClientRect().width;
-		if(mouseX < leftWidth){
-			if(left.style("position") == "fixed"){
-				left.style("position", "absolute")
-					.style("margin-top",  "48px")
-				window.scrollTo(0, leftTop*-1 + 48);
+	if(!PRINT()){
+		addWheelListener(window, function(event){
+			var left = d3.select("#leftSidebar")
+			var right = d3.select("#rightSideBar")
+			var leftWidth = left.node().getBoundingClientRect().width;
+			var rightWidth = right.node().getBoundingClientRect().width;
+			if(mouseX < leftWidth){
+				if(left.style("position") == "fixed"){
+					left.style("position", "absolute")
+						.style("margin-top",  "48px")
+					window.scrollTo(0, leftTop*-1 + 48);
+				}
+				right.style("position", "fixed")
+					.style("margin-top", rightTop + "px")
+				leftTop = left.node().getBoundingClientRect().top
 			}
-			right.style("position", "fixed")
-				.style("margin-top", rightTop + "px")
-			leftTop = left.node().getBoundingClientRect().top
-		}
-		else if(mouseX > window.innerWidth - rightWidth){
-			if(right.style("position") == "fixed"){
-				right.style("position", "absolute")
-					.style("margin-top", "48px")
-				window.scrollTo(0, rightTop*-1 + 48);
+			else if(mouseX > window.innerWidth - rightWidth){
+				if(right.style("position") == "fixed"){
+					right.style("position", "absolute")
+						.style("margin-top", "48px")
+					window.scrollTo(0, rightTop*-1 + 48);
+				}
+				left.style("position", "fixed")
+					.style("margin-top", leftTop + "px")
+				rightTop = right.node().getBoundingClientRect().top
 			}
-			left.style("position", "fixed")
-				.style("margin-top", leftTop + "px")
-			rightTop = right.node().getBoundingClientRect().top
-		}
-		else{
-			right.style("position", "fixed")
-				.style("margin-top", rightTop + "px")
-			leftTop = left.node().getBoundingClientRect().top
-			left.style("position", "fixed")
-				.style("margin-top", leftTop + "px")
-			rightTop = right.node().getBoundingClientRect().top
+			else{
+				right.style("position", "fixed")
+					.style("margin-top", rightTop + "px")
+				leftTop = left.node().getBoundingClientRect().top
+				left.style("position", "fixed")
+					.style("margin-top", leftTop + "px")
+				rightTop = right.node().getBoundingClientRect().top
 
-		}
-	})
-
+			}
+		})
+	}
 	/*******************************************************/
 	/****************** ABOUT SECTION **********************/
 	/*******************************************************/
@@ -1802,6 +1929,263 @@ function wrap(text, width) {
 
 	
 						
+	/*******************************************************/
+	/*********************** PRINT *************************/
+	/*******************************************************/
+	function buildPrintHeader(h){
+		h.append("img")
+			.attr("class","printLogo")
+			.attr("src","../img/logo.png")
+		h.append("div")
+			.attr("class","printTitle")
+			.html("Prison Population <span>Forecaster</span>")
+
+	}
+
+	function buildPrintView(forecasts){
+		d3.select("body").classed("print",true)
+		// d3.select("#printContainer")
+		for(var i = 1; i <= forecasts.length; i++){
+
+			var container = d3.select("#printContainer")
+
+			var ph = container
+				.append("div")
+				.attr("class", "printHeader ph" + i)
+
+			buildPrintHeader(ph)
+			
+			var pi = container
+				.append("div")
+				.attr("class", "printIntro pi" + i)
+				.html(d3.select("#introText").html())
+
+			var pfn = container
+				.append("div")
+				.attr("class", "printForecastName pfn" + i)
+				
+
+			var psn = container
+				.append("div")
+				.attr("class", "printStateName psn" + i)
+
+			var oc = container
+				.append("div")
+				.attr("class", "offenseContainer oc" + i)
+
+			container
+				.append("div")
+				.attr("class", "page-break")
+
+			var ph2 = container
+				.append("div")
+				.attr("class", "printHeader ph2" + i)
+
+			buildPrintHeader(ph2)
+
+			container
+				.append("div")
+				.attr("class", "printSubhead pop")
+				.text("Population")
+
+			var pt = container
+				.append("div")
+				.attr("class", "popText pt" + i)
+				.text("pop text")
+				
+			container
+				.append("div")
+				.attr("id", "printLineChart" + i)
+				.attr("class","printLineChart")
+
+			container
+				.append("div")
+				.attr("class", "printSubhead demo")
+				.text("Demographics")
+
+			var dc = container
+				.append("div")
+				.attr("class", "printBarChart pbc" + i)
+
+			container
+				.append("div")
+				.attr("class", "printSubhead cost")
+				.text("Cost")
+
+			var ct = container
+				.append("div")
+				.attr("class", "printCostText ct" + i)
+				.html("By <span id = \"costYear\"></span>, these changes would lead to a <span id = \"costHighlight\">cumulative <span id = \"costWord\"></span> of <span id = \"costDollars\"></span></span>.")
+
+
+
+
+			container
+				.append("div")
+				.attr("class", "page-break")
+
+			// buildPopulationChart(forecast, i)
+			var forecast = decodeForecast(forecasts[i-1]),
+				inputs = forecast.inputs,
+				state = forecast.state;
+				name = forecast.name;
+			
+				// setInputs(inputs)
+
+		var reshaped = []
+		for (var offense in inputs) {
+			if (inputs.hasOwnProperty(offense)) {
+				var reshapedAdmissions = [offense, +inputs[offense]["admissions"]["value"]/100, 1]
+				var reshapedLos = [offense, +inputs[offense]["los"]["value"]/100, 2]
+				reshaped.push(reshapedAdmissions)
+				reshaped.push(reshapedLos)
+			}
+		}
+		var rawData = runModel(state, reshaped)
+		var lineData = reshapeLineData(rawData)
+		var costsData = reshapeCostsData(rawData)
+		var barData = reshapeBarData(rawData)
+		pfn.text(name)
+		psn.text(getStateName(state))
+
+		console.log(inputs)
+
+		oc.selectAll("printColumn")
+			.data(PARENTS)
+			.enter()
+			.append("div")
+			.attr("class", function(d){ return "printColumn " + d[0] })
+		for(var j = 0; j < PARENTS.length; j++){
+			var parent = PARENTS[j][0],
+				name = PARENTS[j][1].replace("All ",""),
+				container = d3.select(".oc" + i + " .printColumn." +  parent),
+				children = SUBCATEGORIES[parent]
+
+			// buildOffense(container, name, inputs[parent]["admissions"]["value"], inputs[parent]["los"]["value"], true)
+			var parentHeader = name.charAt(0).toUpperCase() + name.slice(1);
+
+			container.append("div")
+				.attr("class","printOffenseHead")
+				.text(parentHeader)
+
+			for(var k = 0; k<children.length;k++){
+				var child = children[k],
+				name = OFFENSES.filter(function(o){ return o[0] == child;})[0][1]
+
+				buildOffense(container, name, inputs[child]["admissions"]["value"], inputs[child]["los"]["value"], false)
+			}
+		}
+
+		buildPopulationText(lineData, "baseline", i)
+		buildPopulationChart(lineData, i)
+		buildCostInfo(costsData, i)
+		buildDemographicsChart(barData, "baseline", i)
+// 
+		
+
+
+
+
+
+
+		}
+	}
+
+	function buildOffense(container, name, admissions, los){
+		var off = container.append("div")
+			.attr("class", "printOffense")
+		off.append("div")
+			.attr("class","printOffenseName")
+			.text(name)
+		var r1 = off.append("div")
+			.attr("class", "printOffenseStat")
+			.html("Admissions<span>&hellip;</span>" + admissions + "%")
+		var r2 = off.append("div")
+			.attr("class", "printOffenseStat")
+			.html("Length of prison term<span>&hellip;</span>" + los + "%")
+
+			
+	}
+
+	function buildPrintURL(){
+		var printURL = window.location.href.split('?')[0] + "?print=true"
+
+		d3.selectAll(".savedForecast")
+			.each(function(d,i){
+				printURL += "&forecast" + (i+1) + "=" + getQueryString(d, d3.select(this).select(".shareForecast").node())
+			})
+		return printURL
+
+	}
+
+
+	/*******************************************************/
+	/**************** RESPONSIVE LAYOUTS *******************/
+	/*******************************************************/
+	function toggleLayout(layout, animate){
+		var buttonText = (layout == "line") ? "Show details" : "Hide details"
+		d3.select("#toggleButton")
+			.style("display","block")
+			.text(buttonText)
+		var duration = (animate) ? 500 : 0;
+		if(layout == "bar"){
+			d3.select("#centerContainer")
+				.transition()
+				.duration(duration)
+				.style("top","-1000px")
+			d3.select("#demographicSection")
+				.transition()
+				.duration(duration)
+				.style("top", "70px")
+			d3.select("#costSection")
+				.transition()
+				.duration(duration)
+				.style("top", "70px")
+			d3.select("#barChart")
+				.transition()
+				.duration(duration)
+				.style("bottom","100px")
+		}else{
+			d3.select("#centerContainer")
+				.transition()
+				.duration(duration)
+				.style("top","50px")
+			d3.select("#demographicSection")
+				.transition()
+				.duration(duration)
+				.style("top", (window.innerHeight + 100) + "px")
+			d3.select("#costSection")
+				.transition()
+				.duration(duration)
+				.style("top", (window.innerHeight + 100) + "px")
+			d3.select("#barChart")
+				.transition()
+				.duration(duration)
+				.style("bottom","-1000px")
+		}
+	}
+	function normalLayout(){
+		d3.select("#toggleButton")
+			.style("display","none")
+		d3.select("#centerContainer")
+			.style("top","50px")
+		d3.select("#demographicSection")
+			.style("top", "calc(50% + 40px)")
+		d3.select("#costSection")
+			.style("top", "calc(50% + 40px)")
+		d3.select("#barChart")
+			.style("bottom","10px")
+	}
+	d3.select("#toggleButton")
+		.on("click", function(){
+			if(d3.select(this).classed("line")){
+				d3.select(this).classed("line", false).classed("bar", true)
+				toggleLayout("bar", true)
+			}else{
+				d3.select(this).classed("line", true).classed("bar", false)
+				toggleLayout("line", true)
+			}
+		})
 
 
 	/*******************************************************/
@@ -1832,28 +2216,64 @@ function wrap(text, width) {
 		var parameters = parseQueryString(window.location.search);
 		var name = "Sample forecast"
 		var state = ""
-		if(parameters.hasOwnProperty("state")){
-			setState(parameters.state)
-		}
-		if(parameters.hasOwnProperty("forecast")){
-			var forecastString = parameters["forecast"],
-				forecast = decodeForecast(forecastString),
-				inputs = forecast.inputs,
-				state = forecast.state;
-			name = forecast.name;
-			if(! parameters.hasOwnProperty("state")){
-				setState(state)
+		if(parameters.hasOwnProperty("print")){
+			var forecasts = []
+			for(var i = 1; i < Infinity; i++){
+				if(parameters.hasOwnProperty("forecast" + i)){
+					forecasts.push(parameters["forecast" + i])
+				}else{
+					break;
+				}
 			}
-			setInputs(inputs)
+			buildPrintView(forecasts)
+			window.print()
+
+		}
+		else{
+			d3.select("body").attr("class", getLayout())
+
+			if(parameters.hasOwnProperty("state")){
+				setState(parameters.state)
+			}
+			if(parameters.hasOwnProperty("forecast")){
+				var forecastString = parameters["forecast"],
+					forecast = decodeForecast(forecastString),
+					inputs = forecast.inputs,
+					state = forecast.state;
+				name = forecast.name;
+				if(! parameters.hasOwnProperty("state")){
+					setState(state)
+				}
+				setInputs(inputs)
+			}
+			updateInputs(false, false, false, false, "init")
+			d3.select("#saveForecast").classed("deactivated",true)
+			saveForecast(name)
+			handleResize()
+
 		}
 
 
 		// setState("KS")
 		// setInputs({"violent": { "admissions": {"value": "-20", "locked": true}, "los": {"value": "-20", "locked": true} } })
-		updateInputs(false, false, false, false, "init")
-		d3.select("#saveForecast").classed("deactivated",true)
-		saveForecast(name)
+
 	}
+	function handleResize(){
+		var layout = getLayout()
+		if(layout == "toggle"){
+			toggleLayout(getToggleState(), false)
+		}
+		else if(layout == "normal" || layout == "squeeze"){
+			normalLayout();
+		}	
+	}
+
 	init();
-	// $(window).resize(init)
+	$(window).resize(function(){
+		if(!PRINT()){
+			d3.select("body").attr("class",getLayout())
+			updateInputs(false, false, false, false, "init")
+			handleResize()
+		}
+	})
 }();

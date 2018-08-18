@@ -1,0 +1,112 @@
+/*********************************************************************************/
+/*************************      PRINT PAGE      **********************************/
+/*********************************************************************************/
+body.print #header-pinned, body.print .aboutContainer, body.print #rightSideBar, body.print #leftSidebar, body.print #centerContainer{
+    display: none;
+}
+body.print{
+  padding-left: 20px;
+}
+.printTitle{
+    display: inline-block;
+    font-size: 32px;
+    position: relative;
+    top: -33px;
+    left: 40px;
+}
+.printLogo{
+    width: 120px;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+.printTitle span{
+    font-weight: 900;
+}
+.printIntro{
+    font-size: 16px;
+    margin-bottom: 70px;
+}
+.printForecastName{
+  text-transform: uppercase;
+  font-size: 20px;
+  border-bottom: 1px solid #9D9D9D;
+  padding-bottom: 10px;
+}
+body.print #barLegend{
+  position: relative;
+  top: 6px;
+  left: -71px;
+}
+body.print .popText, .printCostText{
+  font-size: 18px;
+  margin-bottom: 26px;
+  width: 187mm;
+}
+body.print .popText span{
+  font-weight: bold;
+  color: #ec008b;
+}
+.printLineChart{
+  margin-left: -20px;
+  margin-bottom: -32px;
+}
+
+body.print{
+    width: 210mm;
+}
+.printSubhead{
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 18px;
+}
+.printSubhead.cost{
+  margin-top: 43px;
+}
+.printStateName{
+  font-size: 17px;
+  margin-top: 10px;
+  margin-bottom: 37px;
+}
+
+.printColumn{
+    width: calc(25% - 16px);
+    display: inline-block;
+    float: left;
+    padding: 0px;
+    font-size: 12px;
+    height: 480px;
+    /* clear: right; */
+    border-right: 1px solid #9D9D9D;
+    padding-left: 20px;
+}
+.printColumn.violent{
+  padding-left: 0px;
+}
+.printOffenseHead{
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 14px;
+}
+.printOffense{
+  margin-bottom: 20px;
+}
+.printOffenseName{
+  font-size: 14px;
+}
+
+@media print{
+  @page {
+    size: 210mm 297mm; /* portrait 
+    /* you can also specify margins here: */
+    margin: 5mm;	
+   /*margin-right: 45mm;  for compatibility with both A4 and Letter */
+  }
+   body.print a:after{
+   	 content:" (" attr(href) ") ";font-size:0.8em;font-weight:normal;
+   }
+
+   body.print .page-break { height:0; page-break-after:always; margin:0; border-top:none; }
+}
+
+
+
