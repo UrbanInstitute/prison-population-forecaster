@@ -112,6 +112,13 @@ body.squeeze #popMenuContainer .ui-selectmenu-button.ui-button{
 	body.toggleSqueeze #datePublished{
 		font-size: 12px;
 	}
+	body.toggleSqueeze #costSection{
+		width: 207px
+	}
+body.toggleSqueeze #popContainer, body.toggleSqueeze #costText{
+	font-size: 16px;
+    line-height: 1.7;
+}
 
 /*end ??*/
 
