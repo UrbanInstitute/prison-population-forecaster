@@ -1,6 +1,13 @@
 # Prison Population Forecaster Version 3
 
-
+## Data coverage
+All states data is included in this model except the following:
+ * AR
+ * CT
+ * DC (not a state)
+ * HI
+ * ID
+ * VT
 
 ## Model and Data file organization
 ```
