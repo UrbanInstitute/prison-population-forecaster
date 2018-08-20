@@ -118,6 +118,7 @@ function wrap(text, width) {
 			return "toggle"
 		}
 		else if(heightIsUnder(900) && !widthIsUnder(1098) && widthIsUnder(1300)){
+			//height cutoff will be more than 900
 			return "toggleSqueeze"
 		}
 		else if(heightIsUnder(900) && !heightIsUnder(800) && !widthIsUnder(1098)){
@@ -1942,7 +1943,7 @@ function wrap(text, width) {
 	function buildPrintHeader(h){
 		h.append("img")
 			.attr("class","printLogo")
-			.attr("src","../img/logo.png")
+			.attr("src","/img/logo.png")
 		h.append("div")
 			.attr("class","printTitle")
 			.html("Prison Population <span>Forecaster</span>")
