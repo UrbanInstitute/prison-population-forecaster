@@ -114,8 +114,11 @@ function wrap(text, width) {
 		return d3.select(".breakpoint.height" + size).style("display") == "block"
 	}
 	function getLayout(){
-		if(heightIsUnder(800) && !heightIsUnder(565) && !widthIsUnder(1098)){
+		if(heightIsUnder(800) && !heightIsUnder(565) && !widthIsUnder(1300)){
 			return "toggle"
+		}
+		else if(heightIsUnder(900) && !widthIsUnder(1098) && widthIsUnder(1300)){
+			return "toggleSqueeze"
 		}
 		else if(heightIsUnder(900) && !heightIsUnder(800) && !widthIsUnder(1098)){
 			return "squeeze"
@@ -535,11 +538,11 @@ function wrap(text, width) {
 
 		}
 		else{
-			if(layout == "normal" || layout == "squeeze"){
+			if(layout == "normal" || layout == "squeeze" || layout == "stack"){
 				w = window.innerWidth - 220 - 280 - 50 - 50;
 				h = (window.innerHeight - 220 - 150) * .5
 			}
-			else if(layout == "toggle"){
+			else if(layout == "toggle" || layout == "toggleSqueeze"){
 				w = window.innerWidth - 220 - 280 - 50 - 50;
 				h = (window.innerHeight - 350) 
 			}
@@ -968,11 +971,11 @@ function wrap(text, width) {
 		w = 600
 		h = 300
 	}else{
-		if(layout == "normal" || layout == "squeeze"){
+		if(layout == "normal" || layout == "squeeze" || layout == "stack"){
 			w = window.innerWidth - 220 - 280 - 50 - 50 - 300;
 			h = (window.innerHeight - 130 - 350) * .5
 		}
-		else if(layout == "toggle"){
+		else if(layout == "toggle" || layout == "toggleSqueeze"){
 			w = window.innerWidth - 120 - 280 - 50 - 50 - 300;
 			h = (window.innerHeight - 100) * .5
 		}
@@ -1861,6 +1864,9 @@ function wrap(text, width) {
 
 	if(!PRINT()){
 		addWheelListener(window, function(event){
+			if(getLayout() == "stack"){
+				return false;
+			}
 			var left = d3.select("#leftSidebar")
 			var right = d3.select("#rightSideBar")
 			var leftWidth = left.node().getBoundingClientRect().width;
@@ -1886,6 +1892,7 @@ function wrap(text, width) {
 				rightTop = right.node().getBoundingClientRect().top
 			}
 			else{
+				// console.log("foo")
 				right.style("position", "fixed")
 					.style("margin-top", rightTop + "px")
 				leftTop = left.node().getBoundingClientRect().top
@@ -2176,6 +2183,18 @@ function wrap(text, width) {
 		d3.select("#barChart")
 			.style("bottom","10px")
 	}
+	function stackLayout(){
+		d3.select("#toggleButton")
+			.style("display","none")
+		d3.select("#centerContainer")
+			.style("top","50px")
+		d3.select("#demographicSection")
+			.style("top", "calc(50% + 40px)")
+		d3.select("#costSection")
+			.style("top", "calc(50% + 40px)")
+		d3.select("#barChart")
+			.style("bottom","10px")
+	}
 	d3.select("#toggleButton")
 		.on("click", function(){
 			if(d3.select(this).classed("line")){
@@ -2260,11 +2279,14 @@ function wrap(text, width) {
 	}
 	function handleResize(){
 		var layout = getLayout()
-		if(layout == "toggle"){
+		if(layout == "toggle" || layout == "toggleSqueeze"){
 			toggleLayout(getToggleState(), false)
 		}
 		else if(layout == "normal" || layout == "squeeze"){
 			normalLayout();
+		}
+		else if(layout == "stack"){
+			stackLayout();
 		}	
 	}
 

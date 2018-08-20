@@ -89,3 +89,39 @@ body.squeeze #popMenuContainer .ui-selectmenu-button.ui-button{
 	    line-height: 1.5;
 	}
 }
+
+/*******************************************************/
+/********************* TOGGLE SQUEEZE ******************/
+/*******************************************************/
+/*** this may not be needed? it's for toggle at width 1099 -> 1300, but should that just indep scroll?**/
+/*This should be a new layout? Heights ??? -> 565, widths 1300 -> 1099*/
+
+	body.toggleSqueeze #introText{
+    width: calc(100% - 310px);
+    display: inline-block;
+    color: #5c5859;
+    float: right;
+    font-size: 13px;
+    line-height: 17px;
+    padding-right: 60px;
+    padding-left: 20px;
+	}
+	body.toggleSqueeze #topTitle, body.toggleSqueeze #bottomTitle{
+		font-size: 28px;
+	}
+	body.toggleSqueeze #datePublished{
+		font-size: 12px;
+	}
+
+/*end ??*/
+
+/*******************************************************/
+/************************ STACK ************************/
+/*******************************************************/
+body.stack #centerContainer{
+	position: absolute;
+	height: 10000px;
+}
+body.stack #leftSidebar, body.stack #rightSideBar{
+	position: absolute;
+}
