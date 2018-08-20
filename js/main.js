@@ -1943,7 +1943,7 @@ function wrap(text, width) {
 	function buildPrintHeader(h){
 		h.append("img")
 			.attr("class","printLogo")
-			.attr("src","/img/logo.png")
+			.attr("src","img/logo.png")
 		h.append("div")
 			.attr("class","printTitle")
 			.html("Prison Population <span>Forecaster</span>")
