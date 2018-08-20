@@ -4,7 +4,7 @@
 All states data is included in this model except the following:
  * AR
  * CT
- * DC (not a state)
+ * DC (not a state, but normally included)
  * HI
  * ID
  * VT
