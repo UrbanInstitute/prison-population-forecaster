@@ -1164,7 +1164,8 @@ input[type=range]:focus::-ms-fill-upper {
     right: 0;
     width: 16px;
     height: 100%;
-    background: red;
+    z-index: 3;
+    opacity: .7;
 }
 
 .jspHorizontalBar
@@ -1189,17 +1190,20 @@ input[type=range]:focus::-ms-fill-upper {
 
 .jspTrack
 {
-    background: #dde;
+    background: #f5f5f5;
     position: relative;
 }
 
 .jspDrag
 {
-    background: #bbd;
+    background: #858282;
     position: relative;
     top: 0;
     left: 0;
     cursor: pointer;
+    border-radius: 35px;
+    width: 11px;
+    margin-left: 2px;
 }
 
 .jspHorizontalBar .jspTrack,

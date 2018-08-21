@@ -1,69 +1,4 @@
-// Polyfill from https://developer.mozilla.org/en-US/docs/Web/Events/wheel
-// creates a global "addWheelListener" method
-// example: addWheelListener( elem, function( e ) { console log( e.deltaY ); e.preventDefault(); } );
-(function(window,document) {
 
-    var prefix = "", _addEventListener, support;
-
-    // detect event model
-    if ( window.addEventListener ) {
-        _addEventListener = "addEventListener";
-    } else {
-        _addEventListener = "attachEvent";
-        prefix = "on";
-    }
-
-    // detect available wheel event
-    support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
-              document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
-              "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
-
-    window.addWheelListener = function( elem, callback, useCapture ) {
-        _addWheelListener( elem, support, callback, useCapture );
-
-        // handle MozMousePixelScroll in older Firefox
-        if( support == "DOMMouseScroll" ) {
-            _addWheelListener( elem, "MozMousePixelScroll", callback, useCapture );
-        }
-    };
-
-    function _addWheelListener( elem, eventName, callback, useCapture ) {
-        elem[ _addEventListener ]( prefix + eventName, support == "wheel" ? callback : function( originalEvent ) {
-            !originalEvent && ( originalEvent = window.event );
-
-            // create a normalized event object
-            var event = {
-                // keep a ref to the original event object
-                originalEvent: originalEvent,
-                target: originalEvent.target || originalEvent.srcElement,
-                type: "wheel",
-                deltaMode: originalEvent.type == "MozMousePixelScroll" ? 0 : 1,
-                deltaX: 0,
-                deltaY: 0,
-                deltaZ: 0,
-                preventDefault: function() {
-                    originalEvent.preventDefault ?
-                        originalEvent.preventDefault() :
-                        originalEvent.returnValue = false;
-                }
-            };
-            
-            // calculate deltaY (and deltaX) according to the event
-            if ( support == "mousewheel" ) {
-                event.deltaY = - 1/40 * originalEvent.wheelDelta;
-                // Webkit also support wheelDeltaX
-                originalEvent.wheelDeltaX && ( event.deltaX = - 1/40 * originalEvent.wheelDeltaX );
-            } else {
-                event.deltaY = originalEvent.deltaY || originalEvent.detail;
-            }
-
-            // it's time to fire the callback
-            return callback( event );
-
-        }, useCapture || false );
-    }
-
-})(window,document);
 
 
 
@@ -1721,6 +1656,7 @@ function wrap(text, width) {
 	/******************** LEFT SIDE BAR ********************/
 	/*******************************************************/
 	function toggleParentDrawer(header){
+
 		var container = d3.select(header.parentNode),
 			open = container.classed("open")
 		if(open){
@@ -1731,6 +1667,9 @@ function wrap(text, width) {
 			container.datum(container.node().getBoundingClientRect().height)
 			container.transition()
 				.style("height", "40px")
+				.on("end", function(){
+					$('#leftSidebar').jScrollPane();
+				})
 		}else{
 			container.classed("open", true)
 			container.select(".parentArrow")
@@ -1742,6 +1681,7 @@ function wrap(text, width) {
 				})
 				.on("end", function(){
 					d3.select(this).style("height", "auto")
+					$('#leftSidebar').jScrollPane();
 				})
 
 		}
@@ -1758,6 +1698,9 @@ function wrap(text, width) {
 				.style("transform","rotate(0deg)")
 			container.transition()
 				.style("height", height)
+				.on("end", function(){
+					$('#leftSidebar').jScrollPane();
+				})
 		}else{
 			var height = (container.classed("tall")) ? "220px" : "205px"
 			container.classed("open", true)
@@ -1766,6 +1709,9 @@ function wrap(text, width) {
 				.style("transform","rotate(180deg)")
 			container.transition()
 				.style("height", height)
+				.on("end", function(){
+					$('#leftSidebar').jScrollPane();
+				})
 
 
 		}
@@ -1884,56 +1830,7 @@ function wrap(text, width) {
 			window.open(buildPrintURL(), "_blank")
 		})
 
-	var mouseX = 0,
-		leftTop = 48,
-		rightTop = 48;
-	$(window).on("mousemove", function(event){
-		mouseX = event.pageX;
-	})
 
-	if(!PRINT()){
-		addWheelListener(window, function(event){
-			return false;
-			if(getLayout() == "mobile"){
-				return false;
-			}
-
-			var left = d3.select("#leftSidebar")
-			var right = d3.select("#rightSideBar")
-			var leftWidth = left.node().getBoundingClientRect().width;
-			var rightWidth = right.node().getBoundingClientRect().width;
-			if(mouseX < leftWidth){
-				if(left.style("position") == "fixed"){
-					left.style("position", "absolute")
-						.style("margin-top",  "48px")
-					window.scrollTo(0, leftTop*-1 + 48);
-				}
-				right.style("position", "fixed")
-					.style("margin-top", rightTop + "px")
-				leftTop = left.node().getBoundingClientRect().top
-			}
-			else if(mouseX > window.innerWidth - rightWidth){
-				if(right.style("position") == "fixed"){
-					right.style("position", "absolute")
-						.style("margin-top", "48px")
-					window.scrollTo(0, rightTop*-1 + 48);
-				}
-				left.style("position", "fixed")
-					.style("margin-top", leftTop + "px")
-				rightTop = right.node().getBoundingClientRect().top
-			}
-			else{
-				// console.log("foo")
-				right.style("position", "fixed")
-					.style("margin-top", rightTop + "px")
-				leftTop = left.node().getBoundingClientRect().top
-				left.style("position", "fixed")
-					.style("margin-top", leftTop + "px")
-				rightTop = right.node().getBoundingClientRect().top
-
-			}
-		})
-	}
 	/*******************************************************/
 	/****************** ABOUT SECTION **********************/
 	/*******************************************************/
@@ -2260,7 +2157,13 @@ function wrap(text, width) {
 				toggleLayout("line", true)
 			}
 		})
-
+	d3.select("#leftSidebar")
+		.on("mouseover", function(){
+			d3.select(this).selectAll(".jspVerticalBar").style("opacity",.7)
+		}) 
+		.on("mouseout", function(){
+			d3.select(this).selectAll(".jspVerticalBar").style("opacity",0)
+		}) 
 
 	/*******************************************************/
 	/********************* INITIALIZE **********************/
@@ -2333,13 +2236,9 @@ function wrap(text, width) {
 
 	}
 	function handleResize(){
+		$('#leftSidebar').jScrollPane();
 		var layout = getLayout()
 		if(layout != "mobile"){
-$(function()
-{
-	$('#leftSidebar').jScrollPane();
-	// d3.select("#leftSidebar").style("padding-bottom", (max - lh + 100) + "px");
-});
 			resizeSidebars();
 		}
 		if(layout == "toggle" || layout == "toggleSqueeze"){

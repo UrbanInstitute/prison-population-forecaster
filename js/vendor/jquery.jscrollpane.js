@@ -163,7 +163,7 @@
 
 					if (hasContainingSpaceChanged) {
 						paneWidth = elem.innerWidth() + originalPaddingTotalWidth;
-						paneHeight = elem.innerHeight();
+						paneHeight = elem.innerHeight() - 145;
 						container.css({
 							width: paneWidth + 'px',
 							height: paneHeight + 'px'
@@ -189,7 +189,7 @@
 				} else {
 					contentWidth = pane[0].scrollWidth;
 				}
-				contentHeight = pane[0].scrollHeight;
+				contentHeight = pane[0].scrollHeight + 200;
 				pane.css('overflow', '');
 
 				percentInViewH = contentWidth / paneWidth;
@@ -350,7 +350,7 @@
 				scrollbarWidth = settings.verticalGutter + verticalTrack.outerWidth();
 
 				// Make the pane thinner to allow for the vertical scrollbar
-				pane.width(paneWidth - scrollbarWidth - originalPaddingTotalWidth);
+				pane.width(paneWidth  - originalPaddingTotalWidth);
 
 				// Add margin to the left of the pane if scrollbars are on that side (to position
 				// the scrollbar on the left or right set it's left or right property in CSS)
@@ -468,9 +468,9 @@
 				}
 				// reflow content
 				if (isScrollableH) {
-					pane.width((container.outerWidth() - originalPaddingTotalWidth) + 'px');
+					// pane.width((container.outerWidth() - originalPaddingTotalWidth) + 'px');
 				}
-				contentHeight = pane.outerHeight() + 1000;
+				contentHeight = pane.outerHeight() + 200;
 				percentInViewV = contentHeight / paneHeight;
 
 				if (isScrollableH) {
