@@ -20,6 +20,9 @@ var costs =  {
 	"CT": {
 		"pcexpend":	42301.85971
 	},
+	"DC": {
+		"pcexpend":	-1
+	}
 	"DE": {
 		"pcexpend":	38231.78499
 	},
