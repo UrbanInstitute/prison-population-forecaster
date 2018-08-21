@@ -391,6 +391,7 @@ function wrap(text, width) {
 
 			}
 		}
+		$('#rightSideBar').jScrollPane();
 	}
 	function lockInput(offense, indicator){
 		var parent = d3.select(".slider[data-offense=\"" + offense + "\"][data-indicator=\"" + indicator + "\"]")
@@ -1234,6 +1235,13 @@ function wrap(text, width) {
 
 	}
 	function buildCostInfo(cost, forecastCount){
+		if(getState() == "DC"){
+			d3.select("#costText").style("display","none")
+			d3.select("#dcText").style("display","block")
+		}else{
+			d3.select("#costText").style("display","block")
+			d3.select("#dcText").style("display","none")
+		}
 
 		var container = (PRINT()) ? ".ct" + forecastCount : "#costText"
 
@@ -1492,7 +1500,8 @@ function wrap(text, width) {
 			clickForecast(forecastCount)
 		}
 
-    // background-image: url(../img/unlocked.png);
+		$('#rightSideBar').jScrollPane();
+
 
 		forecastCount += 1;
 	}
@@ -1953,10 +1962,7 @@ function wrap(text, width) {
 				.attr("class", "printSubhead cost")
 				.text("Cost")
 
-			var ct = container
-				.append("div")
-				.attr("class", "printCostText ct" + i)
-				.html("By <span id = \"costYear\"></span>, these changes would lead to a <span id = \"costHighlight\">cumulative <span id = \"costWord\"></span> of <span id = \"costDollars\"></span></span>.")
+
 
 
 
@@ -1989,7 +1995,20 @@ function wrap(text, width) {
 		pfn.text(name)
 		psn.text(getStateName(state))
 
-		console.log(inputs)
+
+		if(state == "DC"){
+			var ct = container
+				.append("div")
+				.attr("class", "printCostText ct" + i)
+				.html("Corrections spending data are not available for Washington, DC.")
+
+		}else{
+			var ct = container
+				.append("div")
+				.attr("class", "printCostText ct" + i)
+				.html("By <span id = \"costYear\"></span>, these changes would lead to a <span id = \"costHighlight\">cumulative <span id = \"costWord\"></span> of <span id = \"costDollars\"></span></span>.")
+		}
+
 
 		oc.selectAll("printColumn")
 			.data(PARENTS)
@@ -2172,6 +2191,13 @@ function wrap(text, width) {
 		.on("mouseout", function(){
 			d3.select(this).selectAll(".jspVerticalBar").style("opacity",0)
 		}) 
+	d3.select("#rightSideBar")
+		.on("mouseover", function(){
+			d3.select(this).selectAll(".jspVerticalBar").style("opacity",.7)
+		}) 
+		.on("mouseout", function(){
+			d3.select(this).selectAll(".jspVerticalBar").style("opacity",0)
+		}) 
 	d3.select("#mn-header")
 		.on("click", function(){
 			if(d3.select(this).classed("open")){
@@ -2224,7 +2250,7 @@ function wrap(text, width) {
 
 				d3.select("#mn-boorger")
 					.transition()
-					.style("left","140px")
+					.style("left","150px")
 			}
 		})
 
@@ -2324,6 +2350,7 @@ function wrap(text, width) {
 	}
 	function handleResize(){
 		$('#leftSidebar').jScrollPane();
+		$('#rightSideBar').jScrollPane();
 		var layout = getLayout()
 		if(layout != "mobile"){
 			resizeSidebars();

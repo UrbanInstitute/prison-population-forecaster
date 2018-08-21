@@ -202,6 +202,10 @@ body.stack #barChart{
 	font-style: italic;
 	font-weight: normal;
 }
+#mn-header.open #mn-start{
+	font-style: italic;
+	font-weight: normal;
+}
 #mn-boorger{
 	display: inline-block;
     position: relative;
@@ -213,7 +217,7 @@ body.stack #barChart{
 }
 #mn-menu{
 	position: absolute;
-	width: 300px;
+	width: 290px;
     /* height: 900px; */
     background: #353535;
     left: -300px;
@@ -234,13 +238,11 @@ body.stack #barChart{
 body.mobile #headerAboutLink{
 	display: none;
 }
-body.mobile #leftSidebar{
+body.mobile #leftSidebar, body.mobile #rightSideBar{
     top: 52px;
-}
-body.mobile #rightSideBar{
     z-index: 10000000008;
-	top: 72px
 }
+
 body.mobile #mobileNav{
 	display: block;
 }
@@ -341,4 +343,15 @@ body.mobile #startHere{
 body.mobile #clearAll{
 	font-size: 13px;
 	float: left;
+}
+body.mobile .popUp{
+	z-index: 10000000000;
+	width: 300px;
+	left: calc(50% - 150px);
+    -moz-box-shadow: 0px 0px 0px 0px #ccc;
+    -webkit-box-shadow: 0px 0px 0px 0px #ccc;
+    box-shadow: 0px 0px 0px 0px #ccc;
+}
+body.mobile .popHead{
+	top: 87px;
 }

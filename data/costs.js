@@ -22,7 +22,7 @@ var costs =  {
 	},
 	"DC": {
 		"pcexpend":	-1
-	}
+	},
 	"DE": {
 		"pcexpend":	38231.78499
 	},

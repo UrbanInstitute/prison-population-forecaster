@@ -229,6 +229,10 @@ body{
 }
 #dcText{
     display: none;
+    font-size: 18px;
+    line-height: 1.5;
+    color: #9d9d9d;
+    font-style: italic;
 }
 
 .barsGroup text{
@@ -733,8 +737,10 @@ input[type=range]:focus::-ms-fill-upper {
     display: inline-block;
     color: #fff;
     margin-top: 48px;
-    position: absolute;
+    position: fixed;
     right: 0px;
+    height: 100%;
+
     /*padding-bottom: calc(100% - 900px);*/
 }
 #selectionsContainer{
@@ -1168,9 +1174,14 @@ input[type=range]:focus::-ms-fill-upper {
     width: 16px;
     height: 100%;
     z-index: 3;
-    opacity: .7;
+    opacity: 0;
 }
-
+#rightSideBar .jspVerticalBar{
+    left: 0px;
+}
+#rightSideBar .jspPane{
+    margin-left: 0px !important;
+}
 .jspHorizontalBar
 {
     position: absolute;
