@@ -1269,7 +1269,7 @@ function wrap(text, width) {
 			pop.append("div")
 				.attr("class","popErrorContainer")
 				.append("img")
-					.attr("src","../img/error.png")
+					.attr("src","img/error.png")
 
 		}
 		var popHeadText;
@@ -2163,6 +2163,8 @@ function wrap(text, width) {
 		d3.select("#mobileDatePublished").html(d3.select("#datePublished").html())
 
 		d3.select("#mn-menu").style("height",window.innerHeight + "px")
+
+		$('#aboutContainer').css("height",(window.innerHeight - 100) + "px").jScrollPane();
 	}
 	function resizeSidebars(){
 		var ch = d3.select("#centerContainer").node().getBoundingClientRect().height,
@@ -2234,6 +2236,9 @@ function wrap(text, width) {
 				d3.select("#rightSideBar")
 					.transition()
 					.style("left","-300px")
+				d3.select("#aboutContainer")
+					.transition()
+					.style("left","-2000px")
 			}
 			else{
 				d3.select(this).classed("open",true)
@@ -2273,6 +2278,19 @@ function wrap(text, width) {
 				d3.select("#mn-start")
 						.style("color","white")
 				d3.select("#rightSideBar")
+					.transition()
+					.style("left","0px")
+
+
+		})
+		d3.select("#mn-abt")
+			.on("click", function(){
+				if(d3.select("#mn-header").classed("drawerOpen")){ return false }
+				d3.select("#mn-header").classed("drawerOpen",true)
+				d3.select("#mn-header").classed("open",false)
+				d3.select("#mn-start")
+						.style("color","white")
+				d3.select("#aboutContainer")
 					.transition()
 					.style("left","0px")
 

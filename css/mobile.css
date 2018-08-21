@@ -355,3 +355,17 @@ body.mobile .popUp{
 body.mobile .popHead{
 	top: 87px;
 }
+
+body.mobile #aboutContainer{
+	position: fixed;
+    width: calc(100% - 40px);
+    height: 1260px;
+    z-index: 10000000008;
+    left: -2000px;
+    top: 100px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+body.mobile #aboutClose{
+	display: none;
+}
