@@ -539,13 +539,21 @@ function wrap(text, width) {
 
 		}
 		else{
-			if(layout == "normal" || layout == "squeeze" || layout == "stack"){
+			if(layout == "normal" || layout == "squeeze"){
 				w = window.innerWidth - 220 - 280 - 50 - 50;
 				h = (window.innerHeight - 220 - 150) * .5
+			}
+			else if(layout == "stack"){
+				w = window.innerWidth - 220 - 280 - 50 - 50;
+				h = (window.innerHeight - 290 - 150) * .5			
 			}
 			else if(layout == "toggle" || layout == "toggleSqueeze"){
 				w = window.innerWidth - 220 - 280 - 50 - 50;
 				h = (window.innerHeight - 350) 
+			}
+			else if(layout == "mobile"){
+				w = d3.select("#centerContainer").node().getBoundingClientRect().width
+				h = 300 	
 			}
 		}
 
@@ -623,6 +631,7 @@ function wrap(text, width) {
 			}	
 
 			function mouseoverChart(event){
+					if (getLayout() == "mobile"){ return false }
 					var year = Math.round(x.invert(d3.mouse(this)[0] - margin.left))
 					var future = d3.select(".line.projection.future").data()[0].filter(function(o){ return o.year == year})[0]
 					var baseline = d3.select(".line.baseline.future").data()[0].filter(function(o){ return o.year == year})[0]
@@ -780,9 +789,14 @@ function wrap(text, width) {
 			.attr("stroke-dasharray","1,5")
 			.attr("d", lineBaseline);
 
-
-			var legend = d3.select(container).append("div")
-				.attr("id","lineLegend")
+			var legend;
+			if(layout == "mobile"){
+				legend = d3.select(container).insert("div", "#lineChart svg")
+								.attr("id","lineLegend")
+			}else{
+				legend = d3.select(container).append("div")
+					.attr("id","lineLegend")
+			}
 			var l1 = legend.append("div").attr("class","ll-row")
 			l1.append("span").attr("class","ll-key historical")
 			l1.append("div").attr("class","ll-text").text("Historical population")
@@ -972,13 +986,21 @@ function wrap(text, width) {
 		w = 600
 		h = 300
 	}else{
-		if(layout == "normal" || layout == "squeeze" || layout == "stack"){
+		if(layout == "normal" || layout == "squeeze"){
 			w = window.innerWidth - 220 - 280 - 50 - 50 - 300;
 			h = (window.innerHeight - 130 - 350) * .5
+		}
+		else if(layout == "stack"){
+			w = window.innerWidth - 220 - 280 - 50 - 50 - 200;
+			h = (window.innerHeight - 130 - 350 - 120) * .5
 		}
 		else if(layout == "toggle" || layout == "toggleSqueeze"){
 			w = window.innerWidth - 120 - 280 - 50 - 50 - 300;
 			h = (window.innerHeight - 100) * .5
+		}
+		else if(layout == "mobile"){
+			w = window.innerWidth - 100;
+			h = 300
 		}
 	}
 
@@ -1096,10 +1118,16 @@ function wrap(text, width) {
 		.call(d3.axisBottom(x0))
     	.selectAll(".tick text")
       		.call(wrap, 100)
-
-      	var bl = d3.select(container)
-      		.append("div")
-      		.attr("id","barLegend")
+      	var bl;
+      	if(layout == "mobile"){
+      		bl = d3.select(container)
+      			.insert("div", "#barChart svg")
+      			.attr("id","barLegend")
+      	}else{
+      		bl = d3.select(container)
+      			.append("div")
+      			.attr("id","barLegend")
+      	}
       	var bl1 = bl.append("div")
       		.attr("class","bl-row")
       	bl1.append("span")
@@ -1865,9 +1893,11 @@ function wrap(text, width) {
 
 	if(!PRINT()){
 		addWheelListener(window, function(event){
-			if(getLayout() == "stack"){
+			return false;
+			if(getLayout() == "mobile"){
 				return false;
 			}
+
 			var left = d3.select("#leftSidebar")
 			var right = d3.select("#rightSideBar")
 			var leftWidth = left.node().getBoundingClientRect().width;
@@ -2196,6 +2226,30 @@ function wrap(text, width) {
 		d3.select("#barChart")
 			.style("bottom","10px")
 	}
+	function mobileLayout(){
+		d3.select("#toggleButton")
+			.style("display","none")
+		d3.select("#centerContainer")
+			.style("top","auto")
+		d3.select("#demographicSection")
+			.style("top", "auto")
+		d3.select("#costSection")
+			.style("top", "auto")
+		d3.select("#barChart")
+			.style("bottom","auto")
+
+		d3.select("#mobileDatePublished").html(d3.select("#datePublished").html())
+	}
+	function resizeSidebars(){
+		var ch = d3.select("#centerContainer").node().getBoundingClientRect().height,
+			rh = d3.select("#rightSideBar").node().getBoundingClientRect().height, 
+			lh = d3.select("#leftSidebar").node().getBoundingClientRect().height
+
+		var max = d3.max([ch, rh, lh])
+
+		 d3.select("#leftSidebar").style("padding-bottom", (max - lh + 100) + "px");
+		 d3.select("#rightSideBar").style("padding-bottom", (max - rh + 100) + "px")
+	}
 	d3.select("#toggleButton")
 		.on("click", function(){
 			if(d3.select(this).classed("line")){
@@ -2280,6 +2334,14 @@ function wrap(text, width) {
 	}
 	function handleResize(){
 		var layout = getLayout()
+		if(layout != "mobile"){
+$(function()
+{
+	$('#leftSidebar').jScrollPane();
+	// d3.select("#leftSidebar").style("padding-bottom", (max - lh + 100) + "px");
+});
+			resizeSidebars();
+		}
 		if(layout == "toggle" || layout == "toggleSqueeze"){
 			toggleLayout(getToggleState(), false)
 		}
@@ -2288,7 +2350,10 @@ function wrap(text, width) {
 		}
 		else if(layout == "stack"){
 			stackLayout();
-		}	
+		}
+		else if(layout == "mobile"){
+			mobileLayout();
+		}
 	}
 
 	init();

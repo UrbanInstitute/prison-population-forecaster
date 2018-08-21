@@ -1,3 +1,6 @@
+body.hide{
+	display: none;
+}
 /*******************************************************/
 /********************* BREAKPOINTS *********************/
 /*******************************************************/
@@ -125,10 +128,132 @@ body.toggleSqueeze #popContainer, body.toggleSqueeze #costText{
 /*******************************************************/
 /************************ STACK ************************/
 /*******************************************************/
-body.stack #centerContainer{
-	position: absolute;
-	height: 10000px;
+
+	body.stack #introText{
+    width: calc(100% - 310px);
+    display: inline-block;
+    color: #5c5859;
+    float: right;
+    font-size: 12px;
+    line-height: 17px;
+    padding-right: 60px;
+    padding-left: 20px;
+	}
+	body.stack #topTitle, body.stack #bottomTitle{
+		font-size: 28px;
+	}
+	body.stack #datePublished{
+		font-size: 12px;
+	}
+body.stack #lineChart{
+	margin-top: 40px;
 }
-body.stack #leftSidebar, body.stack #rightSideBar{
+body.stack #demographicSection{
+	top: calc(50% + 10px) !important;
+}
+body.stack #popContainer{
+	font-size: 16px;
+}
+body.stack #costSection{
+    top: auto !important;
+    width: 100%;
+    border: 0px;
+    right: auto;
+    bottom: 20px;
+    width: calc(100% - 570px);
+    font-size: 16px;
+}
+body.stack #demographicSection{
+	width: calc(100% - 631px);
+}
+body.stack #barChart{
+    bottom: 110px !important;	
+}
+
+
+
+/*******************************************************/
+/*********************** MOBILE ************************/
+/*******************************************************/
+body.mobile #introText{
+    clear: both;
+    display: block;
+    float: left;
+    width: 100%;
+    text-align: center;
+    padding-left: 0px;
+    padding-bottom: 50px;
+    margin-top: 20px;
+}
+body.mobile #titleContainer{
+	clear: both;
+	display: block;
+	text-align: center;
+	margin-top: 50px;
+}
+body.mobile #topTitle{
+    display: inline-block;
+    margin-right: 6px;
+    font-size: 30px !important;
+}
+body.mobile #bottomTitle{
+	display: inline-block;
+	font-size: 30px;
+}
+#mobileDatePublished, body.mobile #datePublished{
+	display: none;
+}
+body.mobile #mobileDatePublished{
+    display: block;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+body.mobile #leftSidebar, body.mobile #rightSideBar{
+	left: -300px;
+}
+body.mobile #centerContainer{
 	position: absolute;
+	left: 0px;
+	padding-left: 10px;
+	width: calc(100% - 20px);
+}
+body.mobile #lineLegend{
+border: none;
+    background: none;
+    bottom: 0px;
+    left: 10px;
+}
+body.mobile #demographicSection {
+    position: relative;
+    top: 10px;
+    left: 10px;
+    width: 100%;
+}
+body.mobile #barChart{
+	position: relative;
+}
+body.mobile .bar-note{
+	opacity: 1;
+    right: 0px;
+    display: block;
+    width: 100%;
+    margin-bottom: -20px;
+}
+body.mobile .bl-row{
+    margin-bottom: 10px;
+    width: 130px;
+    display: inline-block;
+}
+body.mobile #barLegend{
+    position: relative;
+    border: 0px;
+    top: 3px;
+    left: -18px;
+    float: left;
+    clear: both;
+    height: 100px;
+}
+body.mobile #lineChart{
+	margin-left: 0px;
 }

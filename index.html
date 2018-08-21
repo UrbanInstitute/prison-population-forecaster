@@ -42,7 +42,7 @@
         }
         </script>
 </head>
-<body>
+<body class = "hide">
 <!-- Google Tag Manager -->
 <!-- <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-MKBD2W"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -1051,6 +1051,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     </div>
     <div id = "introText">
     Use our forecaster to explore how policy changes could affect state prison populations. Adjust prison admissions and term lengths. Customize your choices by state and by type of offense. Compare your forecast with the latest year of data or what’s expected in 2025. And save and share what you find.
+    <div id = "mobileDatePublished"></div>
     </div>
   </div>
   <div id = "lineChart"></div>
@@ -1107,6 +1108,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <script src="js/vendor/d3.v4.min.js"></script>
   <script src="js/vendor/jquery.1.8.min.js"></script>
   <script src="js/vendor/jquery-ui.js"></script>
+  <script type="text/javascript" src="js/vendor/jquery.mousewheel.js"></script>
+
+  <script src = "js/vendor/jquery.jscrollpane.min.js"></script>
 
     <script src="data/race.js"></script>
     <script src="data/costs.js"></script>
