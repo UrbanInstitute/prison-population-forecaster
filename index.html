@@ -105,6 +105,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     </div>
   <!-- END HEADER -->
 
+  <div id = "mobileNav">
+    <div id ="mn-header">
+      <div id = "mn-start">Start here</div>
+      <div id = "mn-boorger"><img src = "img/boorger.png"/></div>
+    </div>
+    <div id = "mn-menu">
+      <div class = "mn-row" id = "mn-left"><span>Make adjustments</span></div>
+      <div class = "mn-row" id = "mn-right"><span>Your selections</span></div>
+      <div class = "mn-row" id = "mn-abt"><span>About</span></div>
+    </div>
+  </div>
+
 <!-- START ABOUT DRAWER -->
   <div id = "aboutContainer">
     <img src = "img/close.png" id = "aboutClose" />
@@ -155,7 +167,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <option value="DE">Delaware</option>
 
             <!-- not in costs data -->
-            <!-- <option value="DC">District of Columbia</option> -->
+            <option value="DC">District of Columbia</option>
 
         <option value="FL">Florida</option>
         <option value="GA">Georgia</option>
@@ -1075,7 +1087,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   </div>
   <div id = "costSection">
     <div id = "costTitle" class = "chartSectionTitle">Cost</div>
-    <div id = "costText">By <span id = "costYear"></span>, these changes would lead to a <span id = "costHighlight">cumulative <span id = "costWord"></span> of <span id = "costDollars"></span></span>.</div>
+    <div id = "costText">By <span id = "costYear"></span>, these changes would lead to a <span id = "costHighlight">cumulative <span id = "costWord"></span> of <span id = "costDollars"></span></span> in state corrections spending.</div>
+    <div id = "dcText">Corrections spending data are not available for Washington, DC.</div>
   </div>
 </div>
 <!-- END CENTER CONTENT -->

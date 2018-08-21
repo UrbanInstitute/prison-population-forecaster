@@ -175,6 +175,75 @@ body.stack #barChart{
 /*******************************************************/
 /*********************** MOBILE ************************/
 /*******************************************************/
+#mobileNav{
+	display: none;
+	width: 100%;
+	position: fixed;
+	top: 49px;
+	color: white;
+	z-index: 1000000000;
+}
+#mn-header{
+	width: 100%;
+	background-color: #353535;
+	height: 50px;
+	cursor: pointer;
+	border-bottom: 1px solid white;
+}
+#mn-start{
+    font-size: 15px;
+    font-weight: 900;
+    display: inline-block;
+    top: 15px;
+    position: relative;
+    left: 15px;
+}
+#mn-header.drawerOpen #mn-start{
+	font-style: italic;
+	font-weight: normal;
+}
+#mn-boorger{
+	display: inline-block;
+    position: relative;
+    top: 17px;
+    left: 24px;
+}
+#mn-boorger img{
+	width: 25px;
+}
+#mn-menu{
+	position: absolute;
+	width: 300px;
+    /* height: 900px; */
+    background: #353535;
+    left: -300px;
+}
+.mn-row{
+	height: 36px;
+	text-transform: uppercase;
+	width: 100%;
+	border-bottom: 1px solid white;
+}
+.mn-row span{
+	position: relative;
+	left: 15px;
+	top: 8px;
+	cursor: pointer;
+
+}
+body.mobile #headerAboutLink{
+	display: none;
+}
+body.mobile #leftSidebar{
+    top: 52px;
+}
+body.mobile #rightSideBar{
+    z-index: 10000000008;
+	top: 72px
+}
+body.mobile #mobileNav{
+	display: block;
+}
 body.mobile #introText{
     clear: both;
     display: block;
@@ -189,7 +258,7 @@ body.mobile #titleContainer{
 	clear: both;
 	display: block;
 	text-align: center;
-	margin-top: 50px;
+	margin-top: 140px;
 }
 body.mobile #topTitle{
     display: inline-block;
@@ -229,6 +298,7 @@ body.mobile #demographicSection {
     top: 10px;
     left: 10px;
     width: 100%;
+    margin-top: 90px;
 }
 body.mobile #barChart{
 	position: relative;
@@ -256,4 +326,19 @@ body.mobile #barLegend{
 }
 body.mobile #lineChart{
 	margin-left: 0px;
+}
+body.mobile #costSection{
+	width: 100%;
+    bottom: 0px;
+    position: relative;
+    left: 0px;
+    margin-top: 90px;
+    margin-bottom: 100px;
+}
+body.mobile #startHere{
+	display: none;
+}
+body.mobile #clearAll{
+	font-size: 13px;
+	float: left;
 }

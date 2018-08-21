@@ -101,8 +101,9 @@ body.print{
     margin: 5mm;	
    /*margin-right: 45mm;  for compatibility with both A4 and Letter */
   }
-   body.print a:after{
-   	 content:" (" attr(href) ") ";font-size:0.8em;font-weight:normal;
+   body.print a{
+   	 color: black;
+     text-decoration: none;
    }
 
    body.print .page-break { height:0; page-break-after:always; margin:0; border-top:none; }

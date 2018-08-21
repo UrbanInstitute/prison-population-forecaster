@@ -227,6 +227,9 @@ body{
     font-size: 18px;
     line-height: 1.5;
 }
+#dcText{
+    display: none;
+}
 
 .barsGroup text{
     fill: #ec008b;
@@ -900,11 +903,11 @@ input[type=range]:focus::-ms-fill-upper {
     text-overflow: ellipsis;
 }
 .savedForecast.active input, .savedForecast.clickActive input {
-    color: #000;
+    color: #1696d2;
     font-weight: bold;
 }
 .savedForecast.active .forecastState, .savedForecast.clickActive .forecastState {
-    color: #000;
+    color: #1696d2;
     font-weight: bold;
 }
 .forecastState{

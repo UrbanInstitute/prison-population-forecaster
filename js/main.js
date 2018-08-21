@@ -675,11 +675,14 @@ function wrap(text, width) {
 				.attr("x", width )
 				.attr("y", -7)
 				.text("People")
+				console.log(years)
+
+			var axisFunk = (layout == "mobile") ? d3.axisBottom(x).tickFormat(d3.format(".0f")).ticks(5) : d3.axisBottom(x).tickFormat(d3.format(".0f"))
 
 			g.append("g")
 			.attr("class","lineChart x axis")
 			.attr("transform", "translate(0," + height + ")")
-			.call(d3.axisBottom(x).tickFormat(d3.format(".0f")))
+			.call(axisFunk)
 			.select(".domain")
 			.remove();
 
@@ -791,9 +794,12 @@ function wrap(text, width) {
 
 			d3.select("#lineChartG").attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
+			var axisFunk = (layout == "mobile") ? d3.axisBottom(x).tickFormat(d3.format(".0f")).ticks(5) : d3.axisBottom(x).tickFormat(d3.format(".0f"))
+
+
 			d3.select(".lineChart.x.axis")
 			.attr("transform", "translate(0," + height + ")")
-			.call(d3.axisBottom(x).tickFormat(d3.format(".0f")))
+			.call(axisFunk)
 			.select(".domain")
 			.remove();
 
@@ -1878,7 +1884,7 @@ function wrap(text, width) {
 	}
 
 	function buildPrintView(forecasts){
-		d3.select("body").classed("print",true)
+		d3.select("body").classed("print",true).classed("hide",false)
 		// d3.select("#printContainer")
 		for(var i = 1; i <= forecasts.length; i++){
 
@@ -2136,6 +2142,8 @@ function wrap(text, width) {
 			.style("bottom","auto")
 
 		d3.select("#mobileDatePublished").html(d3.select("#datePublished").html())
+
+		d3.select("#mn-menu").style("height",window.innerHeight + "px")
 	}
 	function resizeSidebars(){
 		var ch = d3.select("#centerContainer").node().getBoundingClientRect().height,
@@ -2164,7 +2172,86 @@ function wrap(text, width) {
 		.on("mouseout", function(){
 			d3.select(this).selectAll(".jspVerticalBar").style("opacity",0)
 		}) 
+	d3.select("#mn-header")
+		.on("click", function(){
+			if(d3.select(this).classed("open")){
+				d3.select(this).classed("open",false)
 
+				d3.select("#mn-menu")
+					.transition()
+					.style("left","-300px")
+
+				d3.select("#mn-start")
+					.style("color","white")
+					.text("Start here")
+
+				d3.select("#mn-boorger")
+					.transition()
+					.style("left","24px")
+
+				d3.select("#leftSidebar")
+					.transition()
+					.style("left","-300px")
+
+			}
+			else if(d3.select(this).classed("drawerOpen")){
+				d3.select(this).classed("open", true)
+				d3.select(this).classed("drawerOpen", false)
+
+				d3.select("#mn-start")
+					.style("color","#353535")
+					.text("Return to global menu")
+
+				d3.select("#leftSidebar")
+					.transition()
+					.style("left","-300px")
+				d3.select("#rightSideBar")
+					.transition()
+					.style("left","-300px")
+			}
+			else{
+				d3.select(this).classed("open",true)
+				d3.select(this).classed("drawerOpen",false)
+
+
+				d3.select("#mn-menu")
+					.transition()
+					.style("left","0px")
+
+				d3.select("#mn-start")
+					.style("color","#353535")
+					.text("Return to global menu")
+
+				d3.select("#mn-boorger")
+					.transition()
+					.style("left","140px")
+			}
+		})
+
+		d3.select("#mn-left")
+			.on("click", function(){
+				if(d3.select("#mn-header").classed("drawerOpen")){ return false }
+				d3.select("#mn-header").classed("drawerOpen",true)
+				d3.select("#mn-header").classed("open",false)
+				d3.select("#mn-start")
+						.style("color","white")
+				d3.select("#leftSidebar")
+					.transition()
+					.style("left","0px")
+		})
+		d3.select("#mn-right")
+			.on("click", function(){
+				if(d3.select("#mn-header").classed("drawerOpen")){ return false }
+				d3.select("#mn-header").classed("drawerOpen",true)
+				d3.select("#mn-header").classed("open",false)
+				d3.select("#mn-start")
+						.style("color","white")
+				d3.select("#rightSideBar")
+					.transition()
+					.style("left","0px")
+
+
+		})
 	/*******************************************************/
 	/********************* INITIALIZE **********************/
 	/*******************************************************/
