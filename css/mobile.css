@@ -369,3 +369,6 @@ body.mobile #aboutContainer{
 body.mobile #aboutClose{
 	display: none;
 }
+body.mobile #barChart .axis .tick text {
+    font-size: 12px;
+}

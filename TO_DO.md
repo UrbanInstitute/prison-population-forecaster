@@ -1,17 +1,15 @@
 cross browser!
-bar chart x axis black
-highlight color cirlce highlight (blue <-> pink) not reliable
-esc to close menus
-on app img for warning
-stack layout, tooltip location is off
+	console error when mousing over saved line
+	highlight color cirlce highlight (blue <-> pink) not reliable (can't replicate)
+	stack layout, tooltip location is off (can't replicate)
 when resizing down to mobile or back up, legend positions should switch
-mobile, rotate bar chart
-hide pink line behind blue line
+	mobile, rotate bar chart
+	hide pink line behind blue line
 bar chart state change overlap w/ y axis
-Switch to AK, save forecast...lines don't overlap. Also loading default MI
 Tooltip text position based on size
-left side bar full height
 align legend w cost
 keep track of scroll position on mobile
+	can't replicate, weird errors on "continue" button, unsaved changes
+click out on body on mobile to close menus
 
 

@@ -501,13 +501,19 @@ function wrap(text, width) {
 			data = (saveForecast) ? allData : allData[0],
 			years = (saveForecast) ? null : allData[1]
 
-
+			if(!saveForecast){
+				data = data.filter(function(o){ return o.year >= MIN_YEAR && o.year <= MAX_YEAR })
+			}
 
 			var x = d3.scaleLinear()
 			.rangeRound([0, width]);
 
+
 			var y = d3.scaleLinear()
 			.rangeRound([height, 0]);
+
+			
+
 
 			lineBaseline = d3.line()
 			.x(function(d) { return x(d.year); })
@@ -520,6 +526,7 @@ function wrap(text, width) {
 			var yMin, yMax;
 			if(saveForecast){
 				var hist = d3.select(".line.baseline.historical").datum()
+
 				yMin = d3.min([
 						d3.min(hist, function(d){ return d.projected}),
 						d3.min(hist, function(d){ return d.baseline}),
@@ -545,6 +552,7 @@ function wrap(text, width) {
 			}
 
 
+
 			x.domain([getMinYear(), MAX_YEAR]);
 			y.domain([0, yMax]);
 
@@ -568,7 +576,12 @@ function wrap(text, width) {
 
 			function mouseoverChart(event){
 					if (getLayout() == "mobile"){ return false }
+					try{
 					var year = Math.round(x.invert(d3.mouse(this)[0] - margin.left))
+					}catch(error){
+						return false;
+					}
+
 					var future = d3.select(".line.projection.future").data()[0].filter(function(o){ return o.year == year})[0]
 					var baseline = d3.select(".line.baseline.future").data()[0].filter(function(o){ return o.year == year})[0]
 					var historical = d3.select(".line.baseline.historical").data()[0].filter(function(o){ return o.year == year})[0]
@@ -676,7 +689,6 @@ function wrap(text, width) {
 				.attr("x", width )
 				.attr("y", -7)
 				.text("People")
-				console.log(years)
 
 			var axisFunk = (layout == "mobile") ? d3.axisBottom(x).tickFormat(d3.format(".0f")).ticks(5) : d3.axisBottom(x).tickFormat(d3.format(".0f"))
 
@@ -748,15 +760,6 @@ function wrap(text, width) {
 			l3.append("span").attr("class","ll-key forecast")
 			l3.append("div").attr("class","ll-text").text("Forecast population")
 
-			// g.append("text")
-		 //        .attr("dy", -4) //Move the text down
-			//    .append("textPath") //append a textPath to the text element
-			//     .attr("xlink:href", "#lbf") //place the ID of the path here
-			//     .style("text-anchor","end") //place the text halfway on the arc
-			//     .attr("startOffset", "100%")
-			//     .style("font-size","13px")
-   //  			.style("letter-spacing","2px")
-			//     .text("Baseline projection");
 
 		}
 		else if(saveForecast){
@@ -781,7 +784,12 @@ function wrap(text, width) {
 				.on("click", function(d){
 					var c = d3.select(this).attr("data-count")
 					var datum = d3.select(".savedForecast.c" + c).datum()
-					loadForecast(datum)
+					if(d3.select("#saveForecast").classed("deactivated") || d3.select("#popUnsaved").classed("checked")){
+						loadForecast(datum)
+					}else{
+						buildPopup("unsaved",loadForecast, datum)
+					}
+
 				})
 
 
@@ -941,7 +949,7 @@ function wrap(text, width) {
 			h = (window.innerHeight - 100) * .5
 		}
 		else if(layout == "mobile"){
-			w = window.innerWidth - 100;
+			w = window.innerWidth - 40;
 			h = 300
 		}
 	}
@@ -983,10 +991,17 @@ function wrap(text, width) {
 		// y.domain([0, d3.max(data, function(d) { return d3.max(keys, function(key) { return d[key]; }); })]).nice();
 		// y.domain([0,1])
 
-		g.append("g")
+		var yaxis = g.append("g")
 		.attr("class", "y bar axis")
 		.call(d3.axisLeft(y).ticks(5, "%").tickSize(-width))
-		.select(".domain")
+
+		yaxis.selectAll(".tick line")
+			.style("stroke", function(d){
+				if(d == 0){ return "#000"}
+				else{ return "#dedddd" }
+			})
+
+		yaxis.select(".domain")
 		.remove();
 
 		var bars = g.append("g")
@@ -1053,18 +1068,22 @@ function wrap(text, width) {
 		.attr("y", function(d) { return y(d.value) -5; })
 		.text(function(d){ return formatPP(d3.format(".2f")(d.diff *100)) })
 
+		var wrapWidth = (layout == "mobile") ? 80 : 100;
 
-		g.append("g")
+		var xaxis = g.append("g")
 		.attr("class", "x bar axis")
 		.attr("transform", "translate(0," + height + ")")
 		.call(d3.axisBottom(x0))
-    	.selectAll(".tick text")
-      		.call(wrap, 100)
+		.selectAll(".tick text")
+      		.call(wrap, wrapWidth)
       	var bl;
       	if(layout == "mobile"){
       		bl = d3.select(container)
       			.insert("div", "#barChart svg")
       			.attr("id","barLegend")
+      			.style("height", function(d){
+      				return (d.filter(function(o){ return o.race == "Hispanic"}).length == 0) ? "80px" : "40px"
+      			})
       	}else{
       		bl = d3.select(container)
       			.append("div")
@@ -1085,6 +1104,8 @@ function wrap(text, width) {
       	bl2.append("div")
       		.attr("class","bl-text forecast")
       		.text("2025 forecast")
+
+
 
       	bl.append("div")
       		.attr("class","bar-note")
@@ -1202,11 +1223,13 @@ function wrap(text, width) {
 		.select(".domain")
 		.remove();
 
+		var wrapWidth = (layout == "mobile") ? 80 : 100;
+
 		d3.select(".x.bar.axis")
 		.attr("transform", "translate(0," + height + ")")
 		.call(d3.axisBottom(x0))
     	.selectAll(".tick text")
-      		.call(wrap, 100)
+      		.call(wrap, wrapWidth)
 
 
 
@@ -2123,6 +2146,11 @@ function wrap(text, width) {
 				.duration(duration)
 				.style("bottom","-1000px")
 		}
+		d3.select("#aboutContainer")
+			.style("top", "-800px")
+			.style("left","0px")
+			.style("height","760px")
+			.style("width","100%")
 	}
 	function normalLayout(){
 		d3.select("#toggleButton")
@@ -2135,6 +2163,11 @@ function wrap(text, width) {
 			.style("top", "calc(50% + 40px)")
 		d3.select("#barChart")
 			.style("bottom","10px")
+		d3.select("#aboutContainer")
+			.style("top", "-800px")
+			.style("left","0px")
+			.style("height","760px")
+			.style("width","100%")
 	}
 	function stackLayout(){
 		d3.select("#toggleButton")
@@ -2147,6 +2180,11 @@ function wrap(text, width) {
 			.style("top", "calc(50% + 40px)")
 		d3.select("#barChart")
 			.style("bottom","10px")
+		d3.select("#aboutContainer")
+			.style("top", "-800px")
+			.style("left","0px")
+			.style("height","760px")
+			.style("width","100%")
 	}
 	function mobileLayout(){
 		d3.select("#toggleButton")
@@ -2159,6 +2197,9 @@ function wrap(text, width) {
 			.style("top", "auto")
 		d3.select("#barChart")
 			.style("bottom","auto")
+		d3.select("#aboutContainer")
+			.style("top", "100px")
+			.style("left","-2000px")
 
 		d3.select("#mobileDatePublished").html(d3.select("#datePublished").html())
 
@@ -2296,6 +2337,12 @@ function wrap(text, width) {
 
 
 		})
+		$(document).keyup(function(e) {
+		 if (e.keyCode == 27) { // escape key maps to keycode `27`
+		    closePopUp();
+		}
+		});
+
 	/*******************************************************/
 	/********************* INITIALIZE **********************/
 	/*******************************************************/
