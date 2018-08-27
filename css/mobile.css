@@ -40,6 +40,11 @@ body.hide{
 		display: block;
 	}
 }
+@media(max-height: 700px){
+	.breakpoint.height800{
+		display: block;
+	}
+}
 @media(max-height: 800px){
 	.breakpoint.height800{
 		display: block;
@@ -118,10 +123,16 @@ body.squeeze #popMenuContainer .ui-selectmenu-button.ui-button{
 	body.toggleSqueeze #costSection{
 		width: 207px
 	}
-body.toggleSqueeze #popContainer, body.toggleSqueeze #costText{
-	font-size: 16px;
-    line-height: 1.7;
-}
+	body.toggleSqueeze #popContainer, body.toggleSqueeze #costText{
+		font-size: 16px;
+	    line-height: 1;
+	}
+	body.toggleSqueeze #popMenuContainer .ui-selectmenu-button.ui-button{
+		display: flow-root;
+	}
+	body.toggleSqueeze #demographicSection{
+		width: calc(100% - 850px)
+	}
 
 /*end ??*/
 

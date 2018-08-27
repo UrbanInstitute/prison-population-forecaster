@@ -1309,7 +1309,7 @@ a.ui-button:active,
     white-space: nowrap;
     width: 203px;
     height: 32px;
-    background: url(../../img/pop-select-2x.png) no-repeat right #fff;
+    background: url(../../img/pop-select-2x.png) no-repeat right transparent;
     background-size: 14px 8px;
     border: none;
     color: #000;

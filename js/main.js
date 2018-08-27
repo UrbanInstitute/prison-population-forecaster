@@ -49,6 +49,9 @@ function wrap(text, width) {
 		return d3.select(".breakpoint.height" + size).style("display") == "block"
 	}
 	function getLayout(){
+		if(widthIsUnder(1098) || heightIsUnder(565)){
+			return "mobile"
+		}
 		if(heightIsUnder(800) && !heightIsUnder(565) && !widthIsUnder(1300)){
 			return "toggle"
 		}
@@ -65,9 +68,7 @@ function wrap(text, width) {
 		else if(widthIsUnder(1300) && !widthIsUnder(1098)){
 			return "stack"
 		}
-		else if(widthIsUnder(1098) || heightIsUnder(565)){
-			return "mobile"
-		}
+
 	}
 
 	function moveToFront(selector){
@@ -435,7 +436,7 @@ function wrap(text, width) {
 	}
 	function reshapeBarData(data){
 
-		var fullRaces = {"white": "White", "black": "Black", "hispanic": "Hispanic", "native": "Native American","asian":"Asian","other":"Other","hawaiian":"Hawaiian"}
+		var fullRaces = {"white": "White", "black": "Black", "hispanic": "Hispanic", "native": "Native American","asian":"Asian","other":"Other","hawaiian":"Hawaiian and Paciffic Islander"}
 
 		var baseline = data["baseline"][1]
 		var vsBaseline = data["projected"][1]
