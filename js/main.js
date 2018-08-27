@@ -755,7 +755,7 @@ function wrap(text, width) {
 
 			var l2 = legend.append("div").attr("class","ll-row")
 			l2.append("span").attr("class","ll-key baseline")
-			l2.append("div").attr("class","ll-text").text("Projected population")
+			l2.append("div").attr("class","ll-text").text("Baseline population")
 
 			var l3 = legend.append("div").attr("class","ll-row")
 			l3.append("span").attr("class","ll-key forecast")
@@ -916,7 +916,7 @@ function wrap(text, width) {
 			if(PRINT()){
 				var letter = 
 				d3.select(".pt" + forecastCount)
-					.html("Compared with the 2025 baseline projection, these changes would lead to a" + popChangeLetter + text)
+					.html("Compared with the 2025 baseline population, these changes would lead to a" + popChangeLetter + text)
 			}
 
 			
