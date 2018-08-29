@@ -1,0 +1,24 @@
+ppf_cat,ppf_cat_name
+arson,Arson
+assault,Assault
+burglary,Burglary
+drugposs,Drug possession
+drugtraff,Drug trafficking
+dwi,DWI
+fraud,Fraud
+homicide,Homicide
+kidnapping,Kidnapping
+larceny,Theft
+otherdrug,Other drug offenses
+otherprop,Other property offenses
+otherviol,Other violent offenses
+public_oth,Public order/other
+robbery,Robbery
+sexassault,Sexual assault
+weapons,Weapons offenses
+mvtheft,Motor vehicle theft
+drug,All drug offenses
+property,All property offenses
+violent,All violent offenses
+other,All other offenses
+nonviolent,All nonviolent offenses
