@@ -1758,6 +1758,16 @@ function wrap(text, width) {
 
 
 	$( "#stateSelect" ).selectmenu({
+	open: function(event, data){
+		d3.select("ul#stateSelect-menu")
+			.style("height", function(){
+				var top = this.getBoundingClientRect().top
+				var raw = (window.innerHeight - top - 40)
+				var round = Math.floor(raw*2/100)*50
+				console.log(raw, round)
+				return round+ "px"
+			})
+	},
 	change: function(event, data){
 		//state on change
 		//get state
