@@ -1,3 +1,15 @@
+//on nav via back button, hard refresh page
+window.addEventListener( "pageshow", function ( event ) {
+  var historyTraversal = event.persisted || 
+                         ( typeof window.performance != "undefined" && 
+                              window.performance.navigation.type === 2 );
+  if ( historyTraversal ) {
+    // Handle page restore.
+    window.location.reload();
+  }
+});
+
+
 // Polyfill from https://developer.mozilla.org/en-US/docs/Web/Events/wheel
 // creates a global "addWheelListener" method
 // example: addWheelListener( elem, function( e ) { console log( e.deltaY ); e.preventDefault(); } );
@@ -70,7 +82,7 @@ var ppf = function(){
 function wrap(text, width) {
   text.each(function() {
     var text = d3.select(this),
-        words = text.text().split(/\s+/).reverse(),
+        words = text.text().split(/\s|\|+/).reverse(),
         word,
         line = [],
         lineNumber = 0,
@@ -391,7 +403,7 @@ function wrap(text, width) {
 
 		l.append("div")
 			.attr("class","selectionItem selectionHeader")
-			.text("Adjusted Offenses")
+			.text("Adjusted offenses")
 
 		for (var parent in SUBCATEGORIES) {
 			if (SUBCATEGORIES.hasOwnProperty(parent)){
@@ -500,7 +512,7 @@ function wrap(text, width) {
 	}
 	function reshapeBarData(data){
 
-		var fullRaces = {"white": "White", "black": "Black", "hispanic": "Hispanic", "native": "Native American","asian":"Asian","other":"Other","hawaiian":"Hawaiian/ Pacific Islander"}
+		var fullRaces = {"white": "White", "black": "Black", "hispanic": "Hispanic", "native": "Native American","asian":"Asian","other":"Other","hawaiian":"Hawaiian/|Pacific Islander"}
 
 		var baseline = data["baseline"][1]
 		var vsBaseline = data["projected"][1]
@@ -914,7 +926,12 @@ function wrap(text, width) {
 			d3.select(".line.baseline.historical")
 			.datum(historicalData)
 			.transition()
-			.attr("d", lineBaseline);	
+			.attrTween('d', function (d) {
+				var previous = d3.select(this).attr('d');
+				var current = lineBaseline(d);
+				return d3.interpolatePath(previous, current);
+			});
+
 
 			d3.select(".line.baseline.future")
 			.datum(futureData)
@@ -1129,7 +1146,13 @@ function wrap(text, width) {
 		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key], diff: (d[key] - d[baselineType])}; }); })
 		.enter().append("text")
 		.style("opacity", function(d){ return ((d.key) == "baseline") ? 0 : 1})
-		.attr("x", function(d) { return x1(d.key) + .5*(30 - x1.bandwidth()); })
+		.attr("x", function(d) {
+			if(Math.abs(d.diff*100) < .001){
+				return x1(d.key) + x1.bandwidth()/2 - 5
+			}else{
+				return x1(d.key);
+			}
+		})
 		.attr("y", function(d) { return y(d.value) -5; })
 		.text(function(d){ return formatPP(d3.format(".2f")(d.diff *100)) })
 
@@ -1276,7 +1299,13 @@ function wrap(text, width) {
 		.merge(texts)
 		.style("opacity", function(d){ return ((d.key) == "baseline" || d.key == "last") ? 0 : 1})
 		.transition()
-		.attr("x", function(d) { return x1(d.key); })
+		.attr("x", function(d) {
+			if(Math.abs(d.diff*100) < .001){
+				return x1(d.key) + x1.bandwidth()/2 - 5
+			}else{
+				return x1(d.key);
+			}
+		})
 		.attr("y", function(d) { return y(d.value) - 5; })
 		.text(function(d){ return formatPP(d3.format(".2f")(d.diff *100)) })
 
@@ -2315,6 +2344,7 @@ function wrap(text, width) {
 
 		$('#aboutContainer').css("height",(window.innerHeight - 100) + "px").jScrollPane();
 	}
+	var mobileScrollTop = 0;
 	function resizeSidebars(){
 		var ch = d3.select("#centerContainer").node().getBoundingClientRect().height,
 			rh = d3.select("#rightSideBar").node().getBoundingClientRect().height, 
@@ -2348,7 +2378,54 @@ function wrap(text, width) {
 		}) 
 		.on("mouseout", function(){
 			d3.select(this).selectAll(".jspVerticalBar").style("opacity",0)
-		}) 
+		})
+	function lockCenter(){
+		mobileScrollTop = window.scrollY
+		d3.select("#centerContainer")
+			.style("position","fixed")
+			.style("top", (-1*mobileScrollTop) + "px")
+
+	}
+	function unlockCenter(){
+		d3.select("#centerContainer")
+			.style("position","absolute")
+			.style("top", "0px")
+		console.log(mobileScrollTop)
+		window.scrollTo(0,mobileScrollTop)
+
+	}
+	if(getLayout() == "mobile"){
+		d3.select("#centerContainer")
+			.on("click", function(){
+				if(d3.select("#mn-header").classed("open") || d3.select("#mn-header").classed("drawerOpen")){
+					unlockCenter();
+				}
+				d3.select("#mn-header").classed("open",false).classed("drawerOpen", false)
+
+				d3.select("#mn-menu")
+					.transition()
+					.style("left","-300px")
+
+				d3.select("#mn-start")
+					.style("color","white")
+					.text("Start here")
+
+				d3.select("#mn-boorger")
+					.transition()
+					.style("left","24px")
+
+				d3.select("#leftSidebar")
+					.transition()
+					.style("left","-300px")
+				d3.select("#rightSideBar")
+					.transition()
+					.style("left","-300px")
+
+				
+
+
+			})
+	}
 	d3.select("#mn-header")
 		.on("click", function(){
 			if(d3.select(this).classed("open")){
@@ -2370,6 +2447,9 @@ function wrap(text, width) {
 					.transition()
 					.style("left","-300px")
 
+				unlockCenter()
+
+
 			}
 			else if(d3.select(this).classed("drawerOpen")){
 				d3.select(this).classed("open", true)
@@ -2388,6 +2468,7 @@ function wrap(text, width) {
 				d3.select("#aboutContainer")
 					.transition()
 					.style("left","-2000px")
+
 			}
 			else{
 				d3.select(this).classed("open",true)
@@ -2405,6 +2486,8 @@ function wrap(text, width) {
 				d3.select("#mn-boorger")
 					.transition()
 					.style("left","150px")
+
+				lockCenter();
 			}
 		})
 
@@ -2525,10 +2608,20 @@ function wrap(text, width) {
 		// setInputs({"violent": { "admissions": {"value": "-20", "locked": true}, "los": {"value": "-20", "locked": true} } })
 
 	}
+	var wasMobile = false;
+	var wasDesktop = false;
 	function handleResize(){
 		$('#leftSidebar').jScrollPane();
 		$('#rightSideBar').jScrollPane();
 		var layout = getLayout()
+
+		if(layout == "mobile" && wasDesktop){
+			window.location.reload();
+		}
+		else if(layout != "mobile" && wasMobile){
+			window.location.reload();
+		}
+
 		if(layout != "mobile"){
 			resizeSidebars();
 		}
@@ -2547,6 +2640,10 @@ function wrap(text, width) {
 	}
 
 	init();
+	var layout = getLayout();
+	if(layout == "mobile"){ wasMobile = true }
+	else{ wasDesktop = true }
+	console.log(wasMobile, wasDesktop)
 	$(window).resize(function(){
 		if(!PRINT()){
 			d3.select("body").attr("class",getLayout())
