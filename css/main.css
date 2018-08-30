@@ -676,8 +676,8 @@ input[type=range]::-moz-range-track {
 }
 input[type=range]::-moz-range-thumb {
     border: 5px solid #1696d2;
-    height: 18px;
-    width: 18px;
+    height: 10px;
+    width: 10px;
     border-radius: 50%;
     background: #fff;
     cursor: pointer;
@@ -685,7 +685,7 @@ input[type=range]::-moz-range-thumb {
 
 /*hide the outline behind the border*/
 input[type=range]:-moz-focusring{
-    outline: 1px solid #ffffff;
+    outline: none;
     outline-offset: -1px;
 }
 
@@ -849,9 +849,8 @@ input[type=range]:focus::-ms-fill-upper {
 .selectionDots{
     background-image: url("../img/dotbg-01.png");
     background-size: 8px;
-    background-repeat-x: repeat;
+    background-repeat: repeat-x;
     background-position: 10px 7px;
-    background-repeat-y: no-repeat;
     overflow: hidden;
 }
 .selectionNum.parent{

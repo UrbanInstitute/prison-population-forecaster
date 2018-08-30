@@ -912,7 +912,20 @@ body .ui-tooltip {
 }
 .ui-widget.ui-widget-content {
 	border: 1px solid #c5c5c5;
+	padding-bottom: 20px;
 }
+.ui-widget.ui-widget-content:after{
+	content: "";
+    position: absolute;
+    height: 40px;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0px;
+    box-shadow: inset white -20px -25px 29px;
+    pointer-events: none;
+}
+
 .ui-widget-content {
 	border: 1px solid #dddddd;
 	background: #ffffff;
@@ -996,6 +1009,7 @@ a.ui-button:active,
 	background: #1696d2;
 	font-weight: normal;
 	color: #ffffff;
+	z-index: 100;
 }
 .ui-button:active{
    	background: url(../../img/urban-select-2x.png) no-repeat right #858282;

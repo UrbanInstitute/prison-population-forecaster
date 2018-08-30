@@ -548,7 +548,7 @@ function wrap(text, width) {
 
 		if(PRINT()){
 			w = 800
-			h = 350
+			h = 300
 
 		}
 		else{
@@ -1855,14 +1855,21 @@ function wrap(text, width) {
 
 	$( "#stateSelect" ).selectmenu({
 	open: function(event, data){
+		var h = 100000;;
 		d3.select("ul#stateSelect-menu")
 			.style("height", function(){
 				var top = this.getBoundingClientRect().top
 				var raw = (window.innerHeight - top - 40)
 				var round = Math.floor(raw*2/100)*50
-				console.log(raw, round)
+				h = round;
 				return round+ "px"
 			})
+
+		var st = d3.select("ul#stateSelect-menu").select(".ui-menu-item-wrapper.ui-state-active").node().getBoundingClientRect().top
+		var y = (st <  h) ? 0 : st;
+
+
+		d3.select("ul#stateSelect-menu").node().scrollTo(0,y)
 	},
 	change: function(event, data){
 		//state on change
@@ -2126,9 +2133,7 @@ function wrap(text, width) {
 
 
 
-			container
-				.append("div")
-				.attr("class", "page-break")
+
 
 			// buildPopulationChart(forecast, i)
 			var forecast = decodeForecast(forecasts[i-1]),
@@ -2167,6 +2172,10 @@ function wrap(text, width) {
 				.attr("class", "printCostText ct" + i)
 				.html("By <span id = \"costYear\"></span>, these changes would lead to a <span id = \"costHighlight\">cumulative <span id = \"costWord\"></span> of <span id = \"costDollars\"></span></span>.")
 		}
+
+					container
+				.append("div")
+				.attr("class", "page-break")
 
 
 		oc.selectAll("printColumn")
