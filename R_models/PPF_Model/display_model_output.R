@@ -169,10 +169,10 @@
       }
       allyrs <- Reduce(sum, lapply(yrlist, OneYrSavings, fdf=fdf))
       if(allyrs<0){
-        return(paste("Cost savings of $",format(abs(allyrs), 
+        return(paste("Cost savings of $",format(round(abs(allyrs), 0), 
                                                 big.mark=","),sep="")) 
       } else if(allyrs>0) {
-        return(paste("Cost increase of $", format(abs(allyrs), 
+        return(paste("Cost increase of $", format(round(abs(allyrs), 0), 
                                                   big.mark=","), sep=""))
       }
     }
@@ -187,29 +187,29 @@
       #   Data frame of results from PPF model
       
       GenRow <- function(ST, sc) {
-        rs <-matrix(nrow=0, ncol=5)
+        rs <-matrix(nrow=0, ncol=6)
         
         if(length(sc)==1){
-          r <- matrix(c(GetCol1(sc), GetCol2(sc), 
+          r <- matrix(c(paste(ST), GetCol1(sc), GetCol2(sc), 
                         GetCol3(StateProjections(ST, sc)), 
                         GetCol4(StateProjections(ST, sc)),
                         GetCol5(StateProjections(ST, sc), ST=ST)), 
-                      nrow=1, ncol=5)
+                      nrow=1, ncol=6)
           rs <- rbind(rs, r)
         } else if(length(sc)>1){
-          r <- matrix(c("Multiple",
+          r <- matrix(c(paste(ST), "Multiple", 
                         paste(lapply(sc, GetCol2), collapse=", "),
                         GetCol3(StateProjections(ST, sc)), 
                         GetCol4(StateProjections(ST, sc)),
                         GetCol5(StateProjections(ST, sc), ST=ST)), 
-                      nrow=1, ncol=5)
+                      nrow=1, ncol=6)
           rs <- rbind(rs, r)
         }
         return(rs)
       }
     
       outputdf <-as.data.frame(Reduce(rbind, lapply(allscens, GenRow, ST=ST)))
-      names(outputdf) <- c("OffenseCategory", "Change forecast", 
+      names(outputdf) <- c("State", "OffenseCategory", "Change forecast", 
                           "Prison population impact (compared to 2025 baseline)", 
                           "Effect on racial and ethnic makeup of prison population",
                           "Effect on state correctional spending by 2025")
@@ -223,7 +223,7 @@
       }
       
       if(ReportHispanic(ST)==0){
-        outputdf <- rbind.fill(outputdf, data.frame("OffenseCategory"="Note: state does not report data on ethnicity"))
+        outputdf <- rbind.fill(outputdf, data.frame("State"="Note: state does not report data on ethnicity"))
       }
       
       return(outputdf)
