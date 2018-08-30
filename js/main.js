@@ -1,3 +1,69 @@
+// Polyfill from https://developer.mozilla.org/en-US/docs/Web/Events/wheel
+// creates a global "addWheelListener" method
+// example: addWheelListener( elem, function( e ) { console log( e.deltaY ); e.preventDefault(); } );
+(function(window,document) {
+
+    var prefix = "", _addEventListener, support;
+
+    // detect event model
+    if ( window.addEventListener ) {
+        _addEventListener = "addEventListener";
+    } else {
+        _addEventListener = "attachEvent";
+        prefix = "on";
+    }
+
+    // detect available wheel event
+    support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
+              document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
+              "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
+
+    window.addWheelListener = function( elem, callback, useCapture ) {
+        _addWheelListener( elem, support, callback, useCapture );
+
+        // handle MozMousePixelScroll in older Firefox
+        if( support == "DOMMouseScroll" ) {
+            _addWheelListener( elem, "MozMousePixelScroll", callback, useCapture );
+        }
+    };
+
+    function _addWheelListener( elem, eventName, callback, useCapture ) {
+        elem[ _addEventListener ]( prefix + eventName, support == "wheel" ? callback : function( originalEvent ) {
+            !originalEvent && ( originalEvent = window.event );
+
+            // create a normalized event object
+            var event = {
+                // keep a ref to the original event object
+                originalEvent: originalEvent,
+                target: originalEvent.target || originalEvent.srcElement,
+                type: "wheel",
+                deltaMode: originalEvent.type == "MozMousePixelScroll" ? 0 : 1,
+                deltaX: 0,
+                deltaY: 0,
+                deltaZ: 0,
+                preventDefault: function() {
+                    originalEvent.preventDefault ?
+                        originalEvent.preventDefault() :
+                        originalEvent.returnValue = false;
+                }
+            };
+            
+            // calculate deltaY (and deltaX) according to the event
+            if ( support == "mousewheel" ) {
+                event.deltaY = - 1/40 * originalEvent.wheelDelta;
+                // Webkit also support wheelDeltaX
+                originalEvent.wheelDeltaX && ( event.deltaX = - 1/40 * originalEvent.wheelDeltaX );
+            } else {
+                event.deltaY = originalEvent.deltaY || originalEvent.detail;
+            }
+
+            // it's time to fire the callback
+            return callback( event );
+
+        }, useCapture || false );
+    }
+
+})(window,document);
 
 
 var ppf = function(){
@@ -321,7 +387,7 @@ function wrap(text, width) {
 			stateL.append("div").attr("class","selectionDots").html("&nbsp;")
 		var stateR = state.append("div").attr("class","selectionState").text(getStateName())
 		var nameWidth = stateR.node().getBoundingClientRect().width
-		stateL.style("width",(180 - nameWidth) + "px")
+		stateL.style("width",(200 - nameWidth) + "px")
 
 		l.append("div")
 			.attr("class","selectionItem selectionHeader")
@@ -1132,11 +1198,12 @@ function wrap(text, width) {
 		.selectAll("g")
 		.data(data)
 
+		bars.exit().remove()
+
 		var enter = bars.enter().append("g")
 		bars = enter.merge(bars)
 		.attr("transform", function(d) { return "translate(" + x0(d.race) + ",0)"; })
 
-		
 
 		var rects = bars.selectAll("rect")
 		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key]}; }); })
@@ -1201,6 +1268,8 @@ function wrap(text, width) {
 		var texts = bars.selectAll("text")
 		.data(function(d) { return keys.map(function(key) { return {key: key, value: d[key], diff: (d[key] - d[baselineType])}; }); })
 
+		texts.exit().remove()
+
 		texts
 		.enter()
 		.append("text")
@@ -1211,9 +1280,9 @@ function wrap(text, width) {
 		.attr("y", function(d) { return y(d.value) - 5; })
 		.text(function(d){ return formatPP(d3.format(".2f")(d.diff *100)) })
 
-		bars.exit().remove()
+		
 		rects.exit().remove()
-		texts.exit().remove()
+		
 
 
 
@@ -1876,7 +1945,36 @@ function wrap(text, width) {
 		.on("click", function(){
 			window.open(buildPrintURL(), "_blank")
 		})
+	var mouseX = 0,
+		leftTop = 48,
+		rightTop = 48;
+	$(window).on("mousemove", function(event){
+		mouseX = event.pageX;
+	})
 
+	if(!PRINT()){
+		addWheelListener(window, function(event){
+			if(getLayout() != "toggle" && getLayout() != "toggleSqueeze"){
+				return false;
+			}
+			var left = d3.select("#leftSidebar")
+			var right = d3.select("#rightSideBar")
+			var leftWidth = left.node().getBoundingClientRect().width;
+			var rightWidth = right.node().getBoundingClientRect().width;
+			if(mouseX == 0 || (mouseX > leftWidth && mouseX < window.innerWidth - rightWidth)){
+				var direction = (event.deltaY > 0) ? "down" : "up";
+				if(d3.select("#toggleContainer").classed("line") && direction == "down"){
+					d3.select("#toggleContainer").classed("line", false).classed("bar", true)
+					toggleLayout("bar", true)
+				}else if(d3.select("#toggleContainer").classed("bar") && direction == "up"){
+					d3.select("#toggleContainer").classed("line", true).classed("bar", false)
+					toggleLayout("line", true)
+				}
+
+			}
+
+		})
+	}
 
 	/*******************************************************/
 	/****************** ABOUT SECTION **********************/
@@ -2118,6 +2216,7 @@ function wrap(text, width) {
 		var buttonText = (layout == "line") ? "Show demographics and cost" : "Show population chart"
 		d3.select("#toggleContainer")
 			.style("display","block")
+			.select("span")
 			.text(buttonText)
 		var duration = (animate) ? 500 : 0;
 		if(layout == "bar"){
@@ -2349,6 +2448,10 @@ function wrap(text, width) {
 		$(document).keyup(function(e) {
 		 if (e.keyCode == 27) { // escape key maps to keycode `27`
 		    closePopUp();
+			d3.select("#headerAboutLink").classed("closed", true)
+			d3.select("#aboutContainer")
+				.transition()
+				.style("top", "-800px")
 		}
 		});
 

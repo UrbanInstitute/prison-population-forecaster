@@ -95,6 +95,22 @@ body.squeeze #popMenuContainer .ui-selectmenu-button.ui-button{
 #toggleContainer:hover{
 	font-weight: 900;
 }
+#toggleContainer.line img{
+	display: block;
+	width: 40px;
+	left: calc(50% - 20px);
+	position: relative;
+	top: 15px;
+	transform: rotate(0deg);
+}
+#toggleContainer.bar img{
+	display: block;
+	width: 40px;
+	left: calc(50% - 20px);
+	position: relative;
+	top: -55px;
+	transform: rotate(180deg);
+}
 @media(max-height: 600px){
 	.chartSectionTitle{
 		margin-bottom: 3px;
