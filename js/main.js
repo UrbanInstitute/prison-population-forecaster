@@ -1,7 +1,5 @@
 
 
-
-
 var ppf = function(){
 function wrap(text, width) {
   text.each(function() {
@@ -133,7 +131,7 @@ function wrap(text, width) {
 		return d3.select("#popMenu").node().value;
 	}
 	function getToggleState(){
-		if(d3.select("#toggleButton").classed("line")){
+		if(d3.select("#toggleContainer").classed("line")){
 			return "line"
 		}else{
 			return "bar"
@@ -436,7 +434,7 @@ function wrap(text, width) {
 	}
 	function reshapeBarData(data){
 
-		var fullRaces = {"white": "White", "black": "Black", "hispanic": "Hispanic", "native": "Native American","asian":"Asian","other":"Other","hawaiian":"Hawaiian and Paciffic Islander"}
+		var fullRaces = {"white": "White", "black": "Black", "hispanic": "Hispanic", "native": "Native American","asian":"Asian","other":"Other","hawaiian":"Hawaiian/ Pacific Islander"}
 
 		var baseline = data["baseline"][1]
 		var vsBaseline = data["projected"][1]
@@ -2117,8 +2115,8 @@ function wrap(text, width) {
 	/**************** RESPONSIVE LAYOUTS *******************/
 	/*******************************************************/
 	function toggleLayout(layout, animate){
-		var buttonText = (layout == "line") ? "Show details" : "Hide details"
-		d3.select("#toggleButton")
+		var buttonText = (layout == "line") ? "Show demographics and cost" : "Show population chart"
+		d3.select("#toggleContainer")
 			.style("display","block")
 			.text(buttonText)
 		var duration = (animate) ? 500 : 0;
@@ -2130,15 +2128,15 @@ function wrap(text, width) {
 			d3.select("#demographicSection")
 				.transition()
 				.duration(duration)
-				.style("top", "70px")
+				.style("top", "170px")
 			d3.select("#costSection")
 				.transition()
 				.duration(duration)
-				.style("top", "70px")
+				.style("top", "170px")
 			d3.select("#barChart")
 				.transition()
 				.duration(duration)
-				.style("bottom","100px")
+				.style("bottom","0px")
 		}else{
 			d3.select("#centerContainer")
 				.transition()
@@ -2164,7 +2162,7 @@ function wrap(text, width) {
 			.style("width","100%")
 	}
 	function normalLayout(){
-		d3.select("#toggleButton")
+		d3.select("#toggleContainer")
 			.style("display","none")
 		d3.select("#centerContainer")
 			.style("top","50px")
@@ -2181,7 +2179,7 @@ function wrap(text, width) {
 			.style("width","100%")
 	}
 	function stackLayout(){
-		d3.select("#toggleButton")
+		d3.select("#toggleContainer")
 			.style("display","none")
 		d3.select("#centerContainer")
 			.style("top","50px")
@@ -2198,7 +2196,7 @@ function wrap(text, width) {
 			.style("width","100%")
 	}
 	function mobileLayout(){
-		d3.select("#toggleButton")
+		d3.select("#toggleContainer")
 			.style("display","none")
 		d3.select("#centerContainer")
 			.style("top","auto")
@@ -2228,7 +2226,7 @@ function wrap(text, width) {
 		 d3.select("#leftSidebar").style("padding-bottom", (max - lh + 100) + "px");
 		 d3.select("#rightSideBar").style("padding-bottom", (max - rh + 100) + "px")
 	}
-	d3.select("#toggleButton")
+	d3.select("#toggleContainer")
 		.on("click", function(){
 			if(d3.select(this).classed("line")){
 				d3.select(this).classed("line", false).classed("bar", true)

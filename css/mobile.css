@@ -71,22 +71,29 @@ body.squeeze #popMenuContainer .ui-selectmenu-button.ui-button{
 /*******************************************************/
 /************************ TOGGLE ***********************/
 /*******************************************************/
-#toggleButton{
+#toggleContainer{
 	position: fixed;
-    bottom: 46px;
-    left: 330px;
- 	background: #1696d2;
-    color: #ffffff;
-    width: 120px;
-    font-size: 16px;
+    left: 279px;
+    color: #1696d2;
+    width: calc(100% - 545px);
+    font-size: 18px;
+    font-weight: 700;
     padding: 18px 13px 18px 13px;
     text-align: center;
     display: none;
     z-index: 100000000;
     cursor: pointer;
 }
-#toggleButton:hover{
-	background: #000;
+#toggleContainer.line{
+	    bottom: 46px;
+	    top: auto;
+}
+#toggleContainer.bar{
+	top: 100px;
+	bottom: auto;
+}
+#toggleContainer:hover{
+	font-weight: 900;
 }
 @media(max-height: 600px){
 	.chartSectionTitle{
