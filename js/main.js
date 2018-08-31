@@ -97,7 +97,10 @@ function wrap(text, width) {
         line.pop()
         tspan.text(line.join(" "))
         line = [word]
-        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
+        lineNumber += 1
+        var ems = lineNumber*lineHeight + dy
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ems + "em").text(word)
+        
       }
     }
   })
