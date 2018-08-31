@@ -406,3 +406,21 @@ body.mobile #aboutClose{
 body.mobile #barChart .axis .tick text {
     font-size: 12px;
 }
+
+body.mobile .savedForecast input {
+    width: 96px;
+}
+
+body.mobile input[type=range]::-webkit-slider-thumb {
+    height: 28px;
+    width: 28px;
+    margin-top: -11px;
+}
+body.mobile input[type=range]::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+}
+body.mobile input[type=range]::-ms-thumb {
+    height: 28px;
+    width: 28px;
+}
