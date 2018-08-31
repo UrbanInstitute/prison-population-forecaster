@@ -1286,3 +1286,6 @@ body.ie .sliderLabels, body.ie .sliderInput{
     position: relative;
     top: -44px;
 }
+body.ie .childContainer{
+    top: -28px;
+}
