@@ -714,8 +714,8 @@ input[type=range]::-ms-fill-upper {
 }
 input[type=range]::-ms-thumb {
     border: 5px solid #1696d2;
-    height: 18px;
-    width: 18px;
+    height: 10px;
+    width: 10px;
     border-radius: 50%;
     background: #fff;
     cursor: pointer;
