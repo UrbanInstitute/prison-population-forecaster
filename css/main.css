@@ -618,7 +618,7 @@ input[type=range] {
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
   input[type=range] {
     display: inline-block;
-    width: 149px;
+    width: 159px;
     float: left;
     margin-top: 12px;
       /*removes default webkit styles*/
@@ -626,7 +626,7 @@ input[type=range] {
       
       /*fix for FF unable to apply focus style bug */
       border: none;
-      height: 18px;
+      height: 20px;
       background-color: transparent;
       
       /*required for proper track sizing in FF*/
@@ -1272,4 +1272,17 @@ input[type=range]:focus::-ms-fill-upper {
 * html .jspCorner
 {
     margin: 0 -3px 0 0;
+}
+
+
+
+
+/*IE trash*/
+body.ie .controlSlider{
+    position: relative;
+    top: -15px;
+}
+body.ie .sliderLabels, body.ie .sliderInput{
+    position: relative;
+    top: -44px;
 }
