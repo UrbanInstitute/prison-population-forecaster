@@ -421,6 +421,6 @@ body.mobile input[type=range]::-moz-range-thumb {
     width: 20px;
 }
 body.mobile input[type=range]::-ms-thumb {
-    height: 28px;
-    width: 28px;
+    height: 18px;
+    width: 18px;
 }
