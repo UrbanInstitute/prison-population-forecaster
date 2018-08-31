@@ -9,6 +9,26 @@ window.addEventListener( "pageshow", function ( event ) {
   }
 });
 
+
+//check for IE
+function IS_IE() {
+
+    var ua = window.navigator.userAgent;
+    var msie = ua.indexOf("MSIE ");
+
+    if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))  // If Internet Explorer, return version number
+    {
+        alert(parseInt(ua.substring(msie + 5, ua.indexOf(".", msie))));
+    }
+    else  // If another browser, return 0
+    {
+        alert('otherbrowser');
+    }
+
+    return false;
+}
+
+
 //MDN polyfill for Object.assign https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
 if (typeof Object.assign != 'function') {
   // Must be writable: true, enumerable: false, configurable: true
@@ -958,14 +978,21 @@ function wrap(text, width) {
 			.transition()
 			.attr("d", lineProjected);
 			
-			d3.select(".line.baseline.historical")
-			.datum(historicalData)
-			.transition()
-			.attrTween('d', function (d) {
-				var previous = d3.select(this).attr('d');
-				var current = lineBaseline(d);
-				return d3.interpolatePath(previous, current);
-			});
+			if(! IS_IE()){
+				d3.select(".line.baseline.historical")
+				.datum(historicalData)
+				.transition()
+				.attrTween('d', function (d) {
+					var previous = d3.select(this).attr('d');
+					var current = lineBaseline(d);
+					return d3.interpolatePath(previous, current);
+				});
+			}else{
+				d3.select(".line.baseline.historical")
+				.datum(historicalData)
+				.transition()
+				.attr('d', lineBaseline);
+			}
 
 
 			d3.select(".line.baseline.future")
