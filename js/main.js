@@ -2662,7 +2662,7 @@ function wrap(text, width) {
 
 		}
 		else{
-			var ie = (IS_IE) ? " ie" + ""
+			var ie = (IS_IE) ? " ie" : "";
 			d3.select("body").attr("class", getLayout() + ie)
 
 			if(parameters.hasOwnProperty("state")){
@@ -2729,7 +2729,7 @@ function wrap(text, width) {
 	console.log(wasMobile, wasDesktop)
 	$(window).resize(function(){
 		if(!PRINT()){
-			var ie = (IS_IE) ? " ie" + ""
+			var ie = (IS_IE) ? " ie" : "";
 			d3.select("body").attr("class",getLayout() + ie)
 			updateInputs(false, false, false, false, "init")
 			handleResize()
