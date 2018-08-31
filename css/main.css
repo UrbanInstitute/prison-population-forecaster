@@ -626,7 +626,7 @@ input[type=range] {
       
       /*fix for FF unable to apply focus style bug */
       border: none;
-      height: 65px;
+      height: 18px;
       background-color: transparent;
       
       /*required for proper track sizing in FF*/
