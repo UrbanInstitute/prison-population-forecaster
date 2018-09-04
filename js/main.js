@@ -1121,11 +1121,11 @@ function wrap(text, width) {
 
 
 	var x0 = d3.scaleBand()
-	    .rangeRound([0, width])
-	    .paddingInner(0.5);
+	    .rangeRound([10, width-10])
+	    .paddingInner(.5);
 
 	var x1 = d3.scaleBand()
-	    .padding(0.04);
+	    .padding(0.1);
 
 	var y = d3.scaleLinear()
 	    .rangeRound([height, 0])
