@@ -1098,7 +1098,7 @@ function wrap(text, width) {
 		h = 300
 	}else{
 		if(layout == "normal" || layout == "squeeze"){
-			w = window.innerWidth - 220 - 280 - 50 - 50 - 300;
+			w = window.innerWidth - 207 - 280 - 50 - 50 - 300;
 			h = (window.innerHeight - 130 - 350) * .5
 		}
 		else if(layout == "stack"){

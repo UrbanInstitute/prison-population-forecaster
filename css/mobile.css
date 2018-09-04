@@ -404,7 +404,7 @@ body.mobile #aboutClose{
 	display: none;
 }
 body.mobile #barChart .axis .tick text {
-    font-size: 12px;
+    font-size: 11px;
 }
 
 body.mobile .savedForecast input {
