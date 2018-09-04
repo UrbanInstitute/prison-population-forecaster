@@ -2655,6 +2655,7 @@ function wrap(text, width) {
 		var name = "Sample forecast"
 		var state = ""
 		if(parameters.hasOwnProperty("print")){
+			 window.print()
 			var forecasts = []
 			for(var i = 1; i < Infinity; i++){
 				if(parameters.hasOwnProperty("forecast" + i)){
@@ -2664,7 +2665,9 @@ function wrap(text, width) {
 				}
 			}
 			buildPrintView(forecasts)
-			window.print()
+			// setTimeout(function(){ window.print() }, 1000);
+
+			
 
 		}
 		else{

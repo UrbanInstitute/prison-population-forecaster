@@ -1,8 +1,14 @@
 /*********************************************************************************/
 /*************************      PRINT PAGE      **********************************/
 /*********************************************************************************/
-body.print #header-pinned, body.print .aboutContainer, body.print #rightSideBar, body.print #leftSidebar, body.print #centerContainer{
+body.print #header-pinned, body.print .aboutContainer, body.print #rightSideBar, body.print #leftSidebar, body.print #centerContainer, body.print #toggleContainer{
     display: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+#printContainer{
+      z-index: 100000000000000000;
 }
 body.print{
   padding-left: 20px;
