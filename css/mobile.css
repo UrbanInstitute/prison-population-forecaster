@@ -81,7 +81,7 @@ body.squeeze #popMenuContainer .ui-selectmenu-button.ui-button{
     padding: 18px 13px 18px 13px;
     text-align: center;
     display: none;
-    z-index: 100000000;
+    z-index: 10;
     cursor: pointer;
 }
 #toggleContainer.line{
