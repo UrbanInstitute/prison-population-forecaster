@@ -102,7 +102,7 @@ body.print{
 
 @media print{
   @page {
-    size: 208mm 295mm; /* portrait 
+    size: 205mm 290mm; /* portrait 
     /* you can also specify margins here: */
     margin: 4mm;	
    /*margin-right: 45mm;  for compatibility with both A4 and Letter */
