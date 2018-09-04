@@ -241,9 +241,15 @@ function wrap(text, width) {
 	function getState(){
 		return d3.select("#stateSelect").node().value
 	}
-	function getStateName(){
-		var state = getState();
-		return d3.select("#stateSelect option[value=" + state + "]").text()
+	function getStateName(s){
+		var state;
+		var names = {"AL":"Alabama", "AK":"Alaska", "AZ":"Arizona", "CA":"California", "CO":"Colorado", "DE":"Delaware", "DC":"District of Columbia", "FL":"Florida", "GA":"Georgia", "IL":"Illinois", "IN":"Indiana", "IA":"Iowa", "KS":"Kansas", "KY":"Kentucky", "LA":"Louisiana", "ME":"Maine", "MD":"Maryland", "MA":"Massachusetts", "MI":"Michigan", "MN":"Minnesota", "MS":"Mississippi", "MO":"Missouri", "MT":"Montana", "NE":"Nebraska", "NV":"Nevada", "NH":"New Hampshire", "NJ":"New Jersey", "NM":"New Mexico", "NY":"New York", "NC":"North Carolina", "ND":"North Dakota", "OH":"Ohio", "OK":"Oklahoma", "OR":"Oregon", "PA":"Pennsylvania", "RI":"Rhode Island", "SC":"South Carolina", "SD":"South Dakota", "TN":"Tennessee", "TX":"Texas", "UT":"Utah", "VA":"Virginia", "WA":"Washington", "WV":"West Virginia", "WI":"Wisconsin", "WY":"Wyoming"}
+		if(typeof(s) != "undefined"){
+			state = s;
+		}else{
+			state = getState();
+		}
+		return names[state]
 
 	}
 	function setState(state){
@@ -360,7 +366,7 @@ function wrap(text, width) {
 				}
 			})
 		}
-		else if(offense != false){
+		else if(offense != false && typeof(inputs[offense]) != "undefined"){
 			inputs[offense][indicator]["value"] = amount
 		}
 		//if changing umbrella category, loop through inputs for each child and if it's not locked, update val
@@ -2213,6 +2219,7 @@ function wrap(text, width) {
 				inputs = forecast.inputs,
 				state = forecast.state;
 				name = forecast.name;
+
 			
 				// setInputs(inputs)
 
@@ -2229,8 +2236,8 @@ function wrap(text, width) {
 		var lineData = reshapeLineData(rawData)
 		var costsData = reshapeCostsData(rawData)
 		var barData = reshapeBarData(rawData)
-		pfn.text(name)
-		psn.text(getStateName(state))
+		d3.select(".printForecastName.pfn" + i).text(name)
+		d3.select(".printStateName.psn" + i).text(getStateName(state))
 
 
 		if(state == "DC"){
@@ -2472,7 +2479,6 @@ function wrap(text, width) {
 		d3.select("#centerContainer")
 			.style("position","absolute")
 			.style("top", "0px")
-		console.log(mobileScrollTop)
 		window.scrollTo(0,mobileScrollTop)
 
 	}
@@ -2663,7 +2669,6 @@ function wrap(text, width) {
 		}
 		else{
 			var ie = (IS_IE()) ? " ie" : "";
-			console.log(ie)
 			d3.select("body").attr("class", getLayout() + ie)
 
 			if(parameters.hasOwnProperty("state")){
@@ -2727,7 +2732,6 @@ function wrap(text, width) {
 	var layout = getLayout();
 	if(layout == "mobile"){ wasMobile = true }
 	else{ wasDesktop = true }
-	console.log(wasMobile, wasDesktop)
 	$(window).resize(function(){
 		if(!PRINT()){
 			var ie = (IS_IE()) ? " ie" : "";
