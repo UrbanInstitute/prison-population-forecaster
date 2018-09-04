@@ -102,17 +102,22 @@ body.print{
 
 @media print{
   @page {
-    size: 210mm 297mm; /* portrait 
+    size: 208mm 295mm; /* portrait 
     /* you can also specify margins here: */
-    margin: 5mm;	
+    margin: 4mm;	
    /*margin-right: 45mm;  for compatibility with both A4 and Letter */
+  }
+  body.print #header-pinned, body.print .aboutContainer, body.print #rightSideBar, body.print #leftSidebar, body.print #centerContainer, body.print #toggleContainer{
+      display: none;
+      z-index: -1;
+      overflow: hidden;
   }
    body.print a{
    	 color: black;
      text-decoration: none;
    }
 
-   body.print .page-break { height:0; page-break-after:always; margin:0; border-top:none; }
+   body.print .page-break { width:0; background: transparent; height:0; page-break-after:always; margin:0; border-top:none; opacity: 0;}
 }
 
 
