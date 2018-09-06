@@ -260,6 +260,7 @@ function wrap(text, width) {
 			var name = OFFENSES[i][1]
 			if(offenses.indexOf(o) == -1){
 				d3.select(d3.select('.child.slider[data-offense="' + o + '"]').node().parentNode.parentNode).style("display","none")
+				d3.selectAll(".selectionItem." + o).remove()
 
 			}
 		}
@@ -509,10 +510,16 @@ function wrap(text, width) {
 				l.append("div")
 					.attr("class","selectionItem exceptionsLabel " + parent)
 					.text("Exceptions")
+
+				var catlist = counts[getState()]["catList"]
+				var children = SUBCATEGORIES[parent].filter(function(o){
+					return catlist.indexOf(o) != -1
+				})
+				console.log(catlist)
 				
 				
-				for(var i = 0; i < SUBCATEGORIES[parent].length; i++){
-					var child = SUBCATEGORIES[parent][i]
+				for(var i = 0; i < children.length; i++){
+					var child = children[i]
 					 	childAdmissions = +inputs[child]["admissions"]["value"],
 					 	childLos = +inputs[child]["los"]["value"]
 					if(childAdmissions != +admissions){
