@@ -1005,6 +1005,9 @@ input[type=range]:focus::-ms-fill-upper {
     font-size: 17px;
     line-height: 1.7;
 }
+.aboutP.methodology{
+    line-height: 1.4;
+}
 .aboutP.credits{
     font-style: italic;
     margin-bottom: 30px;
@@ -1292,4 +1295,10 @@ body.ie .sliderLabels, body.ie .sliderInput{
 }
 body.ie .childContainer{
     top: -28px;
+}
+
+#offNote{
+    font-size: 12px;
+    position: relative;
+    top: 10px;
 }
