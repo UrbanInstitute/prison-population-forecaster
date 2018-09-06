@@ -2158,12 +2158,24 @@ function wrap(text, width) {
 		})
 
 	
-					d3.select("#mobileDatePublished span")
+	d3.select("#mobileDatePublished span")
 		.on("click", function(){
+				d3.event.stopPropagation(); 
 				d3.select("#mn-header").classed("drawerOpen",true)
 				d3.select("#mn-header").classed("open",false)
+
+				d3.select("#mn-boorger")
+					.transition()
+					.style("left","178px")
+
+				d3.select("#mn-menu")
+					.transition()
+					.style("left","0px")
+
 				d3.select("#mn-start")
-						.style("color","white")
+					.style("color","white")
+					.text("Return to global menu")
+
 				d3.select("#aboutContainer")
 					.transition()
 					.style("left","0px")
@@ -2474,6 +2486,7 @@ function wrap(text, width) {
 			.style("bottom","auto")
 		d3.select("#aboutContainer")
 			.style("top", "100px")
+			.style("width", "239px")
 			.style("left","-2000px")
 
 
@@ -2481,7 +2494,7 @@ function wrap(text, width) {
 
 		d3.select("#mn-menu").style("height",window.innerHeight + "px")
 
-		$('#aboutContainer').css("height",(window.innerHeight - 100) + "px").jScrollPane();
+		$('#aboutContainer').css("height",(window.innerHeight ) + "px").jScrollPane();
 	}
 	var mobileScrollTop = 0;
 	function resizeSidebars(){
@@ -2535,6 +2548,7 @@ function wrap(text, width) {
 	if(getLayout() == "mobile"){
 		d3.select("#centerContainer")
 			.on("click", function(){
+
 				if(d3.select("#mn-header").classed("open") || d3.select("#mn-header").classed("drawerOpen")){
 					unlockCenter();
 				}
@@ -2542,7 +2556,7 @@ function wrap(text, width) {
 
 				d3.select("#mn-menu")
 					.transition()
-					.style("left","-300px")
+					.style("left","-318px")
 
 				d3.select("#mn-start")
 					.style("color","white")
@@ -2554,10 +2568,13 @@ function wrap(text, width) {
 
 				d3.select("#leftSidebar")
 					.transition()
-					.style("left","-300px")
+					.style("left","-318px")
 				d3.select("#rightSideBar")
 					.transition()
-					.style("left","-300px")
+					.style("left","-318px")
+				d3.select("#aboutContainer")
+					.transition()
+					.style("left","-2000px")
 
 				
 
@@ -2571,7 +2588,7 @@ function wrap(text, width) {
 
 				d3.select("#mn-menu")
 					.transition()
-					.style("left","-300px")
+					.style("left","-318px")
 
 				d3.select("#mn-start")
 					.style("color","white")
@@ -2583,7 +2600,13 @@ function wrap(text, width) {
 
 				d3.select("#leftSidebar")
 					.transition()
-					.style("left","-300px")
+					.style("left","-318px")
+				d3.select("#rightSideBar")
+					.transition()
+					.style("left","-318px")
+				d3.select("#aboutContainer")
+					.transition()
+					.style("left","-2000px")
 
 				unlockCenter()
 
@@ -2599,10 +2622,10 @@ function wrap(text, width) {
 
 				d3.select("#leftSidebar")
 					.transition()
-					.style("left","-300px")
+					.style("left","-318px")
 				d3.select("#rightSideBar")
 					.transition()
-					.style("left","-300px")
+					.style("left","-318px")
 				d3.select("#aboutContainer")
 					.transition()
 					.style("left","-2000px")
@@ -2623,15 +2646,33 @@ function wrap(text, width) {
 
 				d3.select("#mn-boorger")
 					.transition()
-					.style("left","150px")
+					.style("left","178px")
 
 				lockCenter();
 			}
 		})
 
+		function showOptions(){
+
+				d3.select("#mn-header").classed("open",true).classed("drawerOpen",false)
+				d3.select("#mn-start")
+					.style("color","#353535")
+					.text("Return to global menu")
+
+				d3.select("#leftSidebar")
+					.transition()
+					.style("left","-318px")
+				d3.select("#rightSideBar")
+					.transition()
+					.style("left","-318px")
+				d3.select("#aboutContainer")
+					.transition()
+					.style("left","-2000px")
+		}
+
 		d3.select("#mn-left")
 			.on("click", function(){
-				if(d3.select("#mn-header").classed("drawerOpen")){ return false }
+				if(d3.select("#mn-header").classed("drawerOpen")){ showOptions(); return false }
 				d3.select("#mn-header").classed("drawerOpen",true)
 				d3.select("#mn-header").classed("open",false)
 				d3.select("#mn-start")
@@ -2642,7 +2683,7 @@ function wrap(text, width) {
 		})
 		d3.select("#mn-right")
 			.on("click", function(){
-				if(d3.select("#mn-header").classed("drawerOpen")){ return false }
+				if(d3.select("#mn-header").classed("drawerOpen")){ showOptions(); return false }
 				d3.select("#mn-header").classed("drawerOpen",true)
 				d3.select("#mn-header").classed("open",false)
 				d3.select("#mn-start")
@@ -2655,7 +2696,7 @@ function wrap(text, width) {
 		})
 		d3.select("#mn-abt")
 			.on("click", function(){
-				if(d3.select("#mn-header").classed("drawerOpen")){ return false }
+				if(d3.select("#mn-header").classed("drawerOpen")){ showOptions(); return false }
 				d3.select("#mn-header").classed("drawerOpen",true)
 				d3.select("#mn-header").classed("open",false)
 				d3.select("#mn-start")

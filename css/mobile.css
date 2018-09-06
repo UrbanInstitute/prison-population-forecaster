@@ -251,10 +251,10 @@ body.stack #barChart{
 }
 #mn-menu{
 	position: absolute;
-	width: 290px;
+	width: 318px;
     /* height: 900px; */
     background: #353535;
-    left: -300px;
+    left: -318px;
 }
 .mn-row{
 	height: 36px;
@@ -273,7 +273,7 @@ body.mobile #headerAboutLink{
 	display: none;
 }
 body.mobile #leftSidebar, body.mobile #rightSideBar{
-    top: 52px;
+    top: 52px;	
     z-index: 10000000008;
 }
 
@@ -394,7 +394,7 @@ body.mobile .popHead{
 
 body.mobile #aboutContainer{
 	position: fixed;
-    width: calc(100% - 40px);
+    width: 199px;
     height: 1260px;
     z-index: 10000000008;
     left: -2000px;
@@ -403,7 +403,13 @@ body.mobile #aboutContainer{
     padding-right: 20px;
 }
 body.mobile #aboutClose{
-	/*display: none;*/
+	display: none;
+}
+body.mobile .aboutHeader{
+	font-size: 25px;
+}
+body.mobile #aboutWell{
+	margin-top: 30px;
 }
 body.mobile #barChart .axis .tick text {
     font-size: 11px;
