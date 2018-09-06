@@ -252,7 +252,20 @@ function wrap(text, width) {
 		return names[state]
 
 	}
+	function hideOffenses(state){
+		d3.selectAll(".childContainer").style("display","block")
+		var offenses = counts[state]["catList"]
+		for(var i = 0; i  < OFFENSES.length; i++){
+			var o = OFFENSES[i][0]
+			var name = OFFENSES[i][1]
+			if(offenses.indexOf(o) == -1){
+				d3.select(d3.select('.child.slider[data-offense="' + o + '"]').node().parentNode.parentNode).style("display","none")
+
+			}
+		}
+	}
 	function setState(state){
+		hideOffenses(state)
 		d3.selectAll(".line.saved:not(.state-" + state + ")").style("opacity",0)
 		d3.selectAll(".line.saved.state-" + state ).style("opacity",1)
 		$( "#stateSelect" ).val(state).selectmenu("refresh")
@@ -396,7 +409,6 @@ function wrap(text, width) {
 		var lineData = reshapeLineData(rawData)
 		var costsData = reshapeCostsData(rawData)
 		var barData = reshapeBarData(rawData)
-
 
 		buildPopulationChart(lineData, false)
 		buildCostInfo(costsData)
@@ -2268,6 +2280,11 @@ function wrap(text, width) {
 				name = PARENTS[j][1].replace("All ",""),
 				container = d3.select(".oc" + i + " .printColumn." +  parent),
 				children = SUBCATEGORIES[parent]
+				catlist = counts[state]["catList"]
+				children = children.filter(function(o){
+					return catlist.indexOf(o) != -1
+				})
+
 
 			// buildOffense(container, name, inputs[parent]["admissions"]["value"], inputs[parent]["los"]["value"], true)
 			var parentHeader = name.charAt(0).toUpperCase() + name.slice(1);
@@ -2644,6 +2661,7 @@ function wrap(text, width) {
 
 
 	function init(){
+
 		bindControlData()
 		x = {"arson": { "admissions": {"value": "40", "locked": true}, "los": {"value": "50", "locked": true} } }
 		y = JSON.stringify(x)
@@ -2655,7 +2673,7 @@ function wrap(text, width) {
 		var name = "Sample forecast"
 		var state = ""
 		if(parameters.hasOwnProperty("print")){
-			 window.print()
+			
 			var forecasts = []
 			for(var i = 1; i < Infinity; i++){
 				if(parameters.hasOwnProperty("forecast" + i)){
@@ -2665,7 +2683,7 @@ function wrap(text, width) {
 				}
 			}
 			buildPrintView(forecasts)
-			// setTimeout(function(){ window.print() }, 1000);
+			window.print()
 
 			
 
@@ -2688,6 +2706,10 @@ function wrap(text, width) {
 				}
 				setInputs(inputs)
 			}
+			if(state == "" && !parameters.hasOwnProperty("state")){
+				hideOffenses("AL")
+			}
+
 			updateInputs(false, false, false, false, "init")
 			d3.select("#saveForecast").classed("deactivated",true)
 			saveForecast(name)
