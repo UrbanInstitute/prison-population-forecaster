@@ -289,6 +289,7 @@ body.mobile #introText{
     padding-left: 0px;
     padding-bottom: 50px;
     margin-top: 20px;
+    z-index: 100;
 }
 body.mobile #titleContainer{
 	clear: both;
@@ -362,6 +363,7 @@ body.mobile #barLegend{
 }
 body.mobile #lineChart{
 	margin-left: 0px;
+	z-index: -1;
 }
 body.mobile #costSection{
 	width: 100%;
@@ -401,7 +403,7 @@ body.mobile #aboutContainer{
     padding-right: 20px;
 }
 body.mobile #aboutClose{
-	display: none;
+	/*display: none;*/
 }
 body.mobile #barChart .axis .tick text {
     font-size: 11px;

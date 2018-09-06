@@ -2124,10 +2124,16 @@ function wrap(text, width) {
 				.attr("src","img/close.png")
 		})
 		.on("click", function(){
-			d3.select("#headerAboutLink").classed("closed", true)
-			d3.select("#aboutContainer")
-				.transition()
-				.style("top", "-800px")
+			if(getLayout() == "mobile"){
+					d3.select("#aboutContainer")
+					.transition()
+					.style("left","-2000px")
+			}else{
+				d3.select("#headerAboutLink").classed("closed", true)
+				d3.select("#aboutContainer")
+					.transition()
+					.style("top", "-800px")
+			}
 		})
 
 	d3.select("#headerAboutLink")
@@ -2141,8 +2147,27 @@ function wrap(text, width) {
 
 		})
 
+	d3.select("#datePublished span")
+		.on("click", function(){
+			d3.select("#headerAboutLink").classed("closed", function(){ return !d3.select("#headerAboutLink").classed("closed") })
+			d3.select("#aboutContainer")
+				.transition()
+				.style("top", function(){
+					return (d3.select("#headerAboutLink").classed("closed") ? "-800px" : "50px")
+				})
+		})
+
 	
-						
+					d3.select("#mobileDatePublished span")
+		.on("click", function(){
+				d3.select("#mn-header").classed("drawerOpen",true)
+				d3.select("#mn-header").classed("open",false)
+				d3.select("#mn-start")
+						.style("color","white")
+				d3.select("#aboutContainer")
+					.transition()
+					.style("left","0px")
+		})				
 	/*******************************************************/
 	/*********************** PRINT *************************/
 	/*******************************************************/
@@ -2451,7 +2476,8 @@ function wrap(text, width) {
 			.style("top", "100px")
 			.style("left","-2000px")
 
-		d3.select("#mobileDatePublished").html(d3.select("#datePublished").html())
+
+
 
 		d3.select("#mn-menu").style("height",window.innerHeight + "px")
 
@@ -2643,10 +2669,12 @@ function wrap(text, width) {
 		$(document).keyup(function(e) {
 		 if (e.keyCode == 27) { // escape key maps to keycode `27`
 		    closePopUp();
-			d3.select("#headerAboutLink").classed("closed", true)
-			d3.select("#aboutContainer")
-				.transition()
-				.style("top", "-800px")
+		    if(getLayout != "mobile"){
+				d3.select("#headerAboutLink").classed("closed", true)
+				d3.select("#aboutContainer")
+					.transition()
+					.style("top", "-800px")
+			}
 		}
 		});
 
