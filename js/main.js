@@ -1813,7 +1813,7 @@ function wrap(text, width) {
 		}
 
 		output.push(d.state)
-		output.push(d.name)
+		output.push(d.name.replace("%","%25"))
 		var merged = [].concat.apply([], output);
 
 		return encodeURIComponent(JSON.stringify(merged)).replace(/%2C/g,",")
