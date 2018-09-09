@@ -76,7 +76,6 @@ function StateProjections(ST,scenarios_list) {
 		//All_scenarios is all scenarios that have been modified by the user in the input
 		population_totals[categories[i]] = CatProjections(categories[i],stateData,all_scenarios,details)
 	}
-
 	// DW note: can make this more efficient and smaller...ignore "unknown" and ignore "hisp_f"
 	var RE = racedata[ST]
 
@@ -118,7 +117,8 @@ function StateProjections(ST,scenarios_list) {
 				}
 			}
 		}
-	}		
+	}
+	// console.log(population_totals)		
 	return [popThruYears, racePCT, raceLYPCT]
 }
 
@@ -430,6 +430,7 @@ function runModel(chosenState, projectedParameters){
 
 
 	return {"projected": projectedFinalData, "baseline": baselineFinalData, "costs": costsFinalData, "years": {"min": +minYear, "max": +maxYear, "diverge": +counts[chosenState].endYear}}
+
 
 }
 

@@ -515,7 +515,6 @@ function wrap(text, width) {
 				var children = SUBCATEGORIES[parent].filter(function(o){
 					return catlist.indexOf(o) != -1
 				})
-				console.log(catlist)
 				
 				
 				for(var i = 0; i < children.length; i++){
@@ -1776,6 +1775,7 @@ function wrap(text, width) {
 		
 	}
 	function getQueryString(d, obj){
+
 		var inputs = d.inputs,
 			parents = d.parents,
 			state = d.state,
@@ -1799,16 +1799,21 @@ function wrap(text, width) {
 	}
 	function encodeForecast(d){
 
-		var allOffenses = OFFENSES.concat(PARENTS).map(function(value,index) { return value[0]; }),
+		var allOffenses = OFFENSES.concat(PARENTS).map(function(value,index) { return value[0]; }).reverse(),
 			inputs = Object.assign({}, d.inputs),
 			output = Array.apply(null, {length: allOffenses.length}).map(Number.call, Number)
+
+
+			
 		for(var attr in inputs){
+			console.log(attr)
 			if(inputs.hasOwnProperty(attr)){
 				var ind = allOffenses.indexOf(attr)
 				var los = inputs[attr]["los"]["value"]
 				var admissions = inputs[attr]["admissions"]["value"]
 
 				output.splice(ind, 1, [parseInt(los),parseInt(admissions)])
+				console.log(output)
 			}
 		}
 
@@ -1816,11 +1821,14 @@ function wrap(text, width) {
 		output.push(d.name.replace("%","%25"))
 		var merged = [].concat.apply([], output);
 
+		console.log(inputs)
+
+
 		return encodeURIComponent(JSON.stringify(merged)).replace(/%2C/g,",")
 
 	}
 	function decodeForecast(d){
-		var allOffenses = OFFENSES.concat(PARENTS).map(function(value,index) { return value[0]; }),
+		var allOffenses = OFFENSES.concat(PARENTS).map(function(value,index) { return value[0]; }).reverse(),
 			input = JSON.parse(decodeURIComponent(d)),
 			output = {"inputs":{}, "state": input[allOffenses.length*2], "name": input[allOffenses.length*2 + 1]}
 
@@ -1828,11 +1836,13 @@ function wrap(text, width) {
 			var los = input[i],
 				admissions = input[i+1],
 				offense = allOffenses[i/2]
+			// console.log(los)
 
 			output["inputs"][offense] = { "admissions": { "value": String(admissions), "locked": false }, "los": {"value": String(los), "locked": false } }
 
 		}
 
+		console.log(input)
 		return output
 
 
@@ -2276,24 +2286,29 @@ function wrap(text, width) {
 				state = forecast.state;
 				name = forecast.name;
 
-			
+
 				// setInputs(inputs)
+
 
 		var reshaped = []
 		for (var offense in inputs) {
 			if (inputs.hasOwnProperty(offense)) {
-				var reshapedAdmissions = [offense, +inputs[offense]["admissions"]["value"]/100, 1]
-				var reshapedLos = [offense, +inputs[offense]["los"]["value"]/100, 2]
+				var reshapedAdmissions = [offense, +inputs[offense]["admissions"]["value"]/100.0, 1]
+				var reshapedLos = [offense, +inputs[offense]["los"]["value"]/100.0, 2]
 				reshaped.push(reshapedAdmissions)
 				reshaped.push(reshapedLos)
 			}
 		}
+
 		var rawData = runModel(state, reshaped)
 		var lineData = reshapeLineData(rawData)
 		var costsData = reshapeCostsData(rawData)
 		var barData = reshapeBarData(rawData)
 		d3.select(".printForecastName.pfn" + i).text(name)
 		d3.select(".printStateName.psn" + i).text(getStateName(state))
+
+
+		// console.log(reshaped)
 
 
 		if(state == "DC"){
